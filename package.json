@@ -23,10 +23,10 @@
 		"start": "run-p start-web-server start-signal-server"
 	},
 	"dependencies": {
-		"renraku": "^0.2.0-3"
+		"renraku": "^0.3.0-0"
 	},
 	"devDependencies": {
-		"@types/node": "^22.7.5",
+		"@types/node": "^22.8.1",
 		"chokidar": "^4.0.1",
 		"chokidar-cli": "^3.0.0",
 		"cynic": "^0.2.1",
