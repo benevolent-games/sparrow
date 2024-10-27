@@ -1,6 +1,5 @@
 
 import {Core} from "./core.js"
-import {makeSignalingApi} from "./api.js"
 import {BrowserApi} from "../browser/api.js"
 import {deathWithDignity} from "../tools/death-with-dignity.js"
 import {WebSocketServer, remote, endpoint} from "renraku/x/node.js"
@@ -16,10 +15,10 @@ const core = new Core()
 const server = new WebSocketServer({
 	acceptConnection: async({ip, remoteEndpoint, close}) => {
 		const browserApi = remote<BrowserApi>(remoteEndpoint)
-		const agent = await core.acceptAgent(ip, browserApi, close)
+		const {agent, signalingApi} = await core.acceptAgent(ip, browserApi, close)
 		return {
 			closed: () => core.agentDisconnected(agent),
-			localEndpoint: endpoint(makeSignalingApi(core, agent)),
+			localEndpoint: endpoint(signalingApi),
 		}
 	},
 })

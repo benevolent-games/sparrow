@@ -1,9 +1,9 @@
 
 import {PartnerOptions} from "./types.js"
+import {Cable} from "./partnerutils/cable.js"
 import {concurrent} from "../tools/concurrent.js"
 import {AgentInfo} from "../signaling/agent/types.js"
 import {Operations} from "./partnerutils/operations.js"
-import {Cable} from "./partnerutils/cable.js"
 
 export type PartnerApi = ReturnType<typeof makePartnerApi>
 

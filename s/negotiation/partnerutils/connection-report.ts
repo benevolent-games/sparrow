@@ -1,6 +1,6 @@
 
-import {AgentInfo} from "../../signaling/agent/types.js"
 import {ConnectionStatus} from "../types.js"
+import {AgentInfo} from "../../signaling/agent/types.js"
 
 export class ConnectionReport {
 	#iceCount = 0

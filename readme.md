@@ -28,13 +28,12 @@
       },
       closed: () => console.log("disconnected from sparrow"),
     })
+
+    sparrow.invite
+      // "8ab469956da27aff3825a3681b4f6452"
     ```
     - this creates a websocket connection to the sparrow signaling server
-    - people can join using the invite string
-      ```ts
-      sparrow.invite
-        // "8ab469956da27aff3825a3681b4f6452"
-      ```
+    - people can join using the `sparrow.invite` string
 1. **be a client: connect to the host via the invite**
     ```ts
     import {Sparrow} from "sparrow-rtc"
@@ -69,11 +68,4 @@
     channelsConfig: stdDataChannels(),
   })
   ```
-
-<br/>
-
-## 🐦 setup multimedia streaming
-
-*TODO*
-
 
