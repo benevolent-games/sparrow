@@ -1,4 +1,18 @@
 
+- possible renames
+  - `peer` becomes `connection`
+  - `Cable` becomes `Peer`
+  - `Channels` becomes `Cable`
+  - thusly,
+    ```js
+    joined: peer => {
+      peer.connection // RTCPeerConnection
+      peer.cable // formerly "channels"
+    },
+    ```
+
+-----------------------
+
 ## a fresh approach
 
 - sparrow gets trimmed down.

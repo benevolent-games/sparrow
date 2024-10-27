@@ -1,4 +1,5 @@
 
+import {pubsub} from "../../tools/pubsub.js"
 import {ConnectionStatus} from "../types.js"
 import {AgentInfo} from "../../signaling/agent/types.js"
 
@@ -6,24 +7,20 @@ export class ConnectionReport {
 	#iceCount = 0
 	#status: ConnectionStatus = "start"
 
-	constructor(public agent: AgentInfo, public onChange: (report: ConnectionReport) => void) {}
+	onChange = pubsub<[ConnectionReport]>()
+
+	constructor(public operationId: number, public agent: AgentInfo) {}
 
 	get iceCount() { return this.#iceCount }
 	set iceCount(x: number) {
 		this.#iceCount = x
-		this.onChange(this)
+		this.onChange.publish(this)
 	}
 
 	get status() { return this.#status }
 	set status(s: ConnectionStatus) {
 		this.#status = s
-		this.onChange(this)
-	}
-
-	reset() {
-		this.#iceCount = 0
-		this.#status = "start"
-		this.onChange(this)
+		this.onChange.publish(this)
 	}
 }
 

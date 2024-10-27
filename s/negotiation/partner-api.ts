@@ -28,56 +28,66 @@ export function makePartnerApi<Channels>({
 			const operation = operations.create({
 				agent,
 				rtcConfig,
-				onReport,
 				sendIceCandidate: signalingApi.sendIceCandidate,
 			})
+			onReport(operation.report)
 			return operation.id
 		},
 
 		async produceOffer(opId: number): Promise<any> {
-			const {peer, channelsWaiting, report} = operations.require(opId)
-			report.status = "offer"
-			channelsWaiting.entangle(channelsConfig.offering(peer))
-			const offer = await peer.createOffer()
-			await peer.setLocalDescription(offer)
-			return offer
+			return await operations.attempt(opId, async operation => {
+				const {peer, channelsWaiting, report} = operation
+				report.status = "offer"
+				channelsWaiting.entangle(channelsConfig.offering(peer))
+				const offer = await peer.createOffer()
+				await peer.setLocalDescription(offer)
+				return offer
+			})
 		},
 
 		async produceAnswer(opId: number, offer: RTCSessionDescription): Promise<any> {
-			const {peer, channelsWaiting, report} = operations.require(opId)
-			report.status = "answer"
-			channelsWaiting.entangle(channelsConfig.answering(peer))
-			await peer.setRemoteDescription(offer)
-			const answer = await peer.createAnswer()
-			await peer.setLocalDescription(answer)
-			return answer
+			return await operations.attempt(opId, async operation => {
+				const {peer, channelsWaiting, report} = operation
+				report.status = "answer"
+				channelsWaiting.entangle(channelsConfig.answering(peer))
+				await peer.setRemoteDescription(offer)
+				const answer = await peer.createAnswer()
+				await peer.setLocalDescription(answer)
+				return answer
+			})
 		},
 
 		async acceptAnswer(opId: number, answer: RTCSessionDescription): Promise<void> {
-			const {peer, report} = operations.require(opId)
-			report.status = "accept"
-			await peer.setRemoteDescription(answer)
+			return await operations.attempt(opId, async operation => {
+				const {peer, report} = operation
+				report.status = "accept"
+				await peer.setRemoteDescription(answer)
+			})
 		},
 
 		async acceptIceCandidate(opId: number, ice: RTCIceCandidate): Promise<void> {
-			const {peer} = operations.require(opId)
-			await peer.addIceCandidate(ice)
+			return await operations.attempt(opId, async operation => {
+				const {peer} = operation
+				await peer.addIceCandidate(ice)
+			})
 		},
 
 		async waitUntilReady(opId: number): Promise<void> {
-			const {agent, report, channelsWaiting, connectedPromise, iceGatheredPromise} = operations.require(opId)
-			report.status = "trickle"
+			return await operations.attempt(opId, async operation => {
+				const {agent, report, channelsWaiting, connectedPromise, iceGatheredPromise} = operation
+				report.status = "trickle"
 
-			const wait = concurrent({
-				peer: connectedPromise,
-				channels: channelsWaiting.promise,
+				const wait = concurrent({
+					peer: connectedPromise,
+					channels: channelsWaiting.promise,
+				})
+
+				const [{peer, channels}] = await Promise.all([wait, iceGatheredPromise])
+
+				report.status = "connected"
+				const cable = new Cable(agent, channels, peer, report)
+				onCable(cable)
 			})
-
-			const [{peer, channels}] = await Promise.all([wait, iceGatheredPromise])
-
-			report.status = "connected"
-			const cable = new Cable(agent, channels, peer, report)
-			onCable(cable)
 		},
 	}
 }

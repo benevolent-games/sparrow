@@ -10,6 +10,9 @@ export function stdOptions(): ConnectOptions<StdDataChannels> {
 		url: stdUrl(),
 		rtcConfig: stdRtcConfig(),
 		channelsConfig: stdDataChannels(),
+		allow: async() => true,
+		joined: () => () => {},
+		closed: () => {},
 	}
 }
 

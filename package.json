@@ -23,9 +23,11 @@
 		"start": "run-p start-web-server start-signal-server"
 	},
 	"dependencies": {
+		"@benev/slate": "^0.2.8",
 		"renraku": "^0.3.0-0"
 	},
 	"devDependencies": {
+		"@benev/turtle": "^0.6.3",
 		"@types/node": "^22.8.1",
 		"chokidar": "^4.0.1",
 		"chokidar-cli": "^3.0.0",

@@ -13,7 +13,7 @@ export type PartnerOptions<Channels> = {
 	onReport: (report: ConnectionReport) => void
 }
 
-export type ConnectionStatus = "start" | "offer" | "answer" | "accept" | "trickle" | "connected"
+export type ConnectionStatus = "start" | "offer" | "answer" | "accept" | "trickle" | "connected" | "failed"
 
 export type Partner = {
 	api: PartnerApi

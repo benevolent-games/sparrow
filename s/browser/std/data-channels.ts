@@ -7,16 +7,6 @@ import {ChannelsConfig, StdDataChannels} from "../../negotiation/types.js"
 export const stdDataChannels = (): ChannelsConfig<StdDataChannels> => ({
 
 	offering: async peer => {
-		function prepareChannel(channel: RTCDataChannel) {
-			channel.binaryType = "arraybuffer"
-			const waiting = deferredPromise<RTCDataChannel>()
-			const unattach = attachEvents(channel, {
-				open: () => waiting.resolve(channel),
-				error: (e: RTCErrorEvent) => waiting.reject(e.error),
-			})
-			return waiting.promise.finally(unattach)
-		}
-
 		return concurrent({
 			reliable: prepareChannel(peer.createDataChannel("reliable", {
 				ordered: true,
@@ -50,4 +40,14 @@ export const stdDataChannels = (): ChannelsConfig<StdDataChannels> => ({
 		}).finally(unattach)
 	},
 })
+
+function prepareChannel(channel: RTCDataChannel) {
+	channel.binaryType = "arraybuffer"
+	const waiting = deferredPromise<RTCDataChannel>()
+	const unattach = attachEvents(channel, {
+		open: () => waiting.resolve(channel),
+		error: (e: RTCErrorEvent) => waiting.reject(e.error),
+	})
+	return waiting.promise.finally(unattach)
+}
 

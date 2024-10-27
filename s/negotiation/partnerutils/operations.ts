@@ -11,7 +11,6 @@ export type OperationOptions = {
 	agent: AgentInfo
 	rtcConfig: RTCConfiguration
 	sendIceCandidate: SendIceCandidateFn
-	onReport: (report: ConnectionReport) => void,
 }
 
 export class Operations<Channels> extends Pool<Operation<Channels>> {
@@ -21,6 +20,11 @@ export class Operations<Channels> extends Pool<Operation<Channels>> {
 		const operation = new Operation<Channels>(this.#id++, options)
 		this.add(operation)
 		return operation
+	}
+
+	async attempt<R>(opId: number, fn: (operation: Operation<Channels>) => Promise<R>) {
+		const operation = this.require(opId)
+		return await operation.handleFailure(async() => await fn(operation))
 	}
 }
 
@@ -36,9 +40,18 @@ export class Operation<Channels> {
 	constructor(public id: number, public options: OperationOptions) {
 		this.agent = options.agent
 		this.peer = new RTCPeerConnection(options.rtcConfig)
-		this.report = new ConnectionReport(options.agent, options.onReport)
+		this.report = new ConnectionReport(id, options.agent)
 		this.iceGatheredPromise = gather_ice(this.peer, options.sendIceCandidate, this.report)
 		this.connectedPromise = wait_for_connection(this.peer)
+	}
+
+	async handleFailure<R>(fn: () => Promise<R>) {
+		try { return await fn() }
+		catch (err) {
+			this.report.status = "failed"
+			this.channelsWaiting.reject(err)
+			throw err
+		}
 	}
 }
 

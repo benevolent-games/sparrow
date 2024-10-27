@@ -1,11 +1,15 @@
 
+import {pubsub} from "../../tools/pubsub.js"
 import {ConnectionReport} from "./connection-report.js"
 import {AgentInfo} from "../../signaling/agent/types.js"
+import {attachEvents} from "../../tools/attach-events.js"
 
 export class Cable<Channels> {
 
-	/** this is the id of the agent this cable is connected to */
-	readonly id: string
+	get id() { return this.agent.id }
+	get reputation() { return this.agent.reputation }
+
+	readonly onClosed = pubsub()
 
 	constructor(
 			public agent: AgentInfo,
@@ -13,7 +17,17 @@ export class Cable<Channels> {
 			public peer: RTCPeerConnection,
 			public report: ConnectionReport,
 		) {
-		this.id = agent.id
+
+		const detach = attachEvents(peer, {
+			connectionstatechange: () => {
+				switch (peer.connectionState) {
+					case "closed":
+					case "failed":
+						detach()
+						return this.onClosed.publish()
+				}
+			},
+		})
 	}
 }
 

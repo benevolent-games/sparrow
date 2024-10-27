@@ -1,5 +1,5 @@
 
-import {expose, webSocketRemote} from "renraku"
+import {webSocketRemote, endpoint} from "renraku"
 
 import {Sparrow} from "../sparrow.js"
 import {version} from "../../version.js"
@@ -8,24 +8,22 @@ import {ConnectOptions} from "../types.js"
 import {pubsub} from "../../tools/pubsub.js"
 import {stdOptions} from "./connect-options.js"
 import {SignalingApi} from "../../signaling/api.js"
-import {DoorPolicies} from "../parts/door-policies.js"
 import {Cable} from "../../negotiation/partnerutils/cable.js"
 import {ChannelsConfig, StdDataChannels} from "../../negotiation/types.js"
 import {ConnectionReport} from "../../negotiation/partnerutils/connection-report.js"
 
 export async function connect<Channels = StdDataChannels>(
-		options: Partial<ConnectOptions<Channels>> = stdOptions() as ConnectOptions<any>
+		options_: Partial<ConnectOptions<Channels>>
 	) {
 
-	const o = {...stdOptions(), ...options}
+	const o = {...stdOptions(), ...options_} as ConnectOptions<Channels>
 	const onCable = pubsub<[Cable<Channels>]>()
 	const onReport = pubsub<[ConnectionReport]>()
-	const doorPolicies = new DoorPolicies()
 
 	const {socket, fns: signalingApi} = await webSocketRemote<SignalingApi>({
 		url: o.url,
-		getLocalEndpoint: signalingApi => expose(() => makeBrowserApi({
-			doorPolicies,
+		getLocalEndpoint: signalingApi => endpoint(makeBrowserApi({
+			allow: o.allow,
 			partner: {
 				signalingApi,
 				rtcConfig: o.rtcConfig,
@@ -36,8 +34,11 @@ export async function connect<Channels = StdDataChannels>(
 		})),
 	})
 
-	const self = await signalingApi.hello(version)
+	onCable(cable => {
+		cable.onClosed(o.joined(cable))
+	})
 
-	return new Sparrow<Channels>(socket, signalingApi, self, doorPolicies, onCable, onReport)
+	const self = await signalingApi.hello(version)
+	return new Sparrow<Channels>(socket, signalingApi, self, onCable, onReport)
 }
 
