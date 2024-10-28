@@ -5,22 +5,22 @@
 	"license": "MIT",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"type": "module",
+	"main": "x/index.js",
 	"files": [
 		"x"
 	],
-	"main": "x/sparrow.js",
 	"scripts": {
-		"build": "run-s clean && run-p importmap typescript && run-p test",
-		"clean": "rimraf x && mkdirp x",
-		"importmap": "importly < package-lock.json > x/importmap.json",
-		"typescript": "tsc",
-		"watch-typescript": "tsc -w",
-		"watch-tests": "chokidar 'x/**/*.js' -c 'npm test'",
-		"watch": "run-p watch-typescript",
+		"build": "run-s build-clean build-code build-site build-links",
+		"build-clean": "rimraf x && mkdirp x",
+		"build-code": "turtle build --out=x",
+		"build-site": "turtle ssg --in=s,x --out=x",
+		"build-links": "ln -s \"$(realpath s)\" x/s && ln -s \"$(realpath assets)\" x/assets",
+		"watch": "turtle watch -v --in=s,x --out=x",
+		"start": "run-p start-web-server start-signal-server",
+		"start-web-server": "http-server x",
+		"start-signal-server": "node x/signaling/server.js",
 		"test": "cynic node --label='sparrow-rtc test suite' x/tests.test.js",
-		"start-web-server": "http-server",
-		"start-signal-server": "node x/signal/signal-server.js",
-		"start": "run-p start-web-server start-signal-server"
+		"test-watch": "chokidar 'x/**/*.js' -c 'npm test'"
 	},
 	"dependencies": {
 		"@benev/slate": "^0.2.8",
