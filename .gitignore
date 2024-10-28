@@ -1,6 +1,8 @@
 
-/x
+/assets
+/temp
 /node_modules
-
+/x
 /*.pem
 /*.tgz
+
