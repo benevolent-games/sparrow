@@ -38,13 +38,9 @@
     ```ts
     import {Sparrow} from "sparrow-rtc"
 
-    const sparrow = await Sparrow.connect({
-      closed: () => console.log("disconnected from sparrow"),
-    })
-
-    const peer = await sparrow.join({
+    const peer = await Sparrow.join({
       invite: "8ab469956da27aff3825a3681b4f6452",
-      closed: () => console.log("disconnected from peer"),
+      closed: () => console.log("host disconnected"),
     })
     ```
 

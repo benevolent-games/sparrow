@@ -33,7 +33,7 @@ export const makeSignalingApi = (core: Core, agent: Agent) => ({
 
 		const allowed = await alice.browserApi.knock(bob.info())
 		if (!allowed)
-			return undefined
+			return null
 
 		const partnerA: Partner = {
 			agent,
@@ -46,6 +46,7 @@ export const makeSignalingApi = (core: Core, agent: Agent) => ({
 		}
 
 		await negotiate_rtc_connection(partnerA, partnerB)
+		return alice.info()
 	},
 
 	async sendIceCandidate(ice: RTCIceCandidate) {

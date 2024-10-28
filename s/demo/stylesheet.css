@@ -61,9 +61,6 @@
 }
 
 @layer {
-	/* .title { border-bottom: 1px solid #fff2; padding-bottom: 1em; } */
-	/* footer { border-top: 1px solid #fff2; padding-top: 1em; } */
-
 	.title {
 		display: flex;
 		align-items: center;

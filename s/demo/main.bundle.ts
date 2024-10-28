@@ -1,6 +1,6 @@
 
 import {register_to_dom} from "@benev/slate"
-import {SparrowRtc} from "./views/sparrow-rtc/element.js"
+import {SparrowDemo} from "./views/sparrow-demo/element.js"
 
-register_to_dom({SparrowRtc})
+register_to_dom({SparrowDemo})
 

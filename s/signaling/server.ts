@@ -8,7 +8,7 @@ deathWithDignity()
 
 const port = process.argv[2]
 	? parseInt(process.argv[2])
-	: 8192
+	: 8000
 
 const core = new Core()
 

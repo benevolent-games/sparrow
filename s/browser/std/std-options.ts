@@ -1,8 +1,8 @@
 
-import {stdUrl} from "./url.js"
+import {stdUrl} from "./std-url.js"
 import {ConnectOptions} from "../types.js"
-import {stdRtcConfig} from "./rtc-config.js"
-import {stdDataChannels} from "./data-channels.js"
+import {stdRtcConfig} from "./std-rtc-config.js"
+import {stdDataChannels} from "./std-data-channels.js"
 import {StdDataChannels} from "../../negotiation/types.js"
 
 export function stdOptions(): ConnectOptions<StdDataChannels> {
@@ -12,7 +12,7 @@ export function stdOptions(): ConnectOptions<StdDataChannels> {
 		channelsConfig: stdDataChannels(),
 		allow: async() => true,
 		joined: () => () => {},
-		closed: () => {},
+		sparrowClosed: () => {},
 	}
 }
 

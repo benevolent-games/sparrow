@@ -39,8 +39,8 @@ export class Operation<Channels> {
 
 	constructor(public id: number, public options: OperationOptions) {
 		this.agent = options.agent
-		this.peer = new RTCPeerConnection(options.rtcConfig)
 		this.report = new ConnectionReport(id, options.agent)
+		this.peer = new RTCPeerConnection(options.rtcConfig)
 		this.iceGatheredPromise = gather_ice(this.peer, options.sendIceCandidate, this.report)
 		this.connectedPromise = wait_for_connection(this.peer)
 	}
