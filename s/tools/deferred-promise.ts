@@ -3,7 +3,6 @@ export type DeferredPromise<R> = {
 	promise: Promise<R>
 	resolve: (result: R) => void
 	reject: (reason: any) => void
-	entangle: (outsidePromise: Promise<R>) => Promise<R>
 }
 
 export function deferredPromise<R>(): DeferredPromise<R> {
@@ -15,11 +14,6 @@ export function deferredPromise<R>(): DeferredPromise<R> {
 		reject = rej
 	})
 
-	function entangle(outside: Promise<R>) {
-		outside.then(resolve).catch(reject)
-		return promise
-	}
-
-	return {promise, resolve, reject, entangle}
+	return {promise, resolve, reject}
 }
 

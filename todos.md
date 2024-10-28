@@ -1,8 +1,11 @@
 
+- env variable as the reputation salt (github secret) so it's fixed, and bans are more persistent
 - possible renames
-  - `peer` becomes `connection`
-  - `Cable` becomes `Peer`
-  - `Channels` becomes `Cable`
+  - `Sparrow`
+  - `Goose`
+  - `Operation`
+  - `Peer`
+  - `Cable`
   - thusly,
     ```js
     joined: peer => {

@@ -2,43 +2,42 @@
 import {webSocketRemote, endpoint} from "renraku"
 
 import {Sparrow} from "../sparrow.js"
+import {Goose} from "../parts/goose.js"
 import {version} from "../../version.js"
 import {makeBrowserApi} from "../api.js"
 import {ConnectOptions} from "../types.js"
 import {stdOptions} from "./std-options.js"
-import {pubsub} from "../../tools/pubsub.js"
 import {SignalingApi} from "../../signaling/api.js"
-import {Cable} from "../../negotiation/partnerutils/cable.js"
 import {ChannelsConfig, StdDataChannels} from "../../negotiation/types.js"
-import {ConnectionReport} from "../../negotiation/partnerutils/connection-report.js"
 
 export async function connect<Channels = StdDataChannels>(
 		options_: Partial<ConnectOptions<Channels>>
 	) {
 
 	const o = {...stdOptions(), ...options_} as ConnectOptions<Channels>
-	const onCable = pubsub<[Cable<Channels>]>()
-	const onReport = pubsub<[ConnectionReport]>()
+	const goose = new Goose<Channels>()
 
 	const {socket, fns: signalingApi} = await webSocketRemote<SignalingApi>({
 		url: o.url,
 		getLocalEndpoint: signalingApi => endpoint(makeBrowserApi({
-			allow: o.allow,
+			allow: async agent => !!(
+				!goose.operations.has(agent.id) &&
+				await o.allow(agent)
+			),
 			partner: {
 				signalingApi,
 				rtcConfig: o.rtcConfig,
 				channelsConfig: o.channelsConfig as ChannelsConfig<Channels>,
-				onCable: onCable.publish,
-				onReport: onReport.publish,
+				goose,
 			},
 		})),
 	})
 
-	onCable(cable => {
+	goose.onCable(cable => {
 		cable.onClosed(o.joined(cable))
 	})
 
 	const self = await signalingApi.hello(version)
-	return new Sparrow<Channels>(socket, signalingApi, self, onCable, onReport)
+	return new Sparrow<Channels>(socket, signalingApi, self, goose)
 }
 

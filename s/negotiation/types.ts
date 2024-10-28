@@ -1,19 +1,16 @@
 
 import {PartnerApi} from "./partner-api.js"
-import {Cable} from "./partnerutils/cable.js"
 import {SignalingApi} from "../signaling/api.js"
 import {Agent} from "../signaling/agent/agent.js"
-import {ConnectionReport} from "./partnerutils/connection-report.js"
+import {Operation} from "./partnerutils/operations.js"
+import {Goose} from "../browser/parts/goose.js"
 
 export type PartnerOptions<Channels> = {
 	signalingApi: SignalingApi
 	rtcConfig: RTCConfiguration
 	channelsConfig: ChannelsConfig<Channels>
-	onCable: (cable: Cable<Channels>) => void
-	onReport: (report: ConnectionReport) => void
+	goose: Goose<Channels>
 }
-
-export type ConnectionStatus = "start" | "offer" | "answer" | "accept" | "trickle" | "connected" | "failed"
 
 export type Partner = {
 	api: PartnerApi

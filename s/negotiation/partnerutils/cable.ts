@@ -1,11 +1,10 @@
 
+import {IceReport} from "../ice-report.js"
 import {pubsub} from "../../tools/pubsub.js"
-import {ConnectionReport} from "./connection-report.js"
 import {AgentInfo} from "../../signaling/agent/types.js"
 import {attachEvents} from "../../tools/attach-events.js"
 
 export class Cable<Channels> {
-
 	get id() { return this.agent.id }
 	get reputation() { return this.agent.reputation }
 
@@ -13,9 +12,9 @@ export class Cable<Channels> {
 
 	constructor(
 			public agent: AgentInfo,
-			public channels: Channels,
 			public peer: RTCPeerConnection,
-			public report: ConnectionReport,
+			public channels: Channels,
+			public iceReport: IceReport,
 		) {
 
 		const detach = attachEvents(peer, {

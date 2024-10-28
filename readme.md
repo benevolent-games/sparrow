@@ -20,13 +20,15 @@
     import {Sparrow} from "sparrow-rtc"
 
     const sparrow = await Sparrow.connect({
-      joined: peer => {
-        console.log("peer connected")
-        peer.channels.unreliable.send("world")
-        peer.channels.unreliable.onmessage = m => console.log(m.data)
-        return () => console.log("peer disconnected")
+      joined: ({agent, channels}) => {
+        console.log("arrival", agent.id)
+        channels.unreliable.onmessage = m => {
+          console.log("received", m.data)
+          channels.unreliable.send("world")
+        }
+        return () => console.log("departure", agent.id)
       },
-      closed: () => console.log("disconnected from sparrow"),
+      disconnected: () => console.log("disconnected from sparrow server"),
     })
 
     sparrow.invite
@@ -38,10 +40,13 @@
     ```ts
     import {Sparrow} from "sparrow-rtc"
 
-    const peer = await Sparrow.join({
+    const {agent, channels} = await Sparrow.join({
       invite: "8ab469956da27aff3825a3681b4f6452",
-      closed: () => console.log("host disconnected"),
+      closed: () => console.log("host closed this connection"),
     })
+
+    channels.unreliable.send("hello")
+    channels.unreliable.onmessage = m => console.log("received", m.data)
     ```
 
 <br/>

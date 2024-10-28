@@ -1,12 +1,12 @@
 
 import {SendIceCandidateFn} from "../types.js"
-import {ConnectionReport} from "./connection-report.js"
 import {attachEvents} from "../../tools/attach-events.js"
+import {IceReport} from "../ice-report.js"
 
 export function gather_ice(
 		peer: RTCPeerConnection,
 		sendIceCandidate: SendIceCandidateFn,
-		report: ConnectionReport,
+		iceReport: IceReport,
 	) {
 
 	return new Promise<void>((resolve, reject) => {
@@ -15,7 +15,7 @@ export function gather_ice(
 			icecandidate: (event: RTCPeerConnectionIceEvent) => {
 				if (event.candidate) {
 					sendIceCandidate(event.candidate)
-					report.iceCount += 1
+					iceReport.locals.push(event.candidate)
 				}
 			},
 
