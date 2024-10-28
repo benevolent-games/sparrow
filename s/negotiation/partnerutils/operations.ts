@@ -16,16 +16,46 @@ export type OperationOptions = {
 }
 
 export class Operations<Channels> extends Pool<Operation<Channels>> {
-	#id = 0
+	onOperationAdded = pubsub<[Operation<Channels>]>()
+	onOperationRemoved = pubsub<[Operation<Channels>]>()
+	onCable = pubsub<[Cable<Channels>]>()
+
+	onChange = pubsub()
+
+	constructor() {
+		super()
+
+		// publish onChange when any event happens
+		const change = () => this.onChange.publish()
+		this.onOperationAdded(change)
+		this.onOperationRemoved(change)
+		this.onCable(change)
+	}
 
 	create(options: OperationOptions) {
-		const operation = new Operation<Channels>(this.#id++, options)
+		if (this.has(options.agent.id))
+			throw new Error("already engaged with this agent")
+
+		const operation = new Operation<Channels>(options)
 		this.add(operation)
+		this.onOperationAdded.publish(operation)
+
+		const remove = () => {
+			this.remove(operation)
+			this.onOperationRemoved.publish(operation)
+		}
+
+		// remove the operation when it dies
+		operation.onDead(remove)
+
+		// publish onCable when the cable comes in
+		operation.cablePromise.then(cable => this.onCable.publish(cable))
+
 		return operation
 	}
 
-	async attempt<R>(opId: number, fn: (operation: Operation<Channels>) => Promise<R>) {
-		const operation = this.require(opId)
+	async attempt<R>(id: string, fn: (operation: Operation<Channels>) => Promise<R>) {
+		const operation = this.require(id)
 		return await operation.handleFailure(async() => await fn(operation))
 	}
 }
@@ -35,20 +65,24 @@ export class Operation<Channels> {
 	peer: RTCPeerConnection
 	iceReport = new IceReport()
 
-	cable: Cable<Channels> | null = null
-
 	iceGatheredPromise: Promise<void>
 	connectedPromise: Promise<RTCPeerConnection>
 	channelsWaiting = deferPromise<Channels>()
+
+	cable: Cable<Channels> | null = null
 	cablePromise: Promise<Cable<Channels>>
 
 	onDead = pubsub()
 
-	constructor(public id: number, public options: OperationOptions) {
+	get id() { return this.agent.id }
+	get reputation() { return this.agent.reputation }
+
+	constructor(public options: OperationOptions) {
 		this.agent = options.agent
 		this.peer = new RTCPeerConnection(options.rtcConfig)
 		this.iceGatheredPromise = gather_ice(this.peer, options.sendIceCandidate, this.iceReport)
 		this.connectedPromise = wait_for_connection(this.peer)
+
 		this.cablePromise = (
 			Promise.all([
 				this.channelsWaiting.promise,

@@ -5,8 +5,8 @@ import {Partner} from "../types.js"
  * allow the browser peers to freely exchange ice canadidates with each other.
  */
 export function start_exchanging_ice_candidates(
-		[aliceId, alice]: [number, Partner],
-		[bobId, bob]: [number, Partner],
+		[aliceId, alice]: [string, Partner],
+		[bobId, bob]: [string, Partner],
 	) {
 
 	const stopA = alice.agent.onIceCandidate(ice => bob.api.acceptIceCandidate(bobId, ice))

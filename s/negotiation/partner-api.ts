@@ -1,7 +1,6 @@
 
 import {PartnerOptions} from "./types.js"
 import {AgentInfo} from "../signaling/agent/types.js"
-import {Operations} from "./partnerutils/operations.js"
 
 export type PartnerApi = ReturnType<typeof makePartnerApi>
 
@@ -15,10 +14,8 @@ export function makePartnerApi<Channels>({
 		signalingApi,
 		rtcConfig,
 		channelsConfig,
-		goose,
+		operations,
 	}: PartnerOptions<Channels>) {
-
-	const operations = new Operations<Channels>()
 
 	return {
 		async startPeerConnection(agent: AgentInfo) {
@@ -27,12 +24,11 @@ export function makePartnerApi<Channels>({
 				rtcConfig,
 				sendIceCandidate: signalingApi.sendIceCandidate,
 			})
-			goose.addOperation(operation)
 			return operation.id
 		},
 
-		async produceOffer(opId: number): Promise<any> {
-			return await operations.attempt(opId, async operation => {
+		async produceOffer(agentId: string): Promise<any> {
+			return await operations.attempt(agentId, async operation => {
 				const {peer, channelsWaiting} = operation
 				channelsConfig.offering(peer).then(channelsWaiting.resolve)
 				const offer = await peer.createOffer()
@@ -41,8 +37,8 @@ export function makePartnerApi<Channels>({
 			})
 		},
 
-		async produceAnswer(opId: number, offer: RTCSessionDescription): Promise<any> {
-			return await operations.attempt(opId, async operation => {
+		async produceAnswer(agentId: string, offer: RTCSessionDescription): Promise<any> {
+			return await operations.attempt(agentId, async operation => {
 				const {peer, channelsWaiting} = operation
 				channelsConfig.answering(peer).then(channelsWaiting.resolve)
 				await peer.setRemoteDescription(offer)
@@ -52,20 +48,20 @@ export function makePartnerApi<Channels>({
 			})
 		},
 
-		async acceptAnswer(opId: number, answer: RTCSessionDescription): Promise<void> {
-			return await operations.attempt(opId, async operation => {
+		async acceptAnswer(agentId: string, answer: RTCSessionDescription): Promise<void> {
+			return await operations.attempt(agentId, async operation => {
 				await operation.peer.setRemoteDescription(answer)
 			})
 		},
 
-		async acceptIceCandidate(opId: number, candidate: RTCIceCandidate): Promise<void> {
-			return await operations.attempt(opId, async operation => {
+		async acceptIceCandidate(agentId: string, candidate: RTCIceCandidate): Promise<void> {
+			return await operations.attempt(agentId, async operation => {
 				await operation.acceptIceCandidate(candidate)
 			})
 		},
 
-		async waitUntilReady(opId: number): Promise<void> {
-			return await operations.attempt(opId, async operation => {
+		async waitUntilReady(agentId: string): Promise<void> {
+			return await operations.attempt(agentId, async operation => {
 				await operation.cablePromise
 			})
 		},

@@ -2,14 +2,13 @@
 import {PartnerApi} from "./partner-api.js"
 import {SignalingApi} from "../signaling/api.js"
 import {Agent} from "../signaling/agent/agent.js"
-import {Operation} from "./partnerutils/operations.js"
-import {Goose} from "../browser/parts/goose.js"
+import {Operations} from "./partnerutils/operations.js"
 
 export type PartnerOptions<Channels> = {
 	signalingApi: SignalingApi
 	rtcConfig: RTCConfiguration
 	channelsConfig: ChannelsConfig<Channels>
-	goose: Goose<Channels>
+	operations: Operations<Channels>
 }
 
 export type Partner = {
