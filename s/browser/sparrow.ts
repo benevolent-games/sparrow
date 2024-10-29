@@ -26,15 +26,15 @@ export class Sparrow<Channels> {
 	constructor(
 			private socket: WebSocket,
 			private signalingApi: SignalingApi,
-			private self: AgentConfidential,
+			private agent: AgentConfidential,
 			connections: Connections<Channels>,
 		) {
 		this.#connections = connections
 	}
 
-	get id() { return this.self.id }
-	get invite() { return this.self.invite }
-	get reputation() { return this.self.reputation }
+	get id() { return this.agent.id }
+	get invite() { return this.agent.invite }
+	get reputation() { return this.agent.reputation }
 
 	get onConnectionAdded() { return this.#connections.onConnectionAdded }
 	get onConnectionRemoved() { return this.#connections.onConnectionRemoved }
