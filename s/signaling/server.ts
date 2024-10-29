@@ -10,7 +10,12 @@ const port = process.argv[2]
 	? parseInt(process.argv[2])
 	: 8000
 
-const core = new Core()
+const salt = process.env["SPARROW_SALT"]
+
+if (!salt)
+	throw new Error("SPARROW_SALT env variable is missing")
+
+const core = new Core(salt)
 
 const server = new WebSocketServer({
 	acceptConnection: async({ip, remoteEndpoint, close}) => {

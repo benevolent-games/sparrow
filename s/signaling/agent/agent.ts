@@ -6,13 +6,13 @@ import {BrowserApi} from "../../browser/api.js"
 import {AgentConfidential, AgentInfo} from "./types.js"
 
 export class Agent {
-	static salt = hexId()
 	static make = async(
 			ip: string,
 			browserApi: BrowserApi,
 			disconnect: () => void,
+			salt: string,
 		) => {
-		const reputation = await hash(ip + this.salt)
+		const reputation = await hash(ip + salt)
 		return new this(reputation, browserApi, disconnect)
 	}
 

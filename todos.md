@@ -1,6 +1,6 @@
 
-- env variable as the reputation salt (github secret) so it's fixed, and bans are more persistent
-- possible renames
+- [x] env variable as the reputation salt (github secret) so it's fixed, and bans are more persistent
+- [ ] possible renames
   - `Connection` -- connection in progress
   - `Peer` -- RTCPeerConnection
   - `Connected` -- successful connection

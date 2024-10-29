@@ -6,6 +6,7 @@ import {BrowserApi} from "../browser/api.js"
 
 export class Core {
 	agents = new Agents()
+	constructor(private salt: string) {}
 
 	async acceptAgent(
 			ip: string,
@@ -14,7 +15,7 @@ export class Core {
 		) {
 
 		// create the agent
-		const agent = await Agent.make(ip, browserApi, disconnect)
+		const agent = await Agent.make(ip, browserApi, disconnect, this.salt)
 		this.agents.add(agent)
 
 		// create the api available to this agent
