@@ -10,12 +10,12 @@ export type PartnerApi = ReturnType<typeof makePartnerApi>
  * thus, the signalling server is really the one calling the shots and driving the webrtc negotiation.
  * think of the signalling server as a traffic cop (with the whistle) commanding each browser peer throughout the negotation process.
  */
-export function makePartnerApi<Channels>({
+export function makePartnerApi<Cable>({
 		signalingApi,
 		rtcConfig,
-		channelsConfig,
+		cableConfig,
 		connections,
-	}: PartnerOptions<Channels>) {
+	}: PartnerOptions<Cable>) {
 
 	return {
 		async startPeerConnection(agent: AgentInfo) {
@@ -29,8 +29,8 @@ export function makePartnerApi<Channels>({
 
 		async produceOffer(agentId: string): Promise<any> {
 			return await connections.attempt(agentId, async connection => {
-				const {peer, channelsWaiting} = connection
-				channelsConfig.offering(peer).then(channelsWaiting.resolve)
+				const {peer, cableWait} = connection
+				cableConfig.offering(peer).then(cableWait.resolve)
 				const offer = await peer.createOffer()
 				await peer.setLocalDescription(offer)
 				return offer
@@ -39,8 +39,8 @@ export function makePartnerApi<Channels>({
 
 		async produceAnswer(agentId: string, offer: RTCSessionDescription): Promise<any> {
 			return await connections.attempt(agentId, async connection => {
-				const {peer, channelsWaiting} = connection
-				channelsConfig.answering(peer).then(channelsWaiting.resolve)
+				const {peer, cableWait} = connection
+				cableConfig.answering(peer).then(cableWait.resolve)
 				await peer.setRemoteDescription(offer)
 				const answer = await peer.createAnswer()
 				await peer.setLocalDescription(answer)

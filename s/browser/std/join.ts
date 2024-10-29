@@ -3,8 +3,8 @@ import {connect} from "./connect.js"
 import {JoinOptions} from "../types.js"
 import {Connected} from "../../negotiation/partnerutils/connected.js"
 
-export async function join<Channels>(options: JoinOptions<Channels>) {
-	let hostPeer: Connected<Channels> | undefined
+export async function join<Cable>(options: JoinOptions<Cable>) {
+	let hostPeer: Connected<Cable> | undefined
 
 	const sparrow = await connect({
 		...options,

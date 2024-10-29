@@ -20,11 +20,11 @@
     import {Sparrow} from "sparrow-rtc"
 
     const sparrow = await Sparrow.connect({
-      joined: ({agent, channels}) => {
+      joined: ({agent, cable}) => {
         console.log("arrival", agent.id)
-        channels.unreliable.onmessage = m => {
+        cable.unreliable.onmessage = m => {
           console.log("received", m.data)
-          channels.unreliable.send("world")
+          cable.unreliable.send("world")
         }
         return () => console.log("departure", agent.id)
       },
@@ -40,13 +40,13 @@
     ```ts
     import {Sparrow} from "sparrow-rtc"
 
-    const {agent, channels} = await Sparrow.join({
+    const {agent, cable} = await Sparrow.join({
       invite: "8ab469956da27aff3825a3681b4f6452",
       closed: () => console.log("host closed this connection"),
     })
 
-    channels.unreliable.send("hello")
-    channels.unreliable.onmessage = m => console.log("received", m.data)
+    cable.unreliable.send("hello")
+    cable.unreliable.onmessage = m => console.log("received", m.data)
     ```
 
 <br/>
@@ -66,7 +66,7 @@
     rtcConfig: stdRtcConfig(),
 
     // defaults to dual data channels, one reliable, one unreliable
-    channelsConfig: stdDataChannels(),
+    cableConfig: stdDataCable(),
   })
   ```
 

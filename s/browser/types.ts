@@ -1,25 +1,25 @@
 
 import {AgentInfo} from "../signaling/agent/types.js"
-import {ChannelsConfig} from "../negotiation/types.js"
+import {CableConfig} from "../negotiation/types.js"
 import {Connected} from "../negotiation/partnerutils/connected.js"
 
-export type BasicOptions<Channels> = {
+export type BasicOptions<Cable> = {
 	url: string
 	rtcConfig: RTCConfiguration
-	channelsConfig: ChannelsConfig<Channels>
+	cableConfig: CableConfig<Cable>
 }
 
-export type ConnectOptions<Channels> = {
+export type ConnectOptions<Cable> = {
 	allow: AllowFn
-	joined: JoinedFn<Channels>
+	joined: JoinedFn<Cable>
 	sparrowClosed: () => void
-} & BasicOptions<Channels>
+} & BasicOptions<Cable>
 
-export type JoinOptions<Channels> = {
+export type JoinOptions<Cable> = {
 	invite: string
-	hostClosed: (peer: Connected<Channels>) => void
-} & BasicOptions<Channels>
+	hostClosed: (peer: Connected<Cable>) => void
+} & BasicOptions<Cable>
 
 export type AllowFn = (agent: AgentInfo) => Promise<boolean>
-export type JoinedFn<Channels> = (connected: Connected<Channels>) => (() => void)
+export type JoinedFn<Cable> = (connected: Connected<Cable>) => (() => void)
 

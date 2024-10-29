@@ -8,17 +8,17 @@ import {ConnectionOptions} from "../types.js"
 import {AgentInfo} from "../../signaling/agent/types.js"
 import {wait_for_connection} from "./wait-for-connection.js"
 
-export class Connection<Channels> {
+export class Connection<Cable> {
 	agent: AgentInfo
 	peer: RTCPeerConnection
 	iceReport = new IceReport()
 
 	iceGatheredPromise: Promise<void>
 	connectionPromise: Promise<RTCPeerConnection>
-	channelsWaiting = deferPromise<Channels>()
+	cableWait = deferPromise<Cable>()
 
-	connected: Connected<Channels> | null = null
-	connectedPromise: Promise<Connected<Channels>>
+	connected: Connected<Cable> | null = null
+	connectedPromise: Promise<Connected<Cable>>
 
 	onDead = pubsub()
 
@@ -33,15 +33,15 @@ export class Connection<Channels> {
 
 		this.connectedPromise = (
 			Promise.all([
-				this.channelsWaiting.promise,
+				this.cableWait.promise,
 				this.connectionPromise,
 				this.iceGatheredPromise,
 			])
-			.then(([channels]) => {
-				const connected = this.connected = new Connected<Channels>(
+			.then(([cable]) => {
+				const connected = this.connected = new Connected<Cable>(
 					this.agent,
 					this.peer,
-					channels,
+					cable,
 					this.iceReport,
 				)
 				connected.onClosed(() => this.die())
@@ -62,7 +62,7 @@ export class Connection<Channels> {
 	async handleFailure<R>(fn: () => Promise<R>) {
 		try { return await fn() }
 		catch (error) {
-			this.channelsWaiting.reject(error)
+			this.cableWait.reject(error)
 			this.die()
 			throw error
 		}

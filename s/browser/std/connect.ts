@@ -7,15 +7,15 @@ import {makeBrowserApi} from "../api.js"
 import {ConnectOptions} from "../types.js"
 import {stdOptions} from "./std-options.js"
 import {SignalingApi} from "../../signaling/api.js"
+import {CableConfig, StdDataCable} from "../../negotiation/types.js"
 import {Connections} from "../../negotiation/partnerutils/connections.js"
-import {ChannelsConfig, StdDataChannels} from "../../negotiation/types.js"
 
-export async function connect<Channels = StdDataChannels>(
-		options_: Partial<ConnectOptions<Channels>>
+export async function connect<Cable = StdDataCable>(
+		options_: Partial<ConnectOptions<Cable>>
 	) {
 
-	const o = {...stdOptions(), ...options_} as ConnectOptions<Channels>
-	const connections = new Connections<Channels>()
+	const o = {...stdOptions(), ...options_} as ConnectOptions<Cable>
+	const connections = new Connections<Cable>()
 
 	const {socket, fns: signalingApi} = await webSocketRemote<SignalingApi>({
 		url: o.url,
@@ -28,7 +28,7 @@ export async function connect<Channels = StdDataChannels>(
 				connections,
 				signalingApi,
 				rtcConfig: o.rtcConfig,
-				channelsConfig: o.channelsConfig as ChannelsConfig<Channels>,
+				cableConfig: o.cableConfig as CableConfig<Cable>,
 			},
 		})),
 	})
@@ -38,6 +38,6 @@ export async function connect<Channels = StdDataChannels>(
 	})
 
 	const self = await signalingApi.hello(version)
-	return new Sparrow<Channels>(socket, signalingApi, self, connections)
+	return new Sparrow<Cable>(socket, signalingApi, self, connections)
 }
 

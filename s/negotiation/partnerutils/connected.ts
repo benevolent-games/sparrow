@@ -4,7 +4,7 @@ import {pubsub} from "../../tools/pubsub.js"
 import {AgentInfo} from "../../signaling/agent/types.js"
 import {attachEvents} from "../../tools/attach-events.js"
 
-export class Connected<Channels> {
+export class Connected<Cable> {
 	get id() { return this.agent.id }
 	get reputation() { return this.agent.reputation }
 
@@ -13,7 +13,7 @@ export class Connected<Channels> {
 	constructor(
 			public agent: AgentInfo,
 			public peer: RTCPeerConnection,
-			public channels: Channels,
+			public cable: Cable,
 			public iceReport: IceReport,
 		) {
 

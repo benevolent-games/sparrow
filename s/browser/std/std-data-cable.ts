@@ -2,9 +2,9 @@
 import {concurrent} from "../../tools/concurrent.js"
 import {attachEvents} from "../../tools/attach-events.js"
 import {deferredPromise} from "../../tools/deferred-promise.js"
-import {ChannelsConfig, StdDataChannels} from "../../negotiation/types.js"
+import {CableConfig, StdDataCable} from "../../negotiation/types.js"
 
-export const stdDataChannels = (): ChannelsConfig<StdDataChannels> => ({
+export const stdDataCable = (): CableConfig<StdDataCable> => ({
 
 	offering: async peer => {
 		return concurrent({

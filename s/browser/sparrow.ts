@@ -10,7 +10,7 @@ import {join} from "./std/join.js"
 import {stdUrl} from "./std/std-url.js"
 import {stdOptions} from "./std/std-options.js"
 import {stdRtcConfig} from "./std/std-rtc-config.js"
-import {stdDataChannels} from "./std/std-data-channels.js"
+import {stdDataCable} from "./std/std-data-cable.js"
 
 export class Sparrow<Channels> {
 	static join = join
@@ -19,7 +19,7 @@ export class Sparrow<Channels> {
 	static stdUrl = stdUrl
 	static stdOptions = stdOptions
 	static stdRtcConfig = stdRtcConfig
-	static stdDataChannels = stdDataChannels
+	static stdDataCable = stdDataCable
 
 	#operations: Connections<Channels>
 

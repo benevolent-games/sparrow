@@ -5,11 +5,11 @@ import {Agent} from "../signaling/agent/agent.js"
 import {AgentInfo} from "../signaling/agent/types.js"
 import {Connections} from "./partnerutils/connections.js"
 
-export type PartnerOptions<Channels> = {
+export type PartnerOptions<Cable> = {
 	signalingApi: SignalingApi
 	rtcConfig: RTCConfiguration
-	channelsConfig: ChannelsConfig<Channels>
-	connections: Connections<Channels>
+	cableConfig: CableConfig<Cable>
+	connections: Connections<Cable>
 }
 
 export type Partner = {
@@ -25,17 +25,17 @@ export type ConnectionOptions = {
 
 export type SendIceCandidateFn = (candidate: RTCIceCandidate) => Promise<void>
 
-export type ChannelsConfig<Channels> = {
-	offering: (peer: RTCPeerConnection) => Promise<Channels>
-	answering: (peer: RTCPeerConnection) => Promise<Channels>
+export type CableConfig<Cable> = {
+	offering: (peer: RTCPeerConnection) => Promise<Cable>
+	answering: (peer: RTCPeerConnection) => Promise<Cable>
 }
 
-export type StdDataChannels = {
+export type StdDataCable = {
 	reliable: RTCDataChannel
 	unreliable: RTCDataChannel
 }
 
-export function asChannelsConfig<E extends ChannelsConfig<unknown>>(e: E) {
+export function asCableConfig<E extends CableConfig<unknown>>(e: E) {
 	return e
 }
 
