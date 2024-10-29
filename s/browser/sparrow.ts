@@ -12,7 +12,7 @@ import {stdOptions} from "./std/std-options.js"
 import {stdRtcConfig} from "./std/std-rtc-config.js"
 import {stdDataCable} from "./std/std-data-cable.js"
 
-export class Sparrow<Channels> {
+export class Sparrow<Cable> {
 	static join = join
 	static connect = connect
 	static everybody = everybody
@@ -21,13 +21,13 @@ export class Sparrow<Channels> {
 	static stdRtcConfig = stdRtcConfig
 	static stdDataCable = stdDataCable
 
-	#connections: Connections<Channels>
+	#connections: Connections<Cable>
 
 	constructor(
 			private socket: WebSocket,
 			private signalingApi: SignalingApi,
 			private agent: AgentConfidential,
-			connections: Connections<Channels>,
+			connections: Connections<Cable>,
 		) {
 		this.#connections = connections
 	}

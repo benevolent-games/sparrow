@@ -13,34 +13,38 @@ export const SparrowDemo = shadowComponent(use => {
 
 	const statsOp = use.op<Stats>()
 	const connectedSet = use.once(() => new Set<Connected<StdDataCable>>())
+	const sparrowOp = use.op<Sparrow<StdDataCable>>()
 
-	const sparrowOp = use.load(async() => {
-		const sparrow = await Sparrow.connect({
-			url: isLocal()
-				? `ws://${location.hostname}:8000/`
-				: Sparrow.stdUrl(),
-
-			joined: peer => {
-				connectedSet.add(peer)
-				use.rerender()
-
-				return () => {
-					connectedSet.delete(peer)
+	use.once(() =>
+		sparrowOp.load(async() =>
+			Sparrow.connect({
+				url: isLocal()
+					? `ws://${location.hostname}:8000/`
+					: Sparrow.stdUrl(),
+				joined: peer => {
+					connectedSet.add(peer)
 					use.rerender()
-				}
-			},
-
-			sparrowClosed: () => {
-				sparrowOp.setError("the connection to sparrow died")
-			},
+					return () => {
+						connectedSet.delete(peer)
+						use.rerender()
+					}
+				},
+				sparrowClosed: () => {
+					sparrowOp.setError("the connection to sparrow died")
+				},
+			})
+		)
+		.then(sparrow => {
+			statsOp.load(async() => sparrow.stats())
+			return sparrow
 		})
-		statsOp.load(async() => sparrow.stats())
-		return sparrow
-	})
+		.catch(() => {})
+	)
 
 	use.mount(() => interval(5000, () => {
 		if (sparrowOp.isReady() && statsOp.isReady())
 			statsOp.load(async() => sparrowOp.payload.stats())
+				.catch(() => {})
 	}))
 
 	return html`
@@ -62,7 +66,7 @@ export const SparrowDemo = shadowComponent(use => {
 			</section>
 		`)}
 
-		${loading.braille(statsOp, stats => html`
+		${(sparrowOp.isReady() || null) && loading.braille(statsOp, stats => html`
 			<section>
 				<h1>Stats</h1>
 				<div>

@@ -33,6 +33,7 @@ export async function connect<Cable = StdDataCable>(
 				cableConfig: o.cableConfig as CableConfig<Cable>,
 			},
 		})),
+		onError: error => console.error("ERR!", error),
 	})
 
 	connections.onConnected(connected => {
