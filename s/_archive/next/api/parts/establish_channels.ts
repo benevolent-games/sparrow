@@ -4,6 +4,9 @@ import {concurrent} from "../../../toolbox/concurrent.js"
 import {openPromise} from "../../../toolbox/open-promise.js"
 import {attachEvents} from "../../../toolbox/attach-events.js"
 
+// TODO rename to 'channelsConfig'
+// and make standardChannelsConfig and standardDataChannels functions that return the good stuff
+
 export function asChannelEstablisher<E extends EstablishChannels<unknown>>(e: E) {
 	return e
 }

@@ -1,0 +1,20 @@
+
+import {Partner} from "../types.js"
+
+/**
+ * allow the browser peers to freely exchange ice canadidates with each other.
+ */
+export function start_exchanging_ice_candidates(
+		[aliceId, alice]: [number, Partner],
+		[bobId, bob]: [number, Partner],
+	) {
+
+	const stopA = alice.person.onIceCandidate(ice => bob.api.acceptIceCandidate(bobId, ice))
+	const stopB = bob.person.onIceCandidate(ice => alice.api.acceptIceCandidate(aliceId, ice))
+
+	return () => {
+		stopA()
+		stopB()
+	}
+}
+

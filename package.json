@@ -5,27 +5,32 @@
 	"license": "MIT",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"type": "module",
+	"main": "x/index.js",
 	"files": [
 		"x"
 	],
-	"main": "x/sparrow.js",
 	"scripts": {
-		"build": "run-s clean && run-p importmap compile-typescript && run-p test",
-		"clean": "rimraf x && mkdirp x",
-		"importmap": "importly < package-lock.json > x/importmap.json",
-		"compile-typescript": "tsc",
-		"watch-typescript": "npm run -s compile-typescript -- -w",
-		"watch": "run-p watch-typescript",
+		"build": "run-s build-clean build-code build-site build-links",
+		"build-clean": "rimraf x && mkdirp x",
+		"build-code": "turtle build --out=x",
+		"build-site": "turtle ssg --in=s,x --out=x",
+		"build-links": "ln -s \"$(realpath s)\" x/s && ln -s \"$(realpath assets)\" x/assets",
+		"watch": "turtle watch -v --in=s,x --out=x",
+		"start": "run-p start-web-server start-signal-server",
+		"start-web-server": "http-server x",
+		"start-signal-server": "SPARROW_SALT=a5ee36a21e3d624ca6e0940c08cd380e51768124b5cbb2f971ccfaa4cf12bba8 node x/signaling/server.js 8000",
 		"test": "cynic node --label='sparrow-rtc test suite' x/tests.test.js",
-		"start-web-server": "http-server",
-		"start-signal-server": "node x/signal/signal-server.js",
-		"start": "run-p start-web-server start-signal-server"
+		"test-watch": "chokidar 'x/**/*.js' -c 'npm test'"
 	},
 	"dependencies": {
-		"renraku": "^0.2.0-3"
+		"@benev/slate": "^0.2.8",
+		"renraku": "^0.3.0"
 	},
 	"devDependencies": {
-		"@types/node": "^22.6.0",
+		"@benev/turtle": "^0.6.3",
+		"@types/node": "^22.8.4",
+		"chokidar": "^4.0.1",
+		"chokidar-cli": "^3.0.0",
 		"cynic": "^0.2.1",
 		"es-module-shims": "^1.10.0",
 		"http-server": "^14.1.1",
@@ -33,10 +38,10 @@
 		"mkdirp": "^3.0.1",
 		"npm-run-all": "^4.1.5",
 		"rimraf": "^6.0.1",
-		"typescript": "^5.6.2"
+		"typescript": "^5.6.3"
 	},
 	"engines": {
-		"node": ">=17"
+		"node": ">=22"
 	},
 	"repository": {
 		"type": "git",
