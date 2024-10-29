@@ -7,8 +7,8 @@ import {Connection} from "./connection.js"
 import {ConnectionOptions} from "../types.js"
 
 export class Connections<Cable> extends Pool<Connection<Cable>> {
-	onOperationAdded = pubsub<[Connection<Cable>]>()
-	onOperationRemoved = pubsub<[Connection<Cable>]>()
+	onConnectionAdded = pubsub<[Connection<Cable>]>()
+	onConnectionRemoved = pubsub<[Connection<Cable>]>()
 	onConnected = pubsub<[Connected<Cable>]>()
 
 	onChange = pubsub()
@@ -18,8 +18,8 @@ export class Connections<Cable> extends Pool<Connection<Cable>> {
 
 		// publish onChange when any event happens
 		const change = () => this.onChange.publish()
-		this.onOperationAdded(change)
-		this.onOperationRemoved(change)
+		this.onConnectionAdded(change)
+		this.onConnectionRemoved(change)
 		this.onConnected(change)
 	}
 
@@ -27,27 +27,27 @@ export class Connections<Cable> extends Pool<Connection<Cable>> {
 		if (this.has(options.agent.id))
 			throw new Error("already engaged with this agent")
 
-		const operation = new Connection<Cable>(options)
-		this.add(operation)
-		this.onOperationAdded.publish(operation)
+		const connection = new Connection<Cable>(options)
+		this.add(connection)
+		this.onConnectionAdded.publish(connection)
 
 		const remove = () => {
-			this.remove(operation)
-			this.onOperationRemoved.publish(operation)
+			this.remove(connection)
+			this.onConnectionRemoved.publish(connection)
 		}
 
-		// remove the operation when it dies
-		operation.onDead(remove)
+		// remove the connection when it dies
+		connection.onDead(remove)
 
 		// publish onConnected when connection is complete
-		operation.connectedPromise.then(connected => this.onConnected.publish(connected))
+		connection.connectedPromise.then(connected => this.onConnected.publish(connected))
 
-		return operation
+		return connection
 	}
 
-	async attempt<R>(id: string, fn: (operation: Connection<Cable>) => Promise<R>) {
-		const operation = this.require(id)
-		return await operation.handleFailure(async() => await fn(operation))
+	async attempt<R>(id: string, fn: (connection: Connection<Cable>) => Promise<R>) {
+		const connection = this.require(id)
+		return await connection.handleFailure(async() => await fn(connection))
 	}
 }
 
