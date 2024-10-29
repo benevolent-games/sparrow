@@ -1,7 +1,7 @@
 
 import {AgentInfo} from "../signaling/agent/types.js"
 import {ChannelsConfig} from "../negotiation/types.js"
-import {Cable} from "../negotiation/partnerutils/cable.js"
+import {Connected} from "../negotiation/partnerutils/connected.js"
 
 export type BasicOptions<Channels> = {
 	url: string
@@ -17,9 +17,9 @@ export type ConnectOptions<Channels> = {
 
 export type JoinOptions<Channels> = {
 	invite: string
-	hostClosed: (peer: Cable<Channels>) => void
+	hostClosed: (peer: Connected<Channels>) => void
 } & BasicOptions<Channels>
 
 export type AllowFn = (agent: AgentInfo) => Promise<boolean>
-export type JoinedFn<Channels> = (cable: Cable<Channels>) => (() => void)
+export type JoinedFn<Channels> = (connected: Connected<Channels>) => (() => void)
 

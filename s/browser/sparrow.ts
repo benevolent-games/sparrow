@@ -1,6 +1,7 @@
 
 import {SignalingApi} from "../signaling/api.js"
 import {AgentConfidential} from "../signaling/agent/types.js"
+import {Operations} from "../negotiation/partnerutils/operations.js"
 
 import {connect} from "./std/connect.js"
 import {everybody} from "./std/everybody.js"
@@ -10,7 +11,6 @@ import {stdUrl} from "./std/std-url.js"
 import {stdOptions} from "./std/std-options.js"
 import {stdRtcConfig} from "./std/std-rtc-config.js"
 import {stdDataChannels} from "./std/std-data-channels.js"
-import {Operations} from "../negotiation/partnerutils/operations.js"
 
 export class Sparrow<Channels> {
 	static join = join
@@ -38,7 +38,7 @@ export class Sparrow<Channels> {
 
 	get onOperationAdded() { return this.#operations.onOperationAdded }
 	get onOperationRemoved() { return this.#operations.onOperationRemoved }
-	get onCable() { return this.#operations.onCable }
+	get onConnected() { return this.#operations.onConnected }
 	get onChange() { return this.#operations.onChange }
 
 	get operations() {
@@ -47,13 +47,13 @@ export class Sparrow<Channels> {
 
 	get currentlyConnecting() {
 		return this.operations
-			.filter(operation => !operation.cable)
+			.filter(operation => !operation.connected)
 	}
 
-	get cables() {
+	get connected() {
 		return [...this.#operations.values()]
-			.map(operation => operation.cable)
-			.filter(cable => !!cable)
+			.map(operation => operation.connected)
+			.filter(connected => !!connected)
 	}
 
 	async stats() {
@@ -64,7 +64,7 @@ export class Sparrow<Channels> {
 		const agent = await this.signalingApi.join(invite)
 		if (agent) {
 			const operation = this.#operations.require(agent.id)
-			return await operation.cablePromise
+			return await operation.connectedPromise
 		}
 		else return null
 	}

@@ -5,12 +5,12 @@ import stylesCss from "./styles.css.js"
 import {isLocal} from "../../utils/is-local.js"
 import {Sparrow} from "../../../browser/sparrow.js"
 import {StdDataChannels} from "../../../negotiation/types.js"
-import {Cable} from "../../../negotiation/partnerutils/cable.js"
+import {Connected} from "../../../negotiation/partnerutils/connected.js"
 
 export const SparrowDemo = shadowComponent(use => {
 	use.styles(stylesCss)
 
-	const peers = use.once(() => new Set<Cable<StdDataChannels>>())
+	const peers = use.once(() => new Set<Connected<StdDataChannels>>())
 
 	const sparrowOp = use.load(async() => Sparrow.connect({
 		url: isLocal()

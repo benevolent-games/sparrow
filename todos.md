@@ -7,7 +7,7 @@
   - `Cable` -- data channels, media tracks, etc
   - thusly,
     ```js
-    joined: peer => {
+    joined: ({peer, cable}) => {
       peer.connection // RTCPeerConnection
       peer.cable // formerly "channels"
     },

@@ -7,8 +7,8 @@ import {makeBrowserApi} from "../api.js"
 import {ConnectOptions} from "../types.js"
 import {stdOptions} from "./std-options.js"
 import {SignalingApi} from "../../signaling/api.js"
-import {ChannelsConfig, StdDataChannels} from "../../negotiation/types.js"
 import {Operations} from "../../negotiation/partnerutils/operations.js"
+import {ChannelsConfig, StdDataChannels} from "../../negotiation/types.js"
 
 export async function connect<Channels = StdDataChannels>(
 		options_: Partial<ConnectOptions<Channels>>
@@ -33,8 +33,8 @@ export async function connect<Channels = StdDataChannels>(
 		})),
 	})
 
-	operations.onCable(cable => {
-		cable.onClosed(o.joined(cable))
+	operations.onConnected(connected => {
+		connected.onClosed(o.joined(connected))
 	})
 
 	const self = await signalingApi.hello(version)

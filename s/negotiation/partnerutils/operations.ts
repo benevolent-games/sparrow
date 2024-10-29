@@ -1,7 +1,7 @@
 
 import {deferPromise, pubsub} from "@benev/slate"
 
-import {Cable} from "./cable.js"
+import {Connected} from "./connected.js"
 import {Pool} from "../../tools/map2.js"
 import {IceReport} from "../ice-report.js"
 import {gather_ice} from "./gather-ice.js"
@@ -18,7 +18,7 @@ export type OperationOptions = {
 export class Operations<Channels> extends Pool<Operation<Channels>> {
 	onOperationAdded = pubsub<[Operation<Channels>]>()
 	onOperationRemoved = pubsub<[Operation<Channels>]>()
-	onCable = pubsub<[Cable<Channels>]>()
+	onConnected = pubsub<[Connected<Channels>]>()
 
 	onChange = pubsub()
 
@@ -29,7 +29,7 @@ export class Operations<Channels> extends Pool<Operation<Channels>> {
 		const change = () => this.onChange.publish()
 		this.onOperationAdded(change)
 		this.onOperationRemoved(change)
-		this.onCable(change)
+		this.onConnected(change)
 	}
 
 	create(options: OperationOptions) {
@@ -48,8 +48,8 @@ export class Operations<Channels> extends Pool<Operation<Channels>> {
 		// remove the operation when it dies
 		operation.onDead(remove)
 
-		// publish onCable when the cable comes in
-		operation.cablePromise.then(cable => this.onCable.publish(cable))
+		// publish onConnected when connection is complete
+		operation.connectedPromise.then(connected => this.onConnected.publish(connected))
 
 		return operation
 	}
@@ -66,11 +66,11 @@ export class Operation<Channels> {
 	iceReport = new IceReport()
 
 	iceGatheredPromise: Promise<void>
-	connectedPromise: Promise<RTCPeerConnection>
+	connectionPromise: Promise<RTCPeerConnection>
 	channelsWaiting = deferPromise<Channels>()
 
-	cable: Cable<Channels> | null = null
-	cablePromise: Promise<Cable<Channels>>
+	connected: Connected<Channels> | null = null
+	connectedPromise: Promise<Connected<Channels>>
 
 	onDead = pubsub()
 
@@ -81,23 +81,23 @@ export class Operation<Channels> {
 		this.agent = options.agent
 		this.peer = new RTCPeerConnection(options.rtcConfig)
 		this.iceGatheredPromise = gather_ice(this.peer, options.sendIceCandidate, this.iceReport)
-		this.connectedPromise = wait_for_connection(this.peer)
+		this.connectionPromise = wait_for_connection(this.peer)
 
-		this.cablePromise = (
+		this.connectedPromise = (
 			Promise.all([
 				this.channelsWaiting.promise,
-				this.connectedPromise,
+				this.connectionPromise,
 				this.iceGatheredPromise,
 			])
 			.then(([channels]) => {
-				const cable = this.cable = new Cable<Channels>(
+				const connected = this.connected = new Connected<Channels>(
 					this.agent,
 					this.peer,
 					channels,
 					this.iceReport,
 				)
-				cable.onClosed(() => this.die())
-				return cable
+				connected.onClosed(() => this.die())
+				return connected
 			})
 			.catch(error => {
 				this.die()

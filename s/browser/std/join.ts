@@ -1,10 +1,10 @@
 
 import {connect} from "./connect.js"
 import {JoinOptions} from "../types.js"
-import {Cable} from "../../negotiation/partnerutils/cable.js"
+import {Connected} from "../../negotiation/partnerutils/connected.js"
 
 export async function join<Channels>(options: JoinOptions<Channels>) {
-	let hostPeer: Cable<Channels> | undefined
+	let hostPeer: Connected<Channels> | undefined
 
 	const sparrow = await connect({
 		...options,

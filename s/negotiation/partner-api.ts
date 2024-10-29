@@ -62,7 +62,7 @@ export function makePartnerApi<Channels>({
 
 		async waitUntilReady(agentId: string): Promise<void> {
 			return await operations.attempt(agentId, async operation => {
-				await operation.cablePromise
+				await operation.connectedPromise
 			})
 		},
 	}
