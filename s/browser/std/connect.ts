@@ -16,11 +16,13 @@ export async function connect<Cable = StdDataCable>(
 
 	const o = {...stdOptions(), ...options_} as ConnectOptions<Cable>
 	const connections = new Connections<Cable>()
+	let selfId: string | undefined
 
 	const {socket, fns: signalingApi} = await webSocketRemote<SignalingApi>({
 		url: o.url,
 		getLocalEndpoint: signalingApi => endpoint(makeBrowserApi({
 			allow: async agent => !!(
+				agent.id !== selfId &&
 				!connections.has(agent.id) &&
 				await o.allow(agent)
 			),
@@ -38,6 +40,8 @@ export async function connect<Cable = StdDataCable>(
 	})
 
 	const self = await signalingApi.hello(version)
+	selfId = self.id
+
 	return new Sparrow<Cable>(socket, signalingApi, self, connections)
 }
 
