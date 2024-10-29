@@ -2,18 +2,25 @@
 import {PartnerApi} from "./partner-api.js"
 import {SignalingApi} from "../signaling/api.js"
 import {Agent} from "../signaling/agent/agent.js"
-import {Operations} from "./partnerutils/operations.js"
+import {AgentInfo} from "../signaling/agent/types.js"
+import {Connections} from "./partnerutils/connections.js"
 
 export type PartnerOptions<Channels> = {
 	signalingApi: SignalingApi
 	rtcConfig: RTCConfiguration
 	channelsConfig: ChannelsConfig<Channels>
-	operations: Operations<Channels>
+	connections: Connections<Channels>
 }
 
 export type Partner = {
 	api: PartnerApi
 	agent: Agent
+}
+
+export type ConnectionOptions = {
+	agent: AgentInfo
+	rtcConfig: RTCConfiguration
+	sendIceCandidate: SendIceCandidateFn
 }
 
 export type SendIceCandidateFn = (candidate: RTCIceCandidate) => Promise<void>

@@ -1,7 +1,7 @@
 
 - env variable as the reputation salt (github secret) so it's fixed, and bans are more persistent
 - possible renames
-  - `Connecting` -- connection in progress
+  - `Connection` -- connection in progress
   - `Peer` -- RTCPeerConnection
   - `Connected` -- successful connection
   - `Cable` -- data channels, media tracks, etc

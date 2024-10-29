@@ -14,22 +14,22 @@ export function makePartnerApi<Channels>({
 		signalingApi,
 		rtcConfig,
 		channelsConfig,
-		operations,
+		connections,
 	}: PartnerOptions<Channels>) {
 
 	return {
 		async startPeerConnection(agent: AgentInfo) {
-			const operation = operations.create({
+			const connection = connections.create({
 				agent,
 				rtcConfig,
 				sendIceCandidate: signalingApi.sendIceCandidate,
 			})
-			return operation.id
+			return connection.id
 		},
 
 		async produceOffer(agentId: string): Promise<any> {
-			return await operations.attempt(agentId, async operation => {
-				const {peer, channelsWaiting} = operation
+			return await connections.attempt(agentId, async connection => {
+				const {peer, channelsWaiting} = connection
 				channelsConfig.offering(peer).then(channelsWaiting.resolve)
 				const offer = await peer.createOffer()
 				await peer.setLocalDescription(offer)
@@ -38,8 +38,8 @@ export function makePartnerApi<Channels>({
 		},
 
 		async produceAnswer(agentId: string, offer: RTCSessionDescription): Promise<any> {
-			return await operations.attempt(agentId, async operation => {
-				const {peer, channelsWaiting} = operation
+			return await connections.attempt(agentId, async connection => {
+				const {peer, channelsWaiting} = connection
 				channelsConfig.answering(peer).then(channelsWaiting.resolve)
 				await peer.setRemoteDescription(offer)
 				const answer = await peer.createAnswer()
@@ -49,20 +49,20 @@ export function makePartnerApi<Channels>({
 		},
 
 		async acceptAnswer(agentId: string, answer: RTCSessionDescription): Promise<void> {
-			return await operations.attempt(agentId, async operation => {
-				await operation.peer.setRemoteDescription(answer)
+			return await connections.attempt(agentId, async connection => {
+				await connection.peer.setRemoteDescription(answer)
 			})
 		},
 
 		async acceptIceCandidate(agentId: string, candidate: RTCIceCandidate): Promise<void> {
-			return await operations.attempt(agentId, async operation => {
-				await operation.acceptIceCandidate(candidate)
+			return await connections.attempt(agentId, async connection => {
+				await connection.acceptIceCandidate(candidate)
 			})
 		},
 
 		async waitUntilReady(agentId: string): Promise<void> {
-			return await operations.attempt(agentId, async operation => {
-				await operation.connectedPromise
+			return await connections.attempt(agentId, async connection => {
+				await connection.connectedPromise
 			})
 		},
 	}

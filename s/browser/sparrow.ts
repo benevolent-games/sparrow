@@ -1,7 +1,7 @@
 
 import {SignalingApi} from "../signaling/api.js"
 import {AgentConfidential} from "../signaling/agent/types.js"
-import {Operations} from "../negotiation/partnerutils/operations.js"
+import {Connections} from "../negotiation/partnerutils/connections.js"
 
 import {connect} from "./std/connect.js"
 import {everybody} from "./std/everybody.js"
@@ -21,13 +21,13 @@ export class Sparrow<Channels> {
 	static stdRtcConfig = stdRtcConfig
 	static stdDataChannels = stdDataChannels
 
-	#operations: Operations<Channels>
+	#operations: Connections<Channels>
 
 	constructor(
 			private socket: WebSocket,
 			private signalingApi: SignalingApi,
 			private self: AgentConfidential,
-			operations: Operations<Channels>,
+			operations: Connections<Channels>,
 		) {
 		this.#operations = operations
 	}
