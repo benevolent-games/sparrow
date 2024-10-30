@@ -20,19 +20,24 @@ export async function connect<Cable = StdDataCable>(
 
 	const {socket, fns: signalingApi} = await webSocketRemote<SignalingApi>({
 		url: o.url,
-		getLocalEndpoint: signalingApi => endpoint(makeBrowserApi({
-			allow: async agent => !!(
-				agent.id !== selfId &&
-				!connections.has(agent.id) &&
-				await o.allow(agent)
-			),
-			partner: {
-				connections,
-				signalingApi,
-				rtcConfig: o.rtcConfig,
-				cableConfig: o.cableConfig as CableConfig<Cable>,
+		getLocalEndpoint: signalingApi => endpoint(
+			makeBrowserApi({
+				allow: async agent => !!(
+					agent.id !== selfId &&
+					!connections.has(agent.id) &&
+					await o.allow(agent)
+				),
+				partner: {
+					connections,
+					signalingApi,
+					rtcConfig: o.rtcConfig,
+					cableConfig: o.cableConfig as CableConfig<Cable>,
+				},
+			}),
+			{
+				onError: (error) => console.error("ERR2!", error),
 			},
-		})),
+		),
 		onError: error => console.error("ERR!", error),
 	})
 

@@ -11,8 +11,9 @@ import {stdUrl} from "./std/std-url.js"
 import {stdOptions} from "./std/std-options.js"
 import {stdRtcConfig} from "./std/std-rtc-config.js"
 import {stdDataCable} from "./std/std-data-cable.js"
+import {StdDataCable} from "../negotiation/types.js"
 
-export class Sparrow<Cable> {
+export class Sparrow<Cable = StdDataCable> {
 	static join = join
 	static connect = connect
 	static everybody = everybody
@@ -26,7 +27,7 @@ export class Sparrow<Cable> {
 	constructor(
 			private socket: WebSocket,
 			private signalingApi: SignalingApi,
-			private agent: AgentConfidential,
+			public agent: AgentConfidential,
 			connections: Connections<Cable>,
 		) {
 		this.#connections = connections

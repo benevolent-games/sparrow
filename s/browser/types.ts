@@ -18,7 +18,7 @@ export type ConnectOptions<Cable> = {
 export type JoinOptions<Cable> = {
 	invite: string
 	hostClosed: (peer: Connected<Cable>) => void
-} & BasicOptions<Cable>
+} & Partial<BasicOptions<Cable>>
 
 export type AllowFn = (agent: AgentInfo) => Promise<boolean>
 export type JoinedFn<Cable> = (connected: Connected<Cable>) => (() => void)
