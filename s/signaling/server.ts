@@ -2,7 +2,7 @@
 import {Core} from "./core.js"
 import {BrowserApi} from "../browser/api.js"
 import {deathWithDignity} from "../tools/death-with-dignity.js"
-import {WebSocketServer, remote, endpoint, PrettyLogger} from "renraku/x/node.js"
+import {WebSocketServer, remote, endpoint, loggers, RandomUserEmojis} from "renraku/x/server.js"
 
 deathWithDignity()
 
@@ -16,27 +16,18 @@ if (!salt)
 	throw new Error("SPARROW_SALT env variable is missing")
 
 const core = new Core(salt)
-const logger = new PrettyLogger()
-
-logger.log("yoyo3")
+const emojis = new RandomUserEmojis()
 
 const server = new WebSocketServer({
 	acceptConnection: async({ip, remoteEndpoint, close}) => {
-		const browserApi = remote<BrowserApi>(remoteEndpoint)
+		const {onCall, onCallError} = loggers.label(emojis.pull())
+		const browserApi = remote<BrowserApi>(remoteEndpoint, {onCall})
 		const {agent, signalingApi} = await core.acceptAgent(ip, browserApi, close)
 		return {
 			closed: () => core.agentDisconnected(agent),
-			localEndpoint: endpoint(signalingApi, {
-				onError: (error, id, method) => logger.error(error),
-			}),
+			localEndpoint: endpoint(signalingApi, {onCall, onCallError}),
 		}
 	},
-	onError: error => logger.error(
-		"",
-		(error instanceof Error)
-			? error.message
-			: "unknown error"
-	),
 })
 
 server.listen(port)
