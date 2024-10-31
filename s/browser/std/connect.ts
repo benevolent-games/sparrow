@@ -1,5 +1,5 @@
 
-import {webSocketRemote, endpoint} from "renraku"
+import {webSocketRemote, endpoint, loggers} from "renraku"
 
 import {Sparrow} from "../sparrow.js"
 import {version} from "../../version.js"
@@ -18,7 +18,12 @@ export async function connect<Cable = StdDataCable>(
 	const connections = new Connections<Cable>()
 	let selfId: string | undefined
 
+	const emoji = "👤"
+	const remoteLogging = loggers.label(`${emoji} ->`)
+	const localLogging = loggers.label(`${emoji} <-`)
+
 	const {socket, fns: signalingApi} = await webSocketRemote<SignalingApi>({
+		...remoteLogging,
 		url: o.url,
 		getLocalEndpoint: signalingApi => endpoint(
 			makeBrowserApi({
@@ -34,6 +39,7 @@ export async function connect<Cable = StdDataCable>(
 					cableConfig: o.cableConfig as CableConfig<Cable>,
 				},
 			}),
+			localLogging,
 		),
 	})
 
