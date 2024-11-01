@@ -6,3 +6,13 @@ export type AgentInfo = {
 
 export type AgentConfidential = {invite: string} & AgentInfo
 
+export type Stats = {
+	agents: number
+	hourly: StatsHourly
+}
+
+export type StatsHourly = {
+	connections: number
+	failures: number
+}
+

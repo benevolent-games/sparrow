@@ -1,8 +1,11 @@
 
 import {html, loading, shadowView} from "@benev/slate"
 import stylesCss from "./styles.css.js"
-import {Stats} from "../../../signaling/api.js"
+import {Stats} from "../../../signaling/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
+
+import crownSvg from "../../icons/tabler/crown.svg.js"
+import chartBarPopularSvg from "../../icons/tabler/chart-bar-popular.svg.js"
 
 export const HostView = shadowView(use => (sparrow: Sparrow, url: string) => {
 	use.styles(stylesCss)
@@ -23,26 +26,28 @@ export const HostView = shadowView(use => (sparrow: Sparrow, url: string) => {
 	})
 
 	return html`
-		<section>
+		<section x-plate>
 			<h2>Connected to <code>${url}</code></h2>
 			<div x-cards>
 
 				<div>
-					<div>👤</div>
+					<div>
+						${crownSvg}
+					</div>
 					<ul>
 						<li>
-							<strong>id</strong>
-							<span>${sparrow.id.slice(0, 8)}</span>
+							<span>Id</span>
+							<code>${sparrow.id.slice(0, 8)}</code>
 						</li>
 						<li>
-							<strong>reputation</strong>
-							<span>${sparrow.reputation.slice(0, 8)}</span>
+							<span>Reputation</span>
+							<code>${sparrow.reputation.slice(0, 8)}</code>
 						</li>
 						<li>
-							<strong>invite</strong>
+							<span>Invite</span>
 							<span>
 								<a href="${`#invite=${sparrow.invite}`}" target="_blank">
-									${`#invite=${sparrow.invite.slice(0, 8)}...`}
+									${`#invite=${sparrow.invite.slice(0, 8)}`}
 								</a>
 							</span>
 						</li>
@@ -51,19 +56,21 @@ export const HostView = shadowView(use => (sparrow: Sparrow, url: string) => {
 
 				<div>
 					${loading.braille(statsOp, stats => html`
-						<div>📜</div>
+						<div>
+							${chartBarPopularSvg}
+						</div>
 						<ul>
 							<li>
-								<strong>hosts</strong>
-								<span>${stats.agents}</span>
+								<span>Hosting</span>
+								<code>${stats.agents}</code>
 							</li>
 							<li>
-								<strong>last hour connections</strong>
-								<span>${-1}</span>
+								<span>Hourly connections</span>
+								<code>${stats.hourly.connections}</code>
 							</li>
 							<li>
-								<strong>last hour failures</strong>
-								<span>${-1}</span>
+								<span>Hourly failures</span>
+								<code>${stats.hourly.failures}</code>
 							</li>
 						</ul>
 					`)}

@@ -3,9 +3,12 @@ import {Agent} from "./agent/agent.js"
 import {Agents} from "./agent/agents.js"
 import {makeSignalingApi} from "./api.js"
 import {BrowserApi} from "../browser/api.js"
+import {Statistician} from "./utils/statistician.js"
 
 export class Core {
 	agents = new Agents()
+	statistician = new Statistician(this.agents)
+
 	constructor(private salt: string) {}
 
 	async acceptAgent(
