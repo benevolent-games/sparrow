@@ -19,12 +19,13 @@ export async function connect<Cable = StdDataCable>(
 	let selfId: string | undefined
 
 	const emoji = "👤"
-	const remoteLogging = loggers.label(`${emoji} ->`)
-	const localLogging = loggers.label(`${emoji} <-`)
+	const remoteLogging = loggers.label({remote: true, label: `${emoji} ->`, prefix: "server"})
+	const localLogging = loggers.label({remote: false, label: `${emoji} <-`, prefix: "client"})
 
 	const {socket, fns: signalingApi} = await webSocketRemote<SignalingApi>({
 		...remoteLogging,
 		url: o.url,
+		onClose: o.sparrowClosed,
 		getLocalEndpoint: signalingApi => endpoint(
 			makeBrowserApi({
 				allow: async agent => !!(

@@ -21,8 +21,8 @@ const emojis = new RandomUserEmojis()
 const server = new WebSocketServer({
 	acceptConnection: async({ip, remoteEndpoint, close}) => {
 		const emoji = emojis.pull()
-		const remoteLogging = loggers.label(`${emoji} ->`)
-		const localLogging = loggers.label(`${emoji} <-`)
+		const remoteLogging = loggers.label({remote: true, label: `${emoji} <-`, prefix: "client"})
+		const localLogging = loggers.label({remote: false, label: `${emoji} ->`, prefix: "server"})
 
 		const browserApi = remote<BrowserApi>(remoteEndpoint, remoteLogging)
 		const {agent, signalingApi} = await core.acceptAgent(ip, browserApi, close)

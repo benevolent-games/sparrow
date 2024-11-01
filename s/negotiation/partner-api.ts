@@ -19,12 +19,11 @@ export function makePartnerApi<Cable>({
 
 	return {
 		async startPeerConnection(agent: AgentInfo) {
-			const connection = connections.create({
+			connections.create({
 				agent,
 				rtcConfig,
 				sendIceCandidate: signalingApi.sendIceCandidate,
 			})
-			return connection.id
 		},
 
 		async produceOffer(agentId: string): Promise<any> {

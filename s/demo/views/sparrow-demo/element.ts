@@ -34,6 +34,7 @@ export const SparrowDemo = shadowComponent(use => {
 			: await Sparrow.connect({
 				url,
 				sparrowClosed: () => {
+					console.log("connection died!!")
 					op.setError("the connection to sparrow died")
 				},
 			})

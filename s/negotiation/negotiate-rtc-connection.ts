@@ -15,8 +15,10 @@ export async function negotiate_rtc_connection(
 		// try it this way
 		attempt_rtc_connection(partnerA, partnerB)
 
-			// try it that way
-			.catch(() => attempt_rtc_connection(partnerB, partnerA))
+			// TODO
+			//
+			// // try it that way
+			// .catch(() => attempt_rtc_connection(partnerB, partnerA))
 	)
 }
 
