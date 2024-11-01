@@ -1,7 +1,7 @@
 
-import {AgentInfo} from "../signaling/agent/types.js"
+import {AgentInfo} from "../signaling/types.js"
 import {CableConfig} from "../negotiation/types.js"
-import {Connected} from "../negotiation/partnerutils/connected.js"
+import {Connected} from "../negotiation/utils/connected.js"
 
 export type BasicOptions<Cable> = {
 	url: string
@@ -18,7 +18,7 @@ export type ConnectOptions<Cable> = {
 export type JoinOptions<Cable> = {
 	invite: string
 	hostClosed: (peer: Connected<Cable>) => void
-} & BasicOptions<Cable>
+} & Partial<BasicOptions<Cable>>
 
 export type AllowFn = (agent: AgentInfo) => Promise<boolean>
 export type JoinedFn<Cable> = (connected: Connected<Cable>) => (() => void)

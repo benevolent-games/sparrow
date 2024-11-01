@@ -1,7 +1,5 @@
 
-import {concurrent} from "../../tools/concurrent.js"
-import {attachEvents} from "../../tools/attach-events.js"
-import {deferredPromise} from "../../tools/deferred-promise.js"
+import {concurrent, deferPromise, ev} from "@benev/slate"
 import {CableConfig, StdDataCable} from "../../negotiation/types.js"
 
 export const stdDataCable = (): CableConfig<StdDataCable> => ({
@@ -20,11 +18,11 @@ export const stdDataCable = (): CableConfig<StdDataCable> => ({
 
 	answering: async peer => {
 		const waiting = {
-			reliable: deferredPromise<RTCDataChannel>(),
-			unreliable: deferredPromise<RTCDataChannel>(),
+			reliable: deferPromise<RTCDataChannel>(),
+			unreliable: deferPromise<RTCDataChannel>(),
 		}
 
-		const unattach = attachEvents(peer, {
+		const unattach = ev(peer, {
 			datachannel: ({channel}: RTCDataChannelEvent) => {
 				if (channel.label in waiting) {
 					const key = channel.label as keyof typeof waiting
@@ -43,8 +41,8 @@ export const stdDataCable = (): CableConfig<StdDataCable> => ({
 
 function prepareChannel(channel: RTCDataChannel) {
 	channel.binaryType = "arraybuffer"
-	const waiting = deferredPromise<RTCDataChannel>()
-	const unattach = attachEvents(channel, {
+	const waiting = deferPromise<RTCDataChannel>()
+	const unattach = ev(channel, {
 		open: () => waiting.resolve(channel),
 		error: (e: RTCErrorEvent) => waiting.reject(e.error),
 	})

@@ -1,7 +1,7 @@
 
 import {SignalingApi} from "../signaling/api.js"
-import {AgentConfidential} from "../signaling/agent/types.js"
-import {Connections} from "../negotiation/partnerutils/connections.js"
+import {AgentConfidential} from "../signaling/types.js"
+import {Connections} from "../negotiation/utils/connections.js"
 
 import {join} from "./std/join.js"
 import {connect} from "./std/connect.js"
@@ -11,8 +11,9 @@ import {stdUrl} from "./std/std-url.js"
 import {stdOptions} from "./std/std-options.js"
 import {stdRtcConfig} from "./std/std-rtc-config.js"
 import {stdDataCable} from "./std/std-data-cable.js"
+import {StdDataCable} from "../negotiation/types.js"
 
-export class Sparrow<Cable> {
+export class Sparrow<Cable = StdDataCable> {
 	static join = join
 	static connect = connect
 	static everybody = everybody
@@ -26,7 +27,7 @@ export class Sparrow<Cable> {
 	constructor(
 			private socket: WebSocket,
 			private signalingApi: SignalingApi,
-			private agent: AgentConfidential,
+			public agent: AgentConfidential,
 			connections: Connections<Cable>,
 		) {
 		this.#connections = connections
@@ -45,7 +46,7 @@ export class Sparrow<Cable> {
 		return [...this.#connections.values()]
 	}
 
-	get currentlyConnecting() {
+	get connecting() {
 		return this.connections
 			.filter(connection => !connection.connected)
 	}
