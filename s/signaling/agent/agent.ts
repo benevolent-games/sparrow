@@ -1,7 +1,8 @@
 
+import {pubsub} from "@benev/slate"
+
 import {hash} from "../../tools/hash.js"
 import {hexId} from "../../tools/hex-id.js"
-import {pubsub} from "../../tools/pubsub.js"
 import {BrowserApi} from "../../browser/api.js"
 import {AgentConfidential, AgentInfo} from "./types.js"
 

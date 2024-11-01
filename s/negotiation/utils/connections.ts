@@ -1,8 +1,7 @@
 
-import {pubsub} from "@benev/slate"
+import {Pool, pubsub} from "@benev/slate"
 
 import {Connected} from "./connected.js"
-import {Pool} from "../../tools/map2.js"
 import {Connection} from "./connection.js"
 import {ConnectionOptions} from "../types.js"
 

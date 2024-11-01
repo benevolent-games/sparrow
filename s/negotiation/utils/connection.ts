@@ -2,7 +2,7 @@
 import {deferPromise, pubsub} from "@benev/slate"
 
 import {Connected} from "./connected.js"
-import {IceReport} from "../ice-report.js"
+import {IceReport} from "./ice-report.js"
 import {gather_ice} from "./gather-ice.js"
 import {ConnectionOptions} from "../types.js"
 import {AgentInfo} from "../../signaling/agent/types.js"

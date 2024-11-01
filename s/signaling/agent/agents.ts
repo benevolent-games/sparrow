@@ -1,6 +1,6 @@
 
+import {Map2, Pool} from "@benev/slate"
 import {Agent} from "./agent.js"
-import {Map2, Pool} from "../../tools/map2.js"
 
 export class Agents extends Pool<Agent> {
 	invites = new Map2<string, Agent>()

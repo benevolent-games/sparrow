@@ -46,7 +46,7 @@ export class Sparrow<Cable = StdDataCable> {
 		return [...this.#connections.values()]
 	}
 
-	get currentlyConnecting() {
+	get connecting() {
 		return this.connections
 			.filter(connection => !connection.connected)
 	}

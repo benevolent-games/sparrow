@@ -1,7 +1,7 @@
 
-import {IceReport} from "../ice-report.js"
+import {ev} from "@benev/slate"
+import {IceReport} from "./ice-report.js"
 import {SendIceCandidateFn} from "../types.js"
-import {attachEvents} from "../../tools/attach-events.js"
 
 export function gather_ice(
 		peer: RTCPeerConnection,
@@ -10,7 +10,7 @@ export function gather_ice(
 	) {
 
 	return new Promise<void>((resolve, reject) => {
-		const unattach = attachEvents(peer, {
+		const unattach = ev(peer, {
 
 			icecandidate: (event: RTCPeerConnectionIceEvent) => {
 				if (event.candidate) {

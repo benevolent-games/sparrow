@@ -1,9 +1,9 @@
 
-import {attachEvents} from "../../tools/attach-events.js"
+import {ev} from "@benev/slate"
 
 export function wait_for_connection(peer: RTCPeerConnection) {
 	return new Promise<RTCPeerConnection>((resolve, reject) => {
-		const detach = attachEvents(peer, {
+		const detach = ev(peer, {
 			connectionstatechange: () => {
 				switch (peer.connectionState) {
 

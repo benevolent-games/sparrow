@@ -1,8 +1,7 @@
 
 import {Core} from "./core.js"
 import {BrowserApi} from "../browser/api.js"
-import {deathWithDignity} from "../tools/death-with-dignity.js"
-import {WebSocketServer, remote, endpoint, loggers, RandomUserEmojis} from "renraku/x/server.js"
+import {WebSocketServer, remote, endpoint, loggers, RandomUserEmojis, deathWithDignity} from "renraku/x/server.js"
 
 deathWithDignity()
 
