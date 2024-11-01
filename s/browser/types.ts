@@ -1,6 +1,6 @@
 
+import {AgentInfo} from "../signaling/types.js"
 import {CableConfig} from "../negotiation/types.js"
-import {AgentInfo} from "../signaling/agent/types.js"
 import {Connected} from "../negotiation/utils/connected.js"
 
 export type BasicOptions<Cable> = {

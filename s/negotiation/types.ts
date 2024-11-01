@@ -1,9 +1,9 @@
 
 import {PartnerApi} from "./partner-api.js"
+import {AgentInfo} from "../signaling/types.js"
 import {SignalingApi} from "../signaling/api.js"
 import {Agent} from "../signaling/agent/agent.js"
 import {Connections} from "./utils/connections.js"
-import {AgentInfo} from "../signaling/agent/types.js"
 
 export type PartnerOptions<Cable> = {
 	signalingApi: SignalingApi

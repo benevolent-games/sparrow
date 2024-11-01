@@ -2,7 +2,7 @@
 import {ev, pubsub} from "@benev/slate"
 import {StdDataCable} from "../types.js"
 import {IceReport} from "./ice-report.js"
-import {AgentInfo} from "../../signaling/agent/types.js"
+import {AgentInfo} from "../../signaling/types.js"
 
 export class Connected<Cable = StdDataCable> {
 	get id() { return this.agent.id }

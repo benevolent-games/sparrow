@@ -1,5 +1,5 @@
 
-import {AgentInfo} from "../signaling/agent/types.js"
+import {AgentInfo} from "../signaling/types.js"
 import {PartnerOptions} from "../negotiation/types.js"
 import {makePartnerApi} from "../negotiation/partner-api.js"
 

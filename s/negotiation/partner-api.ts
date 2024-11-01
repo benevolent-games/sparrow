@@ -1,6 +1,6 @@
 
 import {PartnerOptions} from "./types.js"
-import {AgentInfo} from "../signaling/agent/types.js"
+import {AgentInfo} from "../signaling/types.js"
 
 export type PartnerApi = ReturnType<typeof makePartnerApi>
 

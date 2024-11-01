@@ -4,7 +4,7 @@ import {pubsub} from "@benev/slate"
 import {hash} from "../../tools/hash.js"
 import {hexId} from "../../tools/hex-id.js"
 import {BrowserApi} from "../../browser/api.js"
-import {AgentConfidential, AgentInfo} from "./types.js"
+import {AgentConfidential, AgentInfo} from "../types.js"
 
 export class Agent {
 	static make = async(
