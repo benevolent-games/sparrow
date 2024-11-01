@@ -1,6 +1,6 @@
 
 import {Partner} from "./types.js"
-import {attempt_rtc_connection} from "./negutils/attempt-rtc-connection.js"
+import {attempt_rtc_connection} from "./utils/attempt-rtc-connection.js"
 
 /**
  * the signaling server uses this algorithm to connect two webrtc browser peers.

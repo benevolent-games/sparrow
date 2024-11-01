@@ -7,8 +7,8 @@ import {makeBrowserApi} from "../api.js"
 import {ConnectOptions} from "../types.js"
 import {stdOptions} from "./std-options.js"
 import {SignalingApi} from "../../signaling/api.js"
+import {Connections} from "../../negotiation/utils/connections.js"
 import {CableConfig, StdDataCable} from "../../negotiation/types.js"
-import {Connections} from "../../negotiation/partnerutils/connections.js"
 
 export async function connect<Cable = StdDataCable>(
 		options_: Partial<ConnectOptions<Cable>>

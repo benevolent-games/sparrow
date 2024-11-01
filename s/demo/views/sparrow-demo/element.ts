@@ -4,10 +4,10 @@ import {shadowComponent, loading} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import {HostView} from "../host-view/view.js"
 import {isLocal} from "../../utils/is-local.js"
+import {ClientView} from "../client-view/view.js"
 import {Sparrow} from "../../../browser/sparrow.js"
 import {parseInvite} from "../../utils/parse-invite.js"
-import {Connected} from "../../../negotiation/partnerutils/connected.js"
-import {ClientView} from "../client-view/view.js"
+import {Connected} from "../../../negotiation/utils/connected.js"
 
 export const SparrowDemo = shadowComponent(use => {
 	use.styles(stylesCss)

@@ -1,7 +1,7 @@
 
 import {connect} from "./connect.js"
 import {JoinOptions} from "../types.js"
-import {Connected} from "../../negotiation/partnerutils/connected.js"
+import {Connected} from "../../negotiation/utils/connected.js"
 
 export async function join<Cable>(options: JoinOptions<Cable>) {
 	let hostPeer: Connected<Cable> | undefined

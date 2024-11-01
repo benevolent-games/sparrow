@@ -1,7 +1,7 @@
 
 import {SignalingApi} from "../signaling/api.js"
 import {AgentConfidential} from "../signaling/agent/types.js"
-import {Connections} from "../negotiation/partnerutils/connections.js"
+import {Connections} from "../negotiation/utils/connections.js"
 
 import {join} from "./std/join.js"
 import {connect} from "./std/connect.js"

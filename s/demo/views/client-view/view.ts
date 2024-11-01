@@ -1,7 +1,7 @@
 
 import {html, shadowView} from "@benev/slate"
 import stylesCss from "./styles.css.js"
-import {Connected} from "../../../negotiation/partnerutils/connected.js"
+import {Connected} from "../../../negotiation/utils/connected.js"
 
 export const ClientView = shadowView(use => (connected: Connected, url: string) => {
 	use.styles(stylesCss)
