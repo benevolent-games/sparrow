@@ -1,4 +1,6 @@
 
+import "@benev/slate/x/node.js"
+
 import {Core} from "./core.js"
 import {BrowserApi} from "../browser/api.js"
 import {WebSocketServer, remote, endpoint, loggers, RandomUserEmojis, deathWithDignity} from "renraku/x/server.js"
