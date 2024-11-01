@@ -1,7 +1,7 @@
 
+import {IceReport} from "../ice-report.js"
 import {SendIceCandidateFn} from "../types.js"
 import {attachEvents} from "../../tools/attach-events.js"
-import {IceReport} from "../ice-report.js"
 
 export function gather_ice(
 		peer: RTCPeerConnection,
@@ -32,9 +32,11 @@ export function gather_ice(
 			},
 
 			connectionstatechange: () => {
-				if (peer.connectionState === "failed") {
-					unattach()
-					reject(new Error("connection failed"))
+				switch (peer.connectionState) {
+					case "failed":
+					case "closed":
+						unattach()
+						reject(new Error("connection failed"))
 				}
 			},
 		})

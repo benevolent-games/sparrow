@@ -14,18 +14,18 @@ export class IceExchanger {
 		) {
 
 		this.disposers.push(
-			alice.agent.onIceCandidate(ice => {
+			alice.agent.onIceCandidate(async ice => {
 				this.toBob.push(ice)
 				if (this.auto)
-					this.send()
+					await this.send()
 			})
 		)
 
 		this.disposers.push(
-			bob.agent.onIceCandidate(ice => {
+			bob.agent.onIceCandidate(async ice => {
 				this.toAlice.push(ice)
 				if (this.auto)
-					this.send()
+					await this.send()
 			})
 		)
 	}

@@ -30,6 +30,7 @@ export class Agent {
 		/** an id derived from this agent's ip address, useful for banning people */
 		public reputation: string,
 
+		/** browser api remote functionality */
 		public browserApi: BrowserApi,
 
 		/** call this to disconnect this agent from the signaling server */

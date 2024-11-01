@@ -23,7 +23,7 @@ export async function attempt_rtc_connection(offerer: Partner, answerer: Partner
 		await offerer.api.acceptAnswer(answererId, answer)
 
 		iceExchanger.auto = true
-		iceExchanger.send()
+		await iceExchanger.send()
 
 		await Promise.all([
 			offerer.api.waitUntilReady(answererId),

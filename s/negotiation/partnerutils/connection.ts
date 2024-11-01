@@ -28,8 +28,12 @@ export class Connection<Cable> {
 	constructor(public options: ConnectionOptions) {
 		this.agent = options.agent
 		this.peer = new RTCPeerConnection(options.rtcConfig)
-		this.iceGatheredPromise = gather_ice(this.peer, options.sendIceCandidate, this.iceReport)
 		this.connectionPromise = wait_for_connection(this.peer)
+		this.iceGatheredPromise = gather_ice(
+			this.peer,
+			options.sendIceCandidate,
+			this.iceReport,
+		)
 
 		this.connectedPromise = (
 			Promise.all([
@@ -37,6 +41,7 @@ export class Connection<Cable> {
 				this.connectionPromise,
 				this.iceGatheredPromise,
 			])
+
 			.then(([cable]) => {
 				const connected = this.connected = new Connected<Cable>(
 					this.agent,
@@ -47,6 +52,7 @@ export class Connection<Cable> {
 				connected.onClosed(() => this.die())
 				return connected
 			})
+
 			.catch(error => {
 				this.die()
 				throw error

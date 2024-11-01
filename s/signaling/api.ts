@@ -36,12 +36,12 @@ export const makeSignalingApi = (core: Core, agent: Agent) => ({
 			return null
 
 		const partnerA: Partner = {
-			agent,
+			agent: alice,
 			api: alice.browserApi.partner,
 		}
 
 		const partnerB: Partner = {
-			agent,
+			agent: bob,
 			api: bob.browserApi.partner,
 		}
 
