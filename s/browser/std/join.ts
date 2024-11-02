@@ -26,7 +26,6 @@ export async function join<Cable>(options: JoinOptions<Cable>) {
 	if (hostPeer.agent.id !== host.id)
 		throw new Error("host peer id mismatch")
 
-	sparrow.close()
 	return hostPeer
 }
 
