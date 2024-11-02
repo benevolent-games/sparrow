@@ -1,5 +1,5 @@
 
-import {BrowserApi} from "../browser2/api.js"
+import {BrowserApi} from "../browser/api.js"
 import {Agent} from "../signaling/parts/agent.js"
 
 export type Partner = {
