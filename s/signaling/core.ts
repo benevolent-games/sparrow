@@ -1,9 +1,9 @@
 
-import {Agent} from "./agent/agent.js"
-import {Agents} from "./agent/agents.js"
+import {Agent} from "./parts/agent.js"
+import {Agents} from "./parts/agents.js"
 import {makeSignalingApi} from "./api.js"
 import {BrowserApi} from "../browser/api.js"
-import {Statistician} from "./utils/statistician.js"
+import {Statistician} from "./parts/statistician.js"
 
 export class Core {
 	agents = new Agents()

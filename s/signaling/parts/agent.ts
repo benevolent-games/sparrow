@@ -1,10 +1,10 @@
 
 import {pubsub} from "@benev/slate"
 
+import {AgentInfo} from "../types.js"
 import {hash} from "../../tools/hash.js"
 import {hexId} from "../../tools/hex-id.js"
 import {BrowserApi} from "../../browser/api.js"
-import {AgentConfidential, AgentInfo} from "../types.js"
 
 export class Agent {
 	static make = async(
@@ -20,8 +20,8 @@ export class Agent {
 	/** id for this specific agent connection to the sparrow server */
 	id = hexId()
 
-	/** anybody with this key can attempt to join this agent */
-	invite = hexId()
+	/** all invites issued by this agent */
+	invites = new Set<string>()
 
 	/** pubsub for exchanging ice candidates */
 	onIceCandidate = pubsub<[RTCIceCandidate]>()
@@ -42,13 +42,6 @@ export class Agent {
 		return {
 			id: this.id,
 			reputation: this.reputation,
-		}
-	}
-
-	confidential(): AgentConfidential {
-		return {
-			...this.info(),
-			invite: this.invite,
 		}
 	}
 }

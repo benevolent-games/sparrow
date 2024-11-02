@@ -4,8 +4,6 @@ export type AgentInfo = {
 	reputation: string
 }
 
-export type AgentConfidential = {invite: string} & AgentInfo
-
 export type Stats = {
 	agents: number
 	hourly: StatsHourly
