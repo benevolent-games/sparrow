@@ -1,8 +1,8 @@
 
-import {PartnerOptions} from "./types.js"
+import {BrowserApiOptions} from "./types.js"
 import {AgentInfo} from "../signaling/types.js"
 
-export type PartnerApi = ReturnType<typeof makePartnerApi>
+export type BrowserApi = ReturnType<typeof makeBrowserApi>
 
 /**
  * each browser peer exposes these functions to the signalling server.
@@ -10,19 +10,26 @@ export type PartnerApi = ReturnType<typeof makePartnerApi>
  * thus, the signalling server is really the one calling the shots and driving the webrtc negotiation.
  * think of the signalling server as a traffic cop (with the whistle) commanding each browser peer throughout the negotation process.
  */
-export function makePartnerApi<Cable>({
+export function makeBrowserApi<Cable>({
+		allow,
 		signalingApi,
 		rtcConfig,
 		cableConfig,
 		connections,
-	}: PartnerOptions<Cable>) {
-
+	}: BrowserApiOptions<Cable>) {
+	const signaller = signalingApi.v0
 	return {
+
+		/** somebody wants to join a room you are hosting.. will you allow it? */
+		async knock(agent: AgentInfo) {
+			return await allow(agent)
+		},
+
 		async startPeerConnection(agent: AgentInfo) {
 			connections.create({
 				agent,
 				rtcConfig,
-				sendIceCandidate: signalingApi.sendIceCandidate,
+				sendIceCandidate: signaller.sendIceCandidate,
 			})
 		},
 

@@ -30,6 +30,11 @@ export const makeSignalingApi = (core: Core, agent: Agent) => ({
 			core.agents.invites.delete(invite)
 		},
 
+		async query(invite: string) {
+			const host = core.agents.invites.require(invite)
+			return host.info()
+		},
+
 		async join(invite: string) {
 			try {
 				const alice = core.agents.invites.require(invite)
