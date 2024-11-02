@@ -27,6 +27,7 @@ export const SparrowDemo = shadowComponent(use => {
 				url,
 				invite,
 				hostClosed: () => {
+					console.log("host closed")
 					op.setError("the connection to sparrow died")
 				},
 			})

@@ -49,12 +49,12 @@ export class Connection<Cable> {
 					cable,
 					this.iceReport,
 				)
-				connected.onClosed(() => this.die())
+				connected.onClosed(() => this.close())
 				return connected
 			})
 
 			.catch(error => {
-				this.die()
+				this.close()
 				throw error
 			})
 		)
@@ -69,12 +69,12 @@ export class Connection<Cable> {
 		try { return await fn() }
 		catch (error) {
 			this.cableWait.reject(error)
-			this.die()
+			this.close()
 			throw error
 		}
 	}
 
-	private die() {
+	close() {
 		this.peer.close()
 		this.onDead.publish()
 	}

@@ -57,6 +57,10 @@ export class Sparrow<Cable = StdDataCable> {
 			.filter(connected => !!connected)
 	}
 
+	requireConnection(id: string) {
+		return this.#connections.require(id)
+	}
+
 	async stats() {
 		return await this.signalingApi.stats()
 	}

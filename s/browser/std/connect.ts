@@ -45,7 +45,11 @@ export async function connect<Cable = StdDataCable>(
 	})
 
 	connections.onConnected(connected => {
-		connected.onClosed(o.joined(connected))
+		const onClosed = o.joined(connected)
+		connected.onClosed(() => {
+			console.log("connection onclosed")
+			onClosed()
+		})
 	})
 
 	const self = await signalingApi.hello(version)
