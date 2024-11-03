@@ -15,7 +15,7 @@ export function makeBrowserApi<Cable>({
 		signalingApi,
 		rtcConfig,
 		cableConfig,
-		connections,
+		prospects,
 	}: BrowserApiOptions<Cable>) {
 	const signaller = signalingApi.v0
 	return {
@@ -26,7 +26,7 @@ export function makeBrowserApi<Cable>({
 		},
 
 		async startPeerConnection(agent: AgentInfo) {
-			connections.create({
+			prospects.create({
 				agent,
 				rtcConfig,
 				sendIceCandidate: signaller.sendIceCandidate,
@@ -34,8 +34,8 @@ export function makeBrowserApi<Cable>({
 		},
 
 		async produceOffer(agentId: string): Promise<any> {
-			return await connections.attempt(agentId, async connection => {
-				const {peer, cableWait} = connection
+			return await prospects.attempt(agentId, async prospect => {
+				const {peer, cableWait} = prospect
 				cableConfig.offering(peer).then(cableWait.resolve)
 				const offer = await peer.createOffer()
 				await peer.setLocalDescription(offer)
@@ -44,8 +44,8 @@ export function makeBrowserApi<Cable>({
 		},
 
 		async produceAnswer(agentId: string, offer: RTCSessionDescription): Promise<any> {
-			return await connections.attempt(agentId, async connection => {
-				const {peer, cableWait} = connection
+			return await prospects.attempt(agentId, async prospect => {
+				const {peer, cableWait} = prospect
 				cableConfig.answering(peer).then(cableWait.resolve)
 				await peer.setRemoteDescription(offer)
 				const answer = await peer.createAnswer()
@@ -55,20 +55,20 @@ export function makeBrowserApi<Cable>({
 		},
 
 		async acceptAnswer(agentId: string, answer: RTCSessionDescription): Promise<void> {
-			return await connections.attempt(agentId, async connection => {
-				await connection.peer.setRemoteDescription(answer)
+			return await prospects.attempt(agentId, async prospect => {
+				await prospect.peer.setRemoteDescription(answer)
 			})
 		},
 
 		async acceptIceCandidate(agentId: string, candidate: RTCIceCandidate): Promise<void> {
-			return await connections.attempt(agentId, async connection => {
-				await connection.acceptIceCandidate(candidate)
+			return await prospects.attempt(agentId, async prospect => {
+				await prospect.acceptIceCandidate(candidate)
 			})
 		},
 
 		async waitUntilReady(agentId: string): Promise<void> {
-			return await connections.attempt(agentId, async connection => {
-				await connection.connectedPromise
+			return await prospects.attempt(agentId, async prospect => {
+				await prospect.readyPromise
 			})
 		},
 	}

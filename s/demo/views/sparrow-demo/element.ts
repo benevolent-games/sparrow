@@ -5,9 +5,9 @@ import stylesCss from "./styles.css.js"
 import {HostView} from "../host-view/view.js"
 import {isLocal} from "../../utils/is-local.js"
 import {ClientView} from "../client-view/view.js"
-import {Sparrow} from "../../../browser/sparrow.js"
 import {parseInvite} from "../../utils/parse-invite.js"
-import {Connected} from "../../../negotiation/utils/connected.js"
+import {Sparrow} from "../../../browser/sparrow.js"
+import {Connection} from "../../../browser/utils/connection.js"
 
 export const SparrowDemo = shadowComponent(use => {
 	use.styles(stylesCss)
@@ -20,7 +20,7 @@ export const SparrowDemo = shadowComponent(use => {
 			: Sparrow.stdUrl()
 	)
 
-	const op = use.load<Sparrow | Connected>(async() => {
+	const op = use.load<Sparrow | Connection>(async() => {
 		return invite
 
 			? await Sparrow.join({

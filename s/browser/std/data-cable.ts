@@ -1,6 +1,6 @@
 
+import {CableConfig, StdDataCable} from "../types.js"
 import {concurrent, deferPromise, ev} from "@benev/slate"
-import {CableConfig, StdDataCable} from "../../negotiation/types.js"
 
 export const stdDataCable = (): CableConfig<StdDataCable> => ({
 

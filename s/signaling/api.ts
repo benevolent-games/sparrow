@@ -40,18 +40,22 @@ export const makeSignalingApi = (core: Core, agent: Agent) => ({
 				const alice = core.agents.invites.require(invite)
 				const bob = agent
 
-				const allowed = await alice.browserApi.knock(bob.info())
-				if (!allowed)
+				const allowances = await Promise.all([
+					alice.browserApi.knock(bob.info()),
+					bob.browserApi.knock(alice.info()),
+				])
+
+				if (allowances.some(allowed => !allowed))
 					return null
 
 				const partnerA: Partner = {
 					agent: alice,
-					api: alice.browserApi.partner,
+					api: alice.browserApi,
 				}
 
 				const partnerB: Partner = {
 					agent: bob,
-					api: bob.browserApi.partner,
+					api: bob.browserApi,
 				}
 
 				await negotiate_rtc_connection(partnerA, partnerB)

@@ -1,17 +1,19 @@
 
+import {Prospects} from "./utils/prospects.js"
 import {AgentInfo} from "../signaling/types.js"
 import {SignalingApi} from "../signaling/api.js"
-import {Connections} from "../negotiation/utils/connections.js"
+import {Prospect} from "./utils/prospect.js"
+import {Connection} from "./utils/connection.js"
 
 export type BrowserApiOptions<Cable> = {
 	allow: AllowFn
 	signalingApi: SignalingApi
 	rtcConfig: RTCConfiguration
 	cableConfig: CableConfig<Cable>
-	connections: Connections<Cable>
+	prospects: Prospects<Cable>
 }
 
-export type ConnectionOptions = {
+export type ProspectOptions = {
 	agent: AgentInfo
 	rtcConfig: RTCConfiguration
 	sendIceCandidate: SendIceCandidateFn
@@ -43,7 +45,7 @@ export type BasicOptions<Cable> = {
 
 export type ConnectOptions<Cable> = {
 	allow: AllowFn
-	connecting: ConnectingFn
+	connecting: ConnectingFn<Cable>
 	closed: () => void
 } & Partial<BasicOptions<Cable>>
 
@@ -51,9 +53,9 @@ export type JoinOptions<Cable> = {
 	invite: string
 	disconnected: () => void
 	allow?: AllowFn
-	connecting?: ConnectingFn
-} & ConnectOptions<Cable>
+	connecting?: ConnectingFn<Cable>
+} & Partial<BasicOptions<Cable>>
 
 export type AllowFn = (agent: AgentInfo) => Promise<boolean>
-export type ConnectingFn = (prospect: any) => (connection: any) => () => void
+export type ConnectingFn<Cable> = (prospect: Prospect<Cable>) => (connection: Connection<Cable>) => () => void
 

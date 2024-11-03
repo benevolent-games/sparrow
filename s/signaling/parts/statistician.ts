@@ -1,5 +1,5 @@
 
-import {Agents} from "../agent/agents.js"
+import {Agents} from "./agents.js"
 import {Stats, StatsHourly} from "../types.js"
 
 type StatName = "connection" | "failure"

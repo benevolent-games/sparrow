@@ -1,9 +1,9 @@
 
-import {ConnectOptions} from "./types.js"
 import {stdOptions} from "./std/options.js"
+import {Prospects} from "./utils/prospects.js"
 import {makeBrowserApi} from "../browser/api.js"
 import {SignalingApi} from "../signaling/api.js"
-import {CableConfig} from "../negotiation/types.js"
+import {CableConfig, ConnectOptions} from "./types.js"
 import {endpoint, loggers, webSocketRemote} from "renraku"
 
 export async function connect<Cable>(options: ConnectOptions<Cable>) {
@@ -15,6 +15,8 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 
 	let selfId: string | undefined
 
+	const prospects = new Prospects(options.connecting)
+
 	const {socket, fns: signalingApi} = await webSocketRemote<SignalingApi>({
 		...remoteLogging,
 		url: o.url,
@@ -25,11 +27,10 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 					agent.id !== selfId &&
 					await o.allow(agent)
 				),
-				partner: {
-					signalingApi,
-					rtcConfig: o.rtcConfig,
-					cableConfig: o.cableConfig as CableConfig<Cable>,
-				},
+				prospects,
+				signalingApi,
+				rtcConfig: o.rtcConfig,
+				cableConfig: o.cableConfig as CableConfig<Cable>,
 			}),
 			localLogging,
 		),
