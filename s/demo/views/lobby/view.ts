@@ -1,13 +1,13 @@
 
-import {html, shadowView} from "@benev/slate"
+import {html, shadowView, Signal} from "@benev/slate"
 
-import {Lobby} from "./lobby.js"
 import stylesCss from "./styles.css.js"
+import {Lobby} from "../../logic/types.js"
 import userSvg from "../../icons/tabler/user.svg.js"
 
 export const LobbyView = shadowView(use => (
 		selfId: string,
-		lobby: Lobby,
+		lobby: Signal<Lobby>,
 		closeConnection?: (id: string) => void,
 	) => {
 
@@ -15,11 +15,11 @@ export const LobbyView = shadowView(use => (
 
 	return html`
 		<ul x-group>
-			${lobby.people.map(({agent, connected, iceCounts}) => html`
+			${lobby.value.people.map(({agent, connected, iceCounts}) => html`
 				<li
 					?x-connected="${connected}"
 					?x-self="${selfId === agent.id}"
-					?x-host="${lobby.hostId === agent.id}">
+					?x-host="${lobby.value.hostId === agent.id}">
 
 					${userSvg}
 

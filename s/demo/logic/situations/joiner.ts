@@ -6,7 +6,10 @@ import {Joined} from "../../../browser/join.js"
 export class JoinerSituation {
 	lobby = signal<Lobby | null>(null)
 
-	constructor(public joined: Joined) {
+	constructor(
+			public url: string,
+			public joined: Joined
+		) {
 		joined.connection.cable.reliable.onmessage = event => {
 			this.lobby.value = JSON.parse(event.data)
 		}

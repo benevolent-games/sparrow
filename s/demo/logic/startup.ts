@@ -49,7 +49,7 @@ async function startHosting(url: string, closed: () => void) {
 	})
 
 	const stats = signal(await hosted.getStats())
-	const hosting = new HostingSituation(hosted, prospects, stats)
+	const hosting = new HostingSituation(url, hosted, prospects, stats)
 	return hosting
 }
 
@@ -59,6 +59,6 @@ async function startJoiner(url: string, invite: string, disconnected: () => void
 		invite,
 		disconnected,
 	})
-	return new JoinerSituation(joined)
+	return new JoinerSituation(url, joined)
 }
 

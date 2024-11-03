@@ -1,5 +1,5 @@
 
-import {repeater, Repeater, Signal} from "@benev/slate"
+import {repeater, Repeater, signal, Signal, signals, Trashbin} from "@benev/slate"
 
 import {Lobby} from "../types.js"
 import {Hosted} from "../../../browser/host.js"
@@ -9,16 +9,19 @@ import {Prospect} from "../../../browser/utils/prospect.js"
 
 export class HostingSituation {
 	repeater: Repeater
-	stopSendingLobby: () => void
+	lobby: Signal<Lobby> = signal(this.getLobby())
+	stopUpdates: () => void
 
 	constructor(
+			public url: string,
 			public hosted: Hosted,
 			public prospects: Signal<Set<Prospect<StdDataCable>>>,
 			public stats: Signal<Stats>,
 		) {
 
 		this.repeater = repeater(5_000, async() => await this.#refreshStats())
-		this.stopSendingLobby = prospects.on(() => this.#sendLobbyToEverybody())
+		this.lobby = signals.computed(() => this.getLobby())
+		this.stopUpdates = this.lobby.on(lobby => this.#sendToEverybody(lobby))
 	}
 
 	getLobby(): Lobby {
@@ -37,10 +40,11 @@ export class HostingSituation {
 
 	closed() {
 		this.repeater.stop()
-		this.stopSendingLobby()
+		this.stopUpdates()
 	}
 
 	kill() {
+		this.closed()
 		for (const prospect of this.prospects.value) {
 			const {connection} = prospect
 			if (connection) {
@@ -49,6 +53,7 @@ export class HostingSituation {
 				prospect.close()
 			}
 		}
+		this.hosted.close()
 	}
 
 	getConnections() {
@@ -61,8 +66,7 @@ export class HostingSituation {
 		this.stats.value = await this.hosted.getStats()
 	}
 
-	async #sendLobbyToEverybody() {
-		const lobby = this.getLobby()
+	async #sendToEverybody(lobby: Lobby) {
 		for (const connection of this.getConnections()) {
 			connection.cable.reliable.send(JSON.stringify(lobby))
 		}
