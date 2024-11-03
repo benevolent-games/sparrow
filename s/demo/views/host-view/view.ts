@@ -5,8 +5,8 @@ import stylesCss from "./styles.css.js"
 import {LobbyView} from "../lobby/view.js"
 
 import crownSvg from "../../icons/tabler/crown.svg.js"
-import chartBarPopularSvg from "../../icons/tabler/chart-bar-popular.svg.js"
 import {HostingSituation} from "../../logic/situations/hosting.js"
+import chartBarPopularSvg from "../../icons/tabler/chart-bar-popular.svg.js"
 
 export const HostView = shadowView(use => (situation: HostingSituation) => {
 	use.styles(stylesCss)

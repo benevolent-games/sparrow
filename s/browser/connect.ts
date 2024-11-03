@@ -25,7 +25,7 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 
 	const prospects = new Prospects(options.connecting)
 
-	const {socket, fns: signalingApi} = await webSocketRemote<SignalingApi>({
+	const {socket, remote: signalingApi} = await webSocketRemote<SignalingApi>({
 		...remoteLogging,
 		url: o.url,
 		onClose: o.closed,
