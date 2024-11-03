@@ -12,6 +12,8 @@ export class Prospect<Cable> {
 	get id() { return this.agent.id }
 	get reputation() { return this.agent.reputation }
 
+	onChange = pubsub()
+
 	agent: AgentInfo
 	peer: RTCPeerConnection
 	iceReport = new IceReport()
@@ -50,6 +52,7 @@ export class Prospect<Cable> {
 					this.iceReport,
 				)
 				connection.onClosed(() => this.close())
+				this.onChange.publish()
 				return connection
 			})
 
@@ -61,7 +64,7 @@ export class Prospect<Cable> {
 	}
 
 	async acceptIceCandidate(candidate: RTCIceCandidate) {
-		this.iceReport.remotes.push(candidate)
+		this.iceReport.recordRemote(candidate)
 		await this.peer.addIceCandidate(candidate)
 	}
 
@@ -75,8 +78,10 @@ export class Prospect<Cable> {
 	}
 
 	close() {
+		this.connection = null
 		this.peer.close()
 		this.onDead.publish()
+		this.onChange.publish()
 	}
 }
 

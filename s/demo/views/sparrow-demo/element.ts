@@ -1,13 +1,14 @@
 
 import {shadowComponent, loading} from "@benev/slate"
 
-import stylesCss from "./styles.css.js"
 import {HostView} from "../host-view/view.js"
 import {isLocal} from "../../utils/is-local.js"
 import {ClientView} from "../client-view/view.js"
-import {parseInvite} from "../../utils/parse-invite.js"
 import {Sparrow} from "../../../browser/sparrow.js"
+import {parseInvite} from "../../utils/parse-invite.js"
 import {Connection} from "../../../browser/utils/connection.js"
+
+import stylesCss from "./styles.css.js"
 
 export const SparrowDemo = shadowComponent(use => {
 	use.styles(stylesCss)
@@ -26,15 +27,22 @@ export const SparrowDemo = shadowComponent(use => {
 			? await Sparrow.join({
 				url,
 				invite,
-				hostClosed: () => {
-					console.log("host closed")
+				disconnected: () => {
 					op.setError("the connection to sparrow died")
 				},
 			})
 
-			: await Sparrow.connect({
+			: await Sparrow.host({
 				url,
-				sparrowClosed: () => {
+				allow: async() => true,
+				connecting: prospect => {
+					return connection => {
+						return () => {
+							prospect.close()
+						}
+					}
+				},
+				closed: () => {
 					op.setError("the connection to sparrow died")
 				},
 			})

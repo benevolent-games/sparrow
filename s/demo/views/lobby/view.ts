@@ -4,22 +4,14 @@ import {html, shadowView} from "@benev/slate"
 import {Lobby} from "./lobby.js"
 import stylesCss from "./styles.css.js"
 import userSvg from "../../icons/tabler/user.svg.js"
-import {Sparrow} from "../../../browser/sparrow.js"
 
 export const LobbyView = shadowView(use => (
 		selfId: string,
 		lobby: Lobby,
-		sparrow?: Sparrow,
+		closeConnection?: (id: string) => void,
 	) => {
 
 	use.styles(stylesCss)
-
-	const controls = sparrow ? {
-		killConnection: (id: string) => {
-			const connection = sparrow.requireConnection(id)
-			connection.close()
-		},
-	} : null
 
 	return html`
 		<ul x-group>
@@ -42,9 +34,9 @@ export const LobbyView = shadowView(use => (
 						<span>${iceCounts.remoteSide} remote</span>
 					</span>
 
-					${controls && html`
+					${closeConnection && html`
 						<span x-buttons>
-							<button @click="${() => controls.killConnection(agent.id)}">disconnect</button>
+							<button @click="${() => closeConnection(agent.id)}">disconnect</button>
 						</span>
 					`}
 				</li>

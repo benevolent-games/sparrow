@@ -9,13 +9,13 @@ import {stdRtcConfig} from "./std/rtc-config.js"
 import {stdUrl} from "./std/url.js"
 
 export class Sparrow {
-	connect = connect
-	host = host
-	join = join
+	static connect = connect
+	static host = host
+	static join = join
 
-	stdDataCable = stdDataCable
-	stdOptions = stdOptions
-	stdRtcConfig = stdRtcConfig
-	stdUrl = stdUrl
+	static stdDataCable = stdDataCable
+	static stdOptions = stdOptions
+	static stdRtcConfig = stdRtcConfig
+	static stdUrl = stdUrl
 }
 
