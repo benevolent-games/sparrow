@@ -1,14 +1,22 @@
 
 import {stdOptions} from "./std/options.js"
 import {Prospects} from "./utils/prospects.js"
-import {makeBrowserApi} from "../browser/api.js"
+import {AgentInfo} from "../signaling/types.js"
 import {SignalingApi} from "../signaling/api.js"
+import {makeBrowserApi} from "../browser/api.js"
 import {CableConfig, ConnectOptions} from "./types.js"
 import {endpoint, loggers, webSocketRemote} from "renraku"
 
+export class Connected {
+	constructor(
+		public self: AgentInfo,
+		public signaller: SignalingApi["v0"],
+		public close: () => void,
+	) {}
+}
+
 export async function connect<Cable>(options: ConnectOptions<Cable>) {
 	const o = {...stdOptions(), ...options}
-
 	const emoji = "👤"
 	const remoteLogging = loggers.label({remote: true, label: `${emoji} ->`, prefix: "server"})
 	const localLogging = loggers.label({remote: false, label: `${emoji} <-`, prefix: "client"})
@@ -39,6 +47,6 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 	const signaller = signalingApi.v0 as SignalingApi["v0"]
 	const self = await signaller.hello()
 	const close = () => socket.close()
-	return {self, signaller, close}
+	return new Connected(self, signaller, close)
 }
 

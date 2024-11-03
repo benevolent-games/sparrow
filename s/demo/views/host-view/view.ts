@@ -3,14 +3,17 @@ import {html, loading, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import {LobbyView} from "../lobby/view.js"
-import {makeLobby} from "../lobby/lobby.js"
+import {HostLobby, makeLobby} from "../lobby/lobby.js"
 import {Stats} from "../../../signaling/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
 
 import crownSvg from "../../icons/tabler/crown.svg.js"
 import chartBarPopularSvg from "../../icons/tabler/chart-bar-popular.svg.js"
 
-export const HostView = shadowView(use => (sparrow: Sparrow, url: string) => {
+export const HostView = shadowView(use => ({}: {
+		lobby: HostLobby<any>,
+	}) => {
+
 	use.styles(stylesCss)
 	const statsOp = use.op<Stats>()
 	const lobby = makeLobby(sparrow)

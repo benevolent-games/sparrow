@@ -4,7 +4,7 @@ import {Prospect} from "./prospect.js"
 import {ConnectingFn, ProspectOptions} from "../types.js"
 
 export class Prospects<Cable> extends Pool<Prospect<Cable>> {
-	constructor(private connecting: ConnectingFn) {
+	constructor(private connecting: ConnectingFn<Cable>) {
 		super()
 	}
 

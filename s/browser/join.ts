@@ -2,26 +2,35 @@
 import {deferPromise} from "@benev/slate"
 
 import {connect} from "./connect.js"
-import {JoinOptions} from "./types.js"
+import {AgentInfo} from "../signaling/types.js"
 import {Connection} from "./utils/connection.js"
+import {JoinOptions, StdDataCable} from "./types.js"
+import {Prospect} from "./utils/prospect.js"
 
-export type Joined = Awaited<ReturnType<typeof join>>
+export class Joined<Cable = StdDataCable> {
+	constructor(
+		public self: AgentInfo,
+		public prospect: Prospect<Cable>,
+		public connection: Connection<Cable>,
+		public close: () => void,
+	) {}
+}
 
 export async function join<Cable>(options: JoinOptions<Cable>) {
 	const allow = options.allow ?? (async() => true)
 	const connecting = options.connecting ?? (() => () => () => {})
-	const ready = deferPromise<Connection<Cable>>()
+	const ready = deferPromise<[Prospect<Cable>, Connection<Cable>]>()
 
 	const {self, signaller, close} = await connect({
 		...options,
 		allow,
-		closed: () => {},
+		closed: () => console.error("join: sparrow closed the connection"),
 		connecting: prospect => {
 			const next = connecting(prospect)
 
 			return connection => {
 				const disconnected = next(connection)
-				ready.resolve(connection)
+				ready.resolve([prospect, connection])
 
 				return () => {
 					disconnected()
@@ -41,8 +50,9 @@ export async function join<Cable>(options: JoinOptions<Cable>) {
 	if (!hostAllowsUs)
 		throw new Error("the host snubbed us")
 
-	const connection = await ready.promise
+	const [prospect, connection] = await ready.promise
+	close()
 
-	return {self, connection, close}
+	return new Joined<Cable>(self, prospect, connection, close)
 }
 
