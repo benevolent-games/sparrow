@@ -6,6 +6,7 @@ import {SignalingApi} from "../signaling/api.js"
 import {makeBrowserApi} from "../browser/api.js"
 import {CableConfig, ConnectOptions} from "./types.js"
 import {endpoint, loggers, webSocketRemote} from "renraku"
+import {ev} from "@benev/slate"
 
 export class Connected {
 	constructor(
@@ -24,6 +25,9 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 	let selfId: string | undefined
 
 	const prospects = new Prospects(options.connecting)
+
+	// disconnect everybody when the user kills the tab
+	ev(window, {beforeunload: () => prospects.disconnectEverybody()})
 
 	const {socket, remote: signalingApi} = await webSocketRemote<SignalingApi>({
 		...remoteLogging,

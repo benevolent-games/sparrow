@@ -38,6 +38,13 @@ export class Prospects<Cable> extends Pool<Prospect<Cable>> {
 		return prospect
 	}
 
+	disconnectEverybody() {
+		for (const prospect of this.values()) {
+			if (prospect.connection)
+				prospect.connection.disconnect()
+		}
+	}
+
 	async attempt<R>(id: string, fn: (prospect: Prospect<Cable>) => Promise<R>) {
 		const connection = this.require(id)
 		return await connection.handleFailure(async() => await fn(connection))

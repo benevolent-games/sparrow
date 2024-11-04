@@ -9,8 +9,9 @@ import {HostingSituation} from "../../logic/situations/hosting.js"
 
 export const SparrowDemo = shadowComponent(use => {
 	use.styles(stylesCss)
+
 	const situationOp = use.load(async() => {
-		return await startup(() => console.log("STARTUP CLOSED"))
+		return await startup(() => situationOp.setError("disconnected"))
 	})
 
 	return loading.braille(situationOp, situation => {
