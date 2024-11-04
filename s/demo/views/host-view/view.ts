@@ -1,11 +1,12 @@
 
 import {html, shadowView} from "@benev/slate"
 
-import stylesCss from "./styles.css.js"
 import {LobbyView} from "../lobby/view.js"
-
-import crownSvg from "../../icons/tabler/crown.svg.js"
+import {Sparrow} from "../../../browser/sparrow.js"
 import {HostingSituation} from "../../logic/situations/hosting.js"
+
+import stylesCss from "./styles.css.js"
+import crownSvg from "../../icons/tabler/crown.svg.js"
 import chartBarPopularSvg from "../../icons/tabler/chart-bar-popular.svg.js"
 
 export const HostView = shadowView(use => (situation: HostingSituation) => {
@@ -35,8 +36,8 @@ export const HostView = shadowView(use => (situation: HostingSituation) => {
 						<li>
 							<span>Invite</span>
 							<span>
-								<a href="${`#invite=${invite}`}" target="_blank">
-									${`#invite=${invite.slice(0, 8)}`}
+								<a href="${Sparrow.invites.makeLinkUrl(invite)}" target="_blank">
+									${Sparrow.invites.makeLinkDisplay(invite)}
 								</a>
 							</span>
 						</li>

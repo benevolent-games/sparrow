@@ -2,7 +2,7 @@
 import {host} from "./host.js"
 import {join} from "./join.js"
 import {connect} from "./connect.js"
-import {parseInvite} from "./utils/parse-invite.js"
+import {invites} from "./utils/invites.js"
 
 import {stdDataCable} from "./std/data-cable.js"
 import {stdOptions} from "./std/options.js"
@@ -19,6 +19,6 @@ export class Sparrow {
 	static stdRtcConfig = stdRtcConfig
 	static stdUrl = stdUrl
 
-	static parseInvite = parseInvite
+	static invites = invites
 }
 
