@@ -1,8 +1,8 @@
 
-import {BrowserApiOptions} from "./types.js"
-import {AgentInfo} from "../signaling/types.js"
 import {deadline} from "renraku"
 import {Conduit} from "./utils/conduit.js"
+import {BrowserApiOptions} from "./types.js"
+import {AgentInfo} from "../signaling/types.js"
 
 export type BrowserApi = ReturnType<typeof makeBrowserApi>
 
