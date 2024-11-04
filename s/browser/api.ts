@@ -27,7 +27,7 @@ export function makeBrowserApi<Cable>({
 		promise: Promise<R>,
 	) => deadline(10_000, label, async() => promise)
 
-	return {
+	const v1 = {
 
 		/** somebody wants to join a room you are hosting.. will you allow it? */
 		async knock(agent: AgentInfo) {
@@ -97,5 +97,7 @@ export function makeBrowserApi<Cable>({
 			})
 		},
 	}
+
+	return {v1}
 }
 

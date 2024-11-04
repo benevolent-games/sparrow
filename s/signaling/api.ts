@@ -41,8 +41,8 @@ export const makeSignalingApi = (core: Core, agent: Agent) => ({
 				const bob = agent
 
 				const allowances = await Promise.all([
-					alice.browserApi.knock(bob.info()),
-					bob.browserApi.knock(alice.info()),
+					alice.browserApi.v1.knock(bob.info()),
+					bob.browserApi.v1.knock(alice.info()),
 				])
 
 				if (allowances.some(allowed => !allowed))
