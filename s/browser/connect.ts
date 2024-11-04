@@ -1,12 +1,13 @@
 
+import {ev} from "@benev/slate"
+import {endpoint, loggers, webSocketRemote} from "renraku"
+
 import {stdOptions} from "./std/options.js"
 import {Prospects} from "./utils/prospects.js"
 import {AgentInfo} from "../signaling/types.js"
 import {SignalingApi} from "../signaling/api.js"
 import {makeBrowserApi} from "../browser/api.js"
 import {CableConfig, ConnectOptions} from "./types.js"
-import {endpoint, loggers, webSocketRemote} from "renraku"
-import {ev} from "@benev/slate"
 
 export class Connected {
 	constructor(
