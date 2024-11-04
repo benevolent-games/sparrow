@@ -14,6 +14,7 @@ export function gather_ice(
 
 			icecandidate: (event: RTCPeerConnectionIceEvent) => {
 				if (event.candidate) {
+					console.log("NEW LOCAL ICE CANDIDATE")
 					sendIceCandidate(event.candidate)
 					iceReport.recordLocal(event.candidate)
 				}

@@ -1,8 +1,8 @@
 
+import {Prospect} from "./utils/prospect.js"
 import {Prospects} from "./utils/prospects.js"
 import {AgentInfo} from "../signaling/types.js"
 import {SignalingApi} from "../signaling/api.js"
-import {Prospect} from "./utils/prospect.js"
 import {Connection} from "./utils/connection.js"
 
 export type BrowserApiOptions<Cable> = {

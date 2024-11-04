@@ -8,14 +8,14 @@ import userSvg from "../../icons/tabler/user.svg.js"
 export const LobbyView = shadowView(use => (
 		selfId: string,
 		lobby: Signal<Lobby>,
-		closeConnection?: (id: string) => void,
+		killProspect?: (id: string) => void,
 	) => {
 
 	use.styles(stylesCss)
 
 	return html`
 		<ul x-group>
-			${lobby.value.people.map(({agent, connected, iceCounts}) => html`
+			${lobby.value.people.map(({agent, details, connected, iceCounts}) => html`
 				<li
 					?x-connected="${connected}"
 					?x-self="${selfId === agent.id}"
@@ -28,15 +28,19 @@ export const LobbyView = shadowView(use => (
 						<span>${agent.id.slice(0, 4)}</span>
 					</span>
 
+					<span x-name>
+						${details.name}
+					</span>
+
 					<span x-ice>
 						<span>ICE:</span>
 						<span>${iceCounts.hostSide} local</span>
 						<span>${iceCounts.remoteSide} remote</span>
 					</span>
 
-					${closeConnection && html`
+					${killProspect && html`
 						<span x-buttons>
-							<button @click="${() => closeConnection(agent.id)}">disconnect</button>
+							<button @click="${() => killProspect(agent.id)}">disconnect</button>
 						</span>
 					`}
 				</li>

@@ -7,11 +7,16 @@ export type Lobby = {
 }
 
 export type Person = {
-	connected: boolean
 	agent: AgentInfo
+	details: UserDetails
+	connected: boolean
 	iceCounts: {
 		hostSide: number
 		remoteSide: number
 	}
+}
+
+export type UserDetails = {
+	name: string
 }
 

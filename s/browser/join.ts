@@ -2,10 +2,10 @@
 import {deferPromise} from "@benev/slate"
 
 import {connect} from "./connect.js"
+import {Prospect} from "./utils/prospect.js"
 import {AgentInfo} from "../signaling/types.js"
 import {Connection} from "./utils/connection.js"
 import {JoinOptions, StdDataCable} from "./types.js"
-import {Prospect} from "./utils/prospect.js"
 
 export class Joined<Cable = StdDataCable> {
 	constructor(
@@ -24,15 +24,18 @@ export async function join<Cable>(options: JoinOptions<Cable>) {
 	const {self, signaller, close} = await connect({
 		...options,
 		allow,
-		closed: () => console.error("join: sparrow closed the connection"),
+		closed: () => {},
 		connecting: prospect => {
+			console.log("NEW PROSPECT")
 			const next = connecting(prospect)
 
 			return connection => {
+				console.log("NEW CONNECTION")
 				const disconnected = next(connection)
 				ready.resolve([prospect, connection])
 
 				return () => {
+					console.log("DISCONNECTED")
 					disconnected()
 					options.disconnected()
 				}
@@ -51,7 +54,6 @@ export async function join<Cable>(options: JoinOptions<Cable>) {
 		throw new Error("the host snubbed us")
 
 	const [prospect, connection] = await ready.promise
-	close()
 
 	return new Joined<Cable>(self, prospect, connection, close)
 }

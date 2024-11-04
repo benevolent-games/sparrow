@@ -5,7 +5,7 @@ import {IceReport} from "./ice-report.js"
 import {AgentInfo} from "../../signaling/types.js"
 
 export class Connection<Cable = StdDataCable> {
-	readonly onClosed = pubsub()
+	readonly onDisconnected = pubsub()
 
 	get id() { return this.agent.id }
 	get reputation() { return this.agent.reputation }
@@ -23,10 +23,15 @@ export class Connection<Cable = StdDataCable> {
 					case "closed":
 					case "failed":
 						detach()
-						return this.onClosed.publish()
+						return this.onDisconnected.publish()
 				}
 			},
 		})
+	}
+
+	disconnect() {
+		this.peer.close()
+		this.onDisconnected.publish()
 	}
 }
 

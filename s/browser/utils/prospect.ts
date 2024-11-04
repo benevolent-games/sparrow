@@ -12,8 +12,6 @@ export class Prospect<Cable> {
 	get id() { return this.agent.id }
 	get reputation() { return this.agent.reputation }
 
-	onChange = pubsub()
-
 	agent: AgentInfo
 	peer: RTCPeerConnection
 	iceReport = new IceReport()
@@ -25,7 +23,7 @@ export class Prospect<Cable> {
 	connection: Connection<Cable> | null = null
 	readyPromise: Promise<Connection<Cable>>
 
-	onDead = pubsub()
+	onDisconnected = pubsub()
 
 	constructor(options: ProspectOptions) {
 		this.agent = options.agent
@@ -51,13 +49,15 @@ export class Prospect<Cable> {
 					cable,
 					this.iceReport,
 				)
-				connection.onClosed(() => this.close())
-				this.onChange.publish()
+				connection.onDisconnected(() => {
+					this.connection = null
+					this.onDisconnected.publish()
+				})
 				return connection
 			})
 
 			.catch(error => {
-				this.close()
+				this.onDisconnected.publish()
 				throw error
 			})
 		)
@@ -72,16 +72,10 @@ export class Prospect<Cable> {
 		try { return await fn() }
 		catch (error) {
 			this.cableWait.reject(error)
-			this.close()
+			if (this.connection)
+				this.connection.disconnect()
 			throw error
 		}
-	}
-
-	close() {
-		this.connection = null
-		this.peer.close()
-		this.onDead.publish()
-		this.onChange.publish()
 	}
 }
 
