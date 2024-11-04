@@ -1,6 +1,8 @@
 
 import {BrowserApiOptions} from "./types.js"
 import {AgentInfo} from "../signaling/types.js"
+import {deadline} from "renraku"
+import {Conduit} from "./utils/conduit.js"
 
 export type BrowserApi = ReturnType<typeof makeBrowserApi>
 
@@ -17,7 +19,14 @@ export function makeBrowserApi<Cable>({
 		cableConfig,
 		prospects,
 	}: BrowserApiOptions<Cable>) {
+
 	const signaller = signalingApi.v0
+
+	const timeout = <R>(
+		label: string,
+		promise: Promise<R>,
+	) => deadline(10_000, label, async() => promise)
+
 	return {
 
 		/** somebody wants to join a room you are hosting.. will you allow it? */
@@ -35,8 +44,13 @@ export function makeBrowserApi<Cable>({
 
 		async produceOffer(agentId: string): Promise<any> {
 			return await prospects.attempt(agentId, async prospect => {
-				const {peer, cableWait} = prospect
-				cableConfig.offering(peer).then(cableWait.resolve)
+				const {peer, cableWait, conduitWait} = prospect
+				timeout("offer conduit", Conduit.offering(peer))
+					.then(conduitWait.resolve)
+					.catch(conduitWait.reject)
+				timeout("offer cable", cableConfig.offering(peer))
+					.then(cableWait.resolve)
+					.catch(cableWait.reject)
 				const offer = await peer.createOffer()
 				await peer.setLocalDescription(offer)
 				return offer
@@ -45,8 +59,13 @@ export function makeBrowserApi<Cable>({
 
 		async produceAnswer(agentId: string, offer: RTCSessionDescription): Promise<any> {
 			return await prospects.attempt(agentId, async prospect => {
-				const {peer, cableWait} = prospect
-				cableConfig.answering(peer).then(cableWait.resolve)
+				const {peer, cableWait, conduitWait} = prospect
+				timeout("answer conduit", Conduit.answering(peer))
+					.then(conduitWait.resolve)
+					.catch(conduitWait.reject)
+				timeout("answer cable", cableConfig.answering(peer))
+					.then(cableWait.resolve)
+					.catch(cableWait.reject)
 				await peer.setRemoteDescription(offer)
 				const answer = await peer.createAnswer()
 				await peer.setLocalDescription(answer)
@@ -69,6 +88,12 @@ export function makeBrowserApi<Cable>({
 		async waitUntilReady(agentId: string): Promise<void> {
 			return await prospects.attempt(agentId, async prospect => {
 				await prospect.readyPromise
+			})
+		},
+
+		async completed(agentId: string): Promise<void> {
+			return await prospects.attempt(agentId, async prospect => {
+				prospect.completedWait.resolve()
 			})
 		},
 	}

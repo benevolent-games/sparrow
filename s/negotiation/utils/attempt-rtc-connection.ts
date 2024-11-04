@@ -29,6 +29,11 @@ export async function attempt_rtc_connection(offerer: Partner, answerer: Partner
 			offerer.api.waitUntilReady(answererId),
 			answerer.api.waitUntilReady(offererId),
 		])
+
+		await Promise.all([
+			offerer.api.completed(answererId),
+			answerer.api.completed(offererId),
+		])
 	}
 	finally {
 		iceExchanger.stop()

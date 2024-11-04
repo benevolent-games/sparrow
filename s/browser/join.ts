@@ -12,7 +12,6 @@ export class Joined<Cable = StdDataCable> {
 		public self: AgentInfo,
 		public prospect: Prospect<Cable>,
 		public connection: Connection<Cable>,
-		public close: () => void,
 	) {}
 }
 
@@ -55,6 +54,12 @@ export async function join<Cable>(options: JoinOptions<Cable>) {
 
 	const [prospect, connection] = await ready.promise
 
-	return new Joined<Cable>(self, prospect, connection, close)
+	prospect.completedWait.promise
+		.then(() => {
+			console.log("completed; joiner closed the sparrow socket")
+			close()
+		})
+
+	return new Joined<Cable>(self, prospect, connection)
 }
 

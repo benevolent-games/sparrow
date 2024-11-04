@@ -19,9 +19,11 @@ export class Prospect<Cable> {
 	iceGatheredPromise: Promise<void>
 	peerPromise: Promise<RTCPeerConnection>
 	cableWait = deferPromise<Cable>()
+	conduitWait = deferPromise<RTCDataChannel>()
 
 	connection: Connection<Cable> | null = null
 	readyPromise: Promise<Connection<Cable>>
+	completedWait = deferPromise<void>()
 
 	onDisconnected = pubsub()
 
@@ -38,15 +40,17 @@ export class Prospect<Cable> {
 		this.readyPromise = (
 			Promise.all([
 				this.cableWait.promise,
+				this.conduitWait.promise,
 				this.peerPromise,
 				this.iceGatheredPromise,
 			])
 
-			.then(([cable]) => {
+			.then(([cable, conduit]) => {
 				const connection = this.connection = new Connection<Cable>(
 					this.agent,
 					this.peer,
 					cable,
+					conduit,
 					this.iceReport,
 				)
 				connection.onDisconnected(() => {
@@ -58,6 +62,7 @@ export class Prospect<Cable> {
 
 			.catch(error => {
 				this.onDisconnected.publish()
+				this.completedWait.reject(error)
 				throw error
 			})
 		)

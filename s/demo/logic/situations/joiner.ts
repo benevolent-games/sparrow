@@ -34,7 +34,6 @@ export class JoinerSituation {
 		this.joined.connection.cable.reliable.close()
 		this.joined.connection.cable.unreliable.close()
 		this.joined.connection.disconnect()
-		this.joined.close()
 	}
 }
 

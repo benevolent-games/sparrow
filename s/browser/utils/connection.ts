@@ -14,6 +14,7 @@ export class Connection<Cable = StdDataCable> {
 			public agent: AgentInfo,
 			public peer: RTCPeerConnection,
 			public cable: Cable,
+			public conduit: RTCDataChannel,
 			public iceReport: IceReport,
 		) {
 
