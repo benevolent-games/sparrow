@@ -64,6 +64,7 @@ h2, h3 {
 		display: flex;
 		padding: 0.5em;
 		gap: 1em;
+		justify-content: center;
 
 		> div {
 			display: flex;
@@ -91,6 +92,10 @@ h2, h3 {
 			}
 		}
 	}
+}
+
+[view="lobby"] {
+	margin-top: 0.5em;
 }
 
 `

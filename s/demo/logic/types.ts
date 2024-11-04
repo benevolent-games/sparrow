@@ -9,14 +9,31 @@ export type Lobby = {
 export type Person = {
 	agent: AgentInfo
 	details: UserDetails
-	connected: boolean
+	scenario: ConnectingScenario | ConnectedScenario | LocalScenario
+}
+
+export type ConnectingScenario = {
+	kind: "connecting"
 	iceCounts: {
 		hostSide: number
 		remoteSide: number
 	}
 }
 
+export type ConnectedScenario = {
+	kind: "connected"
+	iceCounts: {
+		hostSide: number
+		remoteSide: number
+	}
+}
+
+export type LocalScenario = {
+	kind: "local"
+}
+
 export type UserDetails = {
 	name: string
+	emoji: string
 }
 

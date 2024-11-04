@@ -1,15 +1,18 @@
 
 import {Map2, MemeNames, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
-import {Lobby, UserDetails} from "../types.js"
+import {Lobby, Person, UserDetails} from "../types.js"
 import {Hosted} from "../../../browser/host.js"
 import {Stats} from "../../../signaling/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
 import {StdDataCable} from "../../../browser/types.js"
 import {Prospect} from "../../../browser/utils/prospect.js"
+import {RandomUserEmojis} from "renraku"
 
 export class HostingSituation {
 	static async start(url: string, closed: () => void) {
 		const memeNames = new MemeNames()
+		const randomEmoji = new RandomUserEmojis()
+
 		const prospects = signal(new Set<Prospect<StdDataCable>>())
 		const details = new Map2<string, UserDetails>()
 
@@ -26,7 +29,10 @@ export class HostingSituation {
 				prospects.value.add(prospect)
 				prospects.publish()
 				prospect.iceReport.onChange(() => prospects.publish())
-				details.set(prospect.id, {name: memeNames.generate()})
+				details.set(prospect.id, {
+					name: memeNames.generate(),
+					emoji: randomEmoji.pull(),
+				})
 
 				// connection is successful
 				return () => {
@@ -40,6 +46,11 @@ export class HostingSituation {
 					}
 				}
 			},
+		})
+
+		details.set(hosted.self.id, {
+			name: memeNames.generate(),
+			emoji: randomEmoji.pull(),
 		})
 
 		const stats = signal(await hosted.getStats())
@@ -68,17 +79,36 @@ export class HostingSituation {
 	}
 
 	getLobby(): Lobby {
+		const selfPerson: Person = {
+			agent: this.hosted.self,
+			details: this.details.require(this.hosted.self.id),
+			scenario: {kind: "local"}
+		}
+
+		const remotePeople = [...this.prospects.value].map((prospect): Person => ({
+			agent: prospect.agent,
+			details: this.details.require(prospect.agent.id),
+			scenario: (!!prospect.connection
+				? {
+					kind: "connected",
+					iceCounts: {
+						hostSide: prospect.iceReport.locals.length,
+						remoteSide: prospect.iceReport.remotes.length,
+					},
+				}
+				: {
+					kind: "connecting",
+					iceCounts: {
+						hostSide: prospect.iceReport.locals.length,
+						remoteSide: prospect.iceReport.remotes.length,
+					},
+				}
+			),
+		}))
+
 		return {
 			hostId: this.hosted.self.id,
-			people: [...this.prospects.value].map(prospect => ({
-				agent: prospect.agent,
-				details: this.details.require(prospect.agent.id),
-				connected: !!prospect.connection,
-				iceCounts: {
-					hostSide: prospect.iceReport.locals.length,
-					remoteSide: prospect.iceReport.remotes.length,
-				},
-			})),
+			people: [selfPerson, ...remotePeople],
 		}
 	}
 

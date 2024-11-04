@@ -1,9 +1,9 @@
 
 import {html, shadowView, Signal} from "@benev/slate"
+import {Lobby} from "../../logic/types.js"
 
 import stylesCss from "./styles.css.js"
-import {Lobby} from "../../logic/types.js"
-import userSvg from "../../icons/tabler/user.svg.js"
+import themeCss from "../../theme.css.js"
 
 export const LobbyView = shadowView(use => (
 		selfId: string,
@@ -11,38 +11,42 @@ export const LobbyView = shadowView(use => (
 		killProspect?: (id: string) => void,
 	) => {
 
-	use.styles(stylesCss)
+	use.name("lobby")
+	use.styles(themeCss, stylesCss)
 
 	return html`
-		<ul x-group>
-			${lobby.value.people.map(({agent, details, connected, iceCounts}) => html`
+		<ul>
+			${lobby.value.people.map(({agent, details, scenario}) => html`
 				<li
-					?x-connected="${connected}"
+					?x-scenario="${scenario.kind}"
 					?x-self="${selfId === agent.id}"
 					?x-host="${lobby.value.hostId === agent.id}">
 
-					${userSvg}
-
-					<span x-id>
-						<span>${agent.reputation.slice(0, 4)}</span>
-						<span>${agent.id.slice(0, 4)}</span>
+					<span x-icon>
+						${details.emoji}
 					</span>
 
 					<span x-name>
 						${details.name}
 					</span>
 
-					<span x-ice>
-						<span>ICE:</span>
-						<span>${iceCounts.hostSide} local</span>
-						<span>${iceCounts.remoteSide} remote</span>
+					<span x-id>
+						${agent.reputation.slice(0, 4)}.${agent.id.slice(0, 4)}
 					</span>
 
-					${killProspect && html`
-						<span x-buttons>
-							<button @click="${() => killProspect(agent.id)}">disconnect</button>
+					<span x-endcap>
+						<span x-ice>
+							${scenario.kind === "connecting" || scenario.kind === "connected"
+								? `${scenario.iceCounts.hostSide}/${scenario.iceCounts.remoteSide}`
+								: `local`}
 						</span>
-					`}
+
+						${(scenario.kind !== "local" && killProspect) ? html`
+							<span x-buttons>
+								<button @click="${() => killProspect(agent.id)}">kick</button>
+							</span>
+						` : null}
+					</span>
 				</li>
 			`)}
 		</ul>

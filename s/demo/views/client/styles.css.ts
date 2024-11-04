@@ -6,7 +6,5 @@ export default css`
 	margin-top: 1em;
 }
 
-
-
 `
 
