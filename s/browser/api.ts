@@ -20,7 +20,7 @@ export function makeBrowserApi<Cable>({
 		prospects,
 	}: BrowserApiOptions<Cable>) {
 
-	const signaller = signalingApi.v0
+	const signaller = signalingApi.v1
 
 	const timeout = <R>(
 		label: string,

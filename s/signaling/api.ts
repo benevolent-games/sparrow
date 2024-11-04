@@ -9,7 +9,7 @@ import {negotiate_rtc_connection} from "../negotiation/negotiate-rtc-connection.
 export type SignalingApi = ReturnType<typeof makeSignalingApi>
 
 export const makeSignalingApi = (core: Core, agent: Agent) => ({
-	v0: {
+	v1: {
 		async hello() {
 			return agent.info()
 		},

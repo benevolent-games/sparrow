@@ -10,7 +10,7 @@ import {endpoint, loggers, webSocketRemote} from "renraku"
 export class Connected {
 	constructor(
 		public self: AgentInfo,
-		public signaller: SignalingApi["v0"],
+		public signaller: SignalingApi["v1"],
 		public close: () => void,
 	) {}
 }
@@ -44,7 +44,7 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 		),
 	})
 
-	const signaller = signalingApi.v0 as SignalingApi["v0"]
+	const signaller = signalingApi.v1 as SignalingApi["v1"]
 	const self = await signaller.hello()
 	const close = () => socket.close()
 	return new Connected(self, signaller, close)
