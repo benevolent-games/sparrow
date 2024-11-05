@@ -35,5 +35,6 @@ export type LocalScenario = {
 export type UserDetails = {
 	name: string
 	emoji: string
+	stable: boolean
 }
 

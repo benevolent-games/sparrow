@@ -19,8 +19,22 @@ export const LobbyView = shadowView(use => (
 			${lobby.people.map(({agent, details, scenario}) => html`
 				<li
 					x-scenario="${scenario.kind}"
-					?x-self="${selfId === agent.id}"
-					?x-host="${lobby.hostId === agent.id}">
+					?x-self="${agent.id === selfId}"
+					?x-host="${agent.id === lobby.hostId}"
+					?x-unstable="${!details.stable}"
+					>
+
+					${(agent.id === selfId)
+						? html`<span x-tag=self>You</span>`
+						: null}
+
+					${(scenario.kind === "connecting")
+						? html`<span x-tag=connecting>Connecting</span>`
+						: null}
+
+					${(!details.stable)
+						? html`<span x-tag=unstable>Unstable</span>`
+						: null}
 
 					<span x-icon>
 						${details.emoji}

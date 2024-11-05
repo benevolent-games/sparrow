@@ -1,12 +1,13 @@
 
+import {RandomUserEmojis} from "renraku"
 import {Map2, MemeNames, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
-import {Lobby, Person, UserDetails} from "../types.js"
+
 import {Hosted} from "../../../browser/host.js"
 import {Stats} from "../../../signaling/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
 import {StdDataCable} from "../../../browser/types.js"
+import {Lobby, Person, UserDetails} from "../types.js"
 import {Prospect} from "../../../browser/utils/prospect.js"
-import {RandomUserEmojis} from "renraku"
 
 export class HostingSituation {
 	static async start(url: string, closed: () => void) {
@@ -29,14 +30,20 @@ export class HostingSituation {
 				prospects.value.add(prospect)
 				prospects.publish()
 				prospect.iceReport.onChange(() => prospects.publish())
-				details.set(prospect.id, {
+				const userDetails: UserDetails = {
 					name: memeNames.generate(),
 					emoji: randomEmoji.pull(),
-				})
+					stable: true,
+				}
+				details.set(prospect.id, userDetails)
 
 				// connection is successful
-				return () => {
+				return connection => {
 					prospects.publish()
+					connection.onStabilityUpdate(stable => {
+						userDetails.stable = stable
+						prospects.publish()
+					})
 
 					// person has disconnected
 					return () => {
@@ -51,6 +58,7 @@ export class HostingSituation {
 		details.set(hosted.self.id, {
 			name: memeNames.generate(),
 			emoji: randomEmoji.pull(),
+			stable: true,
 		})
 
 		const stats = signal(await hosted.getStats())
@@ -145,9 +153,8 @@ export class HostingSituation {
 
 	async #broadcastLobby() {
 		const lobby = this.getLobby()
-		for (const connection of this.getConnections()) {
+		for (const connection of this.getConnections())
 			connection.cable.reliable.send(JSON.stringify(lobby))
-		}
 	}
 }
 

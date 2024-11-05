@@ -26,34 +26,37 @@ li {
 
 	&[x-self] {
 		background: #724399;
-		&::before {
-			content: "You";
-			display: block;
-			position: absolute;
-			right: calc(100% - 0.2em);
-			top: -0.2em;
-			padding: 0.3em;
-			border-radius: 0.5em;
-			background: #aa0;
-			font-weight: bold;
-			box-shadow: .1em .2em .3em #0004;
-		}
 	}
 
 	&[x-scenario="connecting"] {
 		background: transparent;
 		box-shadow: none;
-		&::after {
-			content: "Connecting";
-			display: block;
-			position: absolute;
-			right: -0.2em;
+	}
+
+	[x-tag] {
+		position: absolute;
+		padding: 0.3em;
+		border-radius: 0.5em;
+		background: #aaa4;
+		font-weight: bold;
+		box-shadow: .1em .2em .3em #0004;
+
+		&[x-tag=self] {
 			top: -0.2em;
-			padding: 0.3em;
-			border-radius: 0.5em;
+			right: calc(100% - 0.2em);
+			background: #aa0;
+		}
+
+		&[x-tag=connecting] {
+			top: -0.2em;
+			right: -0.2em;
 			background: #aaa4;
-			font-weight: bold;
-			box-shadow: .1em .2em .3em #0004;
+		}
+
+		&[x-tag=unstable] {
+			top: -0.2em;
+			right: 25%;
+			background: #8008;
 		}
 	}
 
