@@ -52,7 +52,7 @@ jobs:
       run: |
         mv node_modules x/node_modules
         mv s x/s
-        mv assets/x x/assets
+        mv assets x/assets
 
     - uses: actions/upload-pages-artifact@v3
       with:
