@@ -7,7 +7,8 @@
 	"type": "module",
 	"main": "x/index.js",
 	"files": [
-		"x"
+		"x",
+		"s"
 	],
 	"scripts": {
 		"build": "run-s build-clean build-code build-site build-links",
