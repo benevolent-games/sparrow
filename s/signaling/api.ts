@@ -1,4 +1,6 @@
 
+import {ExposedError} from "renraku"
+
 import {Core} from "./core.js"
 import {Stats} from "./types.js"
 import {Agent} from "./parts/agent.js"
@@ -30,8 +32,13 @@ export const makeSignalingApi = (core: Core, agent: Agent) => ({v1: {
 	},
 
 	async query(invite: string) {
-		const host = core.agents.invites.require(invite)
-		return host.info()
+		try {
+			const host = core.agents.invites.require(invite)
+			return host.info()
+		}
+		catch (error) {
+			throw new ExposedError(`invite ${invite.slice(0, 5)} is no longer available`)
+		}
 	},
 
 	async join(invite: string) {
