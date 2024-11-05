@@ -15,5 +15,5 @@ export * from "./browser/join.js"
 export * from "./browser/sparrow.js"
 export * from "./browser/types.js"
 
-export * from "./signaling/types.js"
+export * from "./signaller/types.js"
 

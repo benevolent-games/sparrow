@@ -3,7 +3,7 @@ import {RandomUserEmojis} from "renraku"
 import {Map2, MemeNames, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
 
 import {Hosted} from "../../../browser/host.js"
-import {Stats} from "../../../signaling/types.js"
+import {Stats} from "../../../signaller/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
 import {StdDataCable} from "../../../browser/types.js"
 import {Lobby, Person, UserDetails} from "../types.js"

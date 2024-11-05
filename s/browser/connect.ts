@@ -4,8 +4,8 @@ import {endpoint, loggers, webSocketRemote} from "renraku"
 
 import {stdOptions} from "./std/options.js"
 import {Prospects} from "./utils/prospects.js"
-import {AgentInfo} from "../signaling/types.js"
-import {SignalingApi} from "../signaling/api.js"
+import {AgentInfo} from "../signaller/types.js"
+import {SignalingApi} from "../signaller/api.js"
 import {makeBrowserApi} from "../browser/api.js"
 import {CableConfig, ConnectOptions} from "./types.js"
 

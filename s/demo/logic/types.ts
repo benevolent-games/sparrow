@@ -1,5 +1,5 @@
 
-import {AgentInfo} from "../../signaling/types.js"
+import {AgentInfo} from "../../signaller/types.js"
 
 export type Lobby = {
 	hostId: string

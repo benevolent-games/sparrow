@@ -2,7 +2,7 @@
 import {deadline} from "renraku"
 import {Conduit} from "./utils/conduit.js"
 import {BrowserApiOptions} from "./types.js"
-import {AgentInfo} from "../signaling/types.js"
+import {AgentInfo} from "../signaller/types.js"
 
 export type BrowserApi = ReturnType<typeof makeBrowserApi>
 

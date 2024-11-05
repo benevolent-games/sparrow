@@ -1,7 +1,7 @@
 
 import {connect} from "./connect.js"
 import {ConnectOptions} from "./types.js"
-import {AgentInfo, Stats} from "../signaling/types.js"
+import {AgentInfo, Stats} from "../signaller/types.js"
 
 export class Hosted {
 	constructor(

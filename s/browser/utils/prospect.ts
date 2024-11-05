@@ -5,7 +5,7 @@ import {IceReport} from "./ice-report.js"
 import {Connection} from "./connection.js"
 import {gather_ice} from "./gather-ice.js"
 import {ProspectOptions} from "../types.js"
-import {AgentInfo} from "../../signaling/types.js"
+import {AgentInfo} from "../../signaller/types.js"
 import {wait_for_connection} from "./wait-for-connection.js"
 
 export class Prospect<Cable> {

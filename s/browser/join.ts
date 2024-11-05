@@ -3,7 +3,7 @@ import {deferPromise} from "@benev/slate"
 
 import {connect} from "./connect.js"
 import {Prospect} from "./utils/prospect.js"
-import {AgentInfo} from "../signaling/types.js"
+import {AgentInfo} from "../signaller/types.js"
 import {Connection} from "./utils/connection.js"
 import {JoinOptions, StdDataCable} from "./types.js"
 

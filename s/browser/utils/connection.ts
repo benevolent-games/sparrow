@@ -2,7 +2,7 @@
 import {ev, pubsub} from "@benev/slate"
 import {StdDataCable} from "../types.js"
 import {IceReport} from "./ice-report.js"
-import {AgentInfo} from "../../signaling/types.js"
+import {AgentInfo} from "../../signaller/types.js"
 
 export class Connection<Cable = StdDataCable> {
 	readonly onDisconnected = pubsub()
