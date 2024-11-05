@@ -134,5 +134,5 @@
     cableConfig: myCableConfig,
   })
   ```
-- Note that Sparrow creates its own special utility rtc data channel called the `conduit`, which is reserved for sparrow internal functionality (it sends "bye" notifications when you call `connection.disconnect` to immediately notify the other side)
+- Note that Sparrow creates its own special utility rtc data channel called the `conduit`, which is reserved for sparrow internal functionality (it sends "bye" notifications when you call `connection.disconnect()` to immediately notify the other side)
 
