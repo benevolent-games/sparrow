@@ -1,7 +1,7 @@
 
 import {ev} from "@benev/slate"
 
-export const DataChanneler = {
+export const DataChanneller = {
 
 	async offering(peer: RTCPeerConnection, label: string, options?: RTCDataChannelInit) {
 		return new Promise<RTCDataChannel>((resolve, reject) => {

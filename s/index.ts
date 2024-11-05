@@ -9,7 +9,7 @@ export * from "./browser/std/url.js"
 export * from "./browser/utils/conduit.js"
 export * from "./browser/utils/connection.js"
 export * from "./browser/utils/prospect.js"
-export * from "./browser/utils/data-channeler.js"
+export * from "./browser/utils/data-channeller.js"
 
 export * from "./browser/connect.js"
 export * from "./browser/host.js"

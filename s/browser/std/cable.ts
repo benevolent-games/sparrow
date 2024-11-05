@@ -1,16 +1,16 @@
 
 import {concurrent} from "@benev/slate"
 import {asCableConfig, StdCable} from "../types.js"
-import {DataChanneler} from "../utils/data-channeler.js"
+import {DataChanneller} from "../utils/data-channeller.js"
 
 export const stdCable = () => asCableConfig<StdCable>({
 
 	offering: async peer => {
 		return concurrent({
-			reliable: DataChanneler.offering(peer, "reliable", {
+			reliable: DataChanneller.offering(peer, "reliable", {
 				ordered: true,
 			}),
-			unreliable: DataChanneler.offering(peer, "unreliable", {
+			unreliable: DataChanneller.offering(peer, "unreliable", {
 				ordered: false,
 				maxRetransmits: 0,
 			}),
@@ -19,8 +19,8 @@ export const stdCable = () => asCableConfig<StdCable>({
 
 	answering: async peer => {
 		return concurrent({
-			reliable: DataChanneler.answering(peer, "reliable"),
-			unreliable: DataChanneler.answering(peer, "unreliable"),
+			reliable: DataChanneller.answering(peer, "reliable"),
+			unreliable: DataChanneller.answering(peer, "unreliable"),
 		})
 	},
 })
