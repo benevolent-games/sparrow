@@ -6,10 +6,10 @@ export type AgentInfo = {
 
 export type Stats = {
 	agents: number
-	hourly: StatsHourly
+	daily: StatsTimeframe
 }
 
-export type StatsHourly = {
+export type StatsTimeframe = {
 	connections: number
 	failures: number
 }

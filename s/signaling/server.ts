@@ -34,5 +34,5 @@ const server = new WebSocketServer({
 	},
 })
 
-server.listen(port)
+server.listen(port, () => loggers.log(`listening on ${port}`))
 

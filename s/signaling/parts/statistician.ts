@@ -1,13 +1,13 @@
 
 import {Agents} from "./agents.js"
-import {Stats, StatsHourly} from "../types.js"
+import {Stats, StatsTimeframe} from "../types.js"
 
 type StatName = "connection" | "failure"
 type StatEvent = [number, StatName]
 
 export class Statistician {
 	#events: StatEvent[] = []
-	#hourly: StatsHourly = {
+	#daily: StatsTimeframe = {
 		failures: 0,
 		connections: 0,
 	}
@@ -15,24 +15,27 @@ export class Statistician {
 	constructor(private agents: Agents) {}
 
 	#recompute() {
-		const hourAgo = Date.now() - (1000 * 60 * 60)
-		const hourly: StatsHourly = {
+		const hour = 1000 * 60 * 60
+		const dayAgo = Date.now() - (24 * hour)
+
+		const daily: StatsTimeframe = {
 			failures: 0,
 			connections: 0,
 		}
+
 		this.#events = this.#events.filter(([timestamp, stat]) => {
 			if (stat === "connection")
-				hourly.connections++
+				daily.connections++
 			if (stat === "failure")
-				hourly.failures++
-			return timestamp >= hourAgo
+				daily.failures++
+			return timestamp >= dayAgo
 		})
-		this.#hourly = hourly
+		this.#daily = daily
 	}
 
 	stats(): Stats {
 		return {
-			hourly: this.#hourly,
+			daily: this.#daily,
 			agents: this.agents.size,
 		}
 	}

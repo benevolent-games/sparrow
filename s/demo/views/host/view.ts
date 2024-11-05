@@ -59,16 +59,16 @@ export const HostView = shadowView(use => (situation: HostingSituation) => {
 						</div>
 						<ul>
 							<li>
-								<span>Hosting</span>
+								<span>Hosting now</span>
 								<code>${stats.agents}</code>
 							</li>
 							<li>
-								<span>Hourly connections</span>
-								<code>${stats.hourly.connections}</code>
+								<span>Daily connections</span>
+								<code>${stats.daily.connections}</code>
 							</li>
 							<li>
-								<span>Hourly failures</span>
-								<code>${stats.hourly.failures}</code>
+								<span>Daily failures</span>
+								<code>${stats.daily.failures}</code>
 							</li>
 						</ul>
 					</div>
