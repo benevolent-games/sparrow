@@ -6,5 +6,5 @@
 source $HOME/.nvm/nvm.sh
 cd $HOME/app
 npm ci --omit=dev
-pm2 restart app || pm2 start "npm start" --name app
+pm2 restart app || pm2 start "node x/signaller/server.js 8000" --name app
 
