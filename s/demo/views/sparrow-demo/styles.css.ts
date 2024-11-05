@@ -9,5 +9,10 @@ export default css`
 	align-items: center;
 }
 
+slate-view {
+	display: block;
+	width: 100%;
+}
+
 `
 

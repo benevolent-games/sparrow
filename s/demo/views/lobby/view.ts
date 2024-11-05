@@ -45,7 +45,7 @@ export const LobbyView = shadowView(use => (
 					</span>
 
 					<span x-id>
-						${agent.reputation.slice(0, 4)}.${agent.id.slice(0, 4)}
+						${agent.reputation.slice(0, 4)}:${agent.id.slice(0, 4)}
 					</span>
 
 					<span x-ice>
