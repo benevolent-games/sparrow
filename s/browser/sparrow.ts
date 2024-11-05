@@ -1,77 +1,29 @@
 
-import {SignalingApi} from "../signaling/api.js"
-import {AgentConfidential} from "../signaling/types.js"
-import {Connections} from "../negotiation/utils/connections.js"
+import {host} from "./host.js"
+import {join} from "./join.js"
+import {connect} from "./connect.js"
+import {asCableConfig} from "./types.js"
+import {invites} from "./utils/invites.js"
+import {mixedId} from "./utils/mixed-id.js"
 
-import {join} from "./std/join.js"
-import {connect} from "./std/connect.js"
-import {everybody} from "./std/everybody.js"
+import {stdCable} from "./std/cable.js"
+import {stdOptions} from "./std/options.js"
+import {rtcConfig, stdRtcConfig} from "./std/rtc-config.js"
+import {stdUrl} from "./std/url.js"
 
-import {stdUrl} from "./std/std-url.js"
-import {stdOptions} from "./std/std-options.js"
-import {stdRtcConfig} from "./std/std-rtc-config.js"
-import {stdDataCable} from "./std/std-data-cable.js"
-import {StdDataCable} from "../negotiation/types.js"
-
-export class Sparrow<Cable = StdDataCable> {
-	static join = join
+export class Sparrow {
 	static connect = connect
-	static everybody = everybody
-	static stdUrl = stdUrl
+	static host = host
+	static join = join
+
+	static stdCable = stdCable
 	static stdOptions = stdOptions
 	static stdRtcConfig = stdRtcConfig
-	static stdDataCable = stdDataCable
+	static stdUrl = stdUrl
 
-	#connections: Connections<Cable>
-
-	constructor(
-			private socket: WebSocket,
-			private signalingApi: SignalingApi,
-			public agent: AgentConfidential,
-			connections: Connections<Cable>,
-		) {
-		this.#connections = connections
-	}
-
-	get id() { return this.agent.id }
-	get invite() { return this.agent.invite }
-	get reputation() { return this.agent.reputation }
-
-	get onConnectionAdded() { return this.#connections.onConnectionAdded }
-	get onConnectionRemoved() { return this.#connections.onConnectionRemoved }
-	get onConnected() { return this.#connections.onConnected }
-	get onChange() { return this.#connections.onChange }
-
-	get connections() {
-		return [...this.#connections.values()]
-	}
-
-	get connecting() {
-		return this.connections
-			.filter(connection => !connection.connected)
-	}
-
-	get connected() {
-		return [...this.#connections.values()]
-			.map(connection => connection.connected)
-			.filter(connected => !!connected)
-	}
-
-	async stats() {
-		return await this.signalingApi.stats()
-	}
-
-	async join(invite: string) {
-		const agent = await this.signalingApi.join(invite)
-		if (agent) {
-			const connection = this.#connections.require(agent.id)
-			return await connection.connectedPromise
-		}
-		else return null
-	}
-
-	close() {
-		this.socket.close()
-	}
+	static rtcConfig = rtcConfig
+	static invites = invites
+	static mixedId = mixedId
+	static asCableConfig = asCableConfig
 }
 

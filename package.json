@@ -16,23 +16,24 @@
 		"build-site": "turtle ssg --in=s,x --out=x",
 		"build-links": "ln -s \"$(realpath s)\" x/s && ln -s \"$(realpath assets)\" x/assets",
 		"watch": "turtle watch -v --in=s,x --out=x",
-		"start": "run-p start-web-server start-signal-server",
-		"start-web-server": "http-server x",
-		"start-signal-server": "SPARROW_SALT=a5ee36a21e3d624ca6e0940c08cd380e51768124b5cbb2f971ccfaa4cf12bba8 node x/signaling/server.js 8000",
+		"start": "run-p start-http start-signal-server",
+		"start-http": "http-server x",
+		"start-signaller": "SPARROW_SALT=a5ee36a21e3d624ca6e0940c08cd380e51768124b5cbb2f971ccfaa4cf12bba8 node x/signaller/server.js 8000 debug",
+		"sig": "npm run start-signaller -s",
 		"test": "cynic node --label='sparrow-rtc test suite' x/tests.test.js",
 		"test-watch": "chokidar 'x/**/*.js' -c 'npm test'"
 	},
 	"dependencies": {
-		"@benev/slate": "^0.2.8",
-		"renraku": "^0.3.0"
+		"@benev/slate": "^0.2.9",
+		"renraku": "^0.4.0-1"
 	},
 	"devDependencies": {
 		"@benev/turtle": "^0.6.3",
-		"@types/node": "^22.8.4",
+		"@types/node": "^22.9.0",
 		"chokidar": "^4.0.1",
 		"chokidar-cli": "^3.0.0",
 		"cynic": "^0.2.1",
-		"es-module-shims": "^1.10.0",
+		"es-module-shims": "^1.10.1",
 		"http-server": "^14.1.1",
 		"importly": "^0.2.3",
 		"mkdirp": "^3.0.1",

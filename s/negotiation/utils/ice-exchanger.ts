@@ -37,10 +37,10 @@ export class IceExchanger {
 
 		await Promise.all([
 			Promise.all(
-				toAlice.map(ice => alice.api.acceptIceCandidate(bob.agent.id, ice))
+				toAlice.map(ice => alice.api.v1.acceptIceCandidate(bob.agent.id, ice))
 			),
 			Promise.all(
-				toBob.map(ice => bob.api.acceptIceCandidate(alice.agent.id, ice))
+				toBob.map(ice => bob.api.v1.acceptIceCandidate(alice.agent.id, ice))
 			),
 		])
 	}

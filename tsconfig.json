@@ -2,18 +2,21 @@
 	"compilerOptions": {
 		"rootDir": "s",
 		"outDir": "x",
-		"target": "es2021",
-		"lib": ["esnext", "dom"],
-		"module": "esnext",
-		"moduleResolution": "node",
+
+		"lib": ["es2023", "dom"],
+		"module": "node16",
+		"target": "es2022",
+
 		"strict": true,
+		"esModuleInterop": true,
 		"skipLibCheck": true,
+		"moduleResolution": "node16",
+
 		"sourceMap": true,
 		"declaration": true
 	},
 	"include": [
-		"s/**/*.ts",
-		"s/**/*.js"
+		"s/**/*"
 	],
 	"exclude": [
 		"s/**/_*"

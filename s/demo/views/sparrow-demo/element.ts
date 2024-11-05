@@ -2,48 +2,22 @@
 import {shadowComponent, loading} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
-import {HostView} from "../host-view/view.js"
-import {isLocal} from "../../utils/is-local.js"
-import {ClientView} from "../client-view/view.js"
-import {Sparrow} from "../../../browser/sparrow.js"
-import {parseInvite} from "../../utils/parse-invite.js"
-import {Connected} from "../../../negotiation/utils/connected.js"
+import {HostView} from "../host/view.js"
+import {ClientView} from "../client/view.js"
+import {startup} from "../../logic/startup.js"
+import {HostingSituation} from "../../logic/situations/hosting.js"
 
 export const SparrowDemo = shadowComponent(use => {
 	use.styles(stylesCss)
 
-	const invite = use.once(() => parseInvite(location.hash))
-
-	const url = use.once(() =>
-		isLocal()
-			? `ws://${location.hostname}:8000/`
-			: Sparrow.stdUrl()
-	)
-
-	const op = use.load<Sparrow | Connected>(async() => {
-		return invite
-
-			? await Sparrow.join({
-				url,
-				invite,
-				hostClosed: () => {
-					op.setError("the connection to sparrow died")
-				},
-			})
-
-			: await Sparrow.connect({
-				url,
-				sparrowClosed: () => {
-					console.log("connection died!!")
-					op.setError("the connection to sparrow died")
-				},
-			})
+	const situationOp = use.load(async() => {
+		return await startup(() => situationOp.setError("disconnected"))
 	})
 
-	return loading.braille(op, x => {
-		return x instanceof Sparrow
-			? HostView([x, url])
-			: ClientView([x, url])
+	return loading.braille(situationOp, situation => {
+		return situation instanceof HostingSituation
+			? HostView([situation])
+			: ClientView([situation])
 	})
 })
 

@@ -32,6 +32,7 @@ export default template(async basic => {
 
 			<footer>
 				<p>Sparrow makes WebRTC easy, learn more on the <a href="https://github.com/chase-moskal/sparrow-rtc" target=_blank>GitHub</a> page.</p>
+				<p><a href="/" target=_blank>Click here</a> to host a new session.</p>
 			</footer>
 		`,
 	})
