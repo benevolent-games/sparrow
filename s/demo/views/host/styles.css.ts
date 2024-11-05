@@ -65,6 +65,7 @@ h2, h3 {
 		padding: 0.5em;
 		gap: 1em;
 		justify-content: center;
+		flex-wrap: wrap;
 
 		> div {
 			display: flex;

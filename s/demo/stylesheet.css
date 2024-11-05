@@ -64,7 +64,7 @@
 	.title {
 		display: flex;
 		align-items: center;
-		font-size: 1rem;
+		font-size: min(1.5vw, 1rem);
 
 		img {
 			display: block;
@@ -84,6 +84,12 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: start;
+		width: 40em;
+		max-width: 96%;
+	}
+
+	sparrow-demo {
+		width: 100%;
 	}
 
 	footer {

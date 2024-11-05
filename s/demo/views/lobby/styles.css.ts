@@ -10,7 +10,6 @@ ul {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
-
 }
 
 li {
@@ -18,6 +17,7 @@ li {
 	display: flex;
 	align-items: center;
 	gap: 1em;
+	flex-wrap: wrap;
 
 	background: #443f64;
 	border-radius: 0.3em;
