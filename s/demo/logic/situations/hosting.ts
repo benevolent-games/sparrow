@@ -1,11 +1,11 @@
 
 import {RandomUserEmojis} from "renraku"
-import {Map2, MemeNames, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
+import {Map2, MemeNames, Pubsub, pubsub, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
 
 import {Hosted} from "../../../browser/host.js"
 import {Stats} from "../../../signaller/types.js"
-import {Sparrow} from "../../../browser/sparrow.js"
 import {StdCable} from "../../../browser/types.js"
+import {Sparrow} from "../../../browser/sparrow.js"
 import {Lobby, Person, UserDetails} from "../types.js"
 import {Prospect} from "../../../browser/utils/prospect.js"
 
@@ -16,12 +16,13 @@ export class HostingSituation {
 
 		const prospects = signal(new Set<Prospect<StdCable>>())
 		const details = new Map2<string, UserDetails>()
+		const onClosed = pubsub()
 
 		const hosted = await Sparrow.host<StdCable>({
 			url,
 			allow: async() => true,
 			closed: () => {
-				hosting.closed()
+				onClosed.publish()
 				closed()
 			},
 
@@ -62,12 +63,11 @@ export class HostingSituation {
 		})
 
 		const stats = signal(await hosted.getStats())
-		const hosting = new this(url, hosted, prospects, stats, details)
-		return hosting
+		return new this(url, hosted, prospects, stats, details, onClosed)
 	}
 
 	repeater: Repeater
-	lobby: Signal<Lobby> = signal(this.getLobby())
+	lobby: Signal<Lobby>
 	stopUpdates: () => void
 
 	constructor(
@@ -76,14 +76,16 @@ export class HostingSituation {
 			public prospects: Signal<Set<Prospect<StdCable>>>,
 			public stats: Signal<Stats>,
 			public details: Map2<string, UserDetails>,
+			onClosed: Pubsub,
 		) {
 
+		this.lobby = signals.computed(() => this.getLobby())
 		this.repeater = repeater(5_000, async() => void await Promise.all([
 			this.#refreshStats(),
 			this.#broadcastLobby(),
 		]))
-		this.lobby = signals.computed(() => this.getLobby())
 		this.stopUpdates = this.lobby.on(() => this.#broadcastLobby())
+		onClosed(() => this.#closed())
 	}
 
 	getLobby(): Lobby {
@@ -120,7 +122,7 @@ export class HostingSituation {
 		}
 	}
 
-	closed() {
+	#closed() {
 		this.repeater.stop()
 		this.stopUpdates()
 	}
