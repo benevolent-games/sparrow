@@ -54,11 +54,13 @@ export const LobbyView = shadowView(use => (
 							: `host`}
 					</span>
 
-					<span x-buttons>
-						${(scenario.kind !== "local" && killProspect) ? html`
-							<button @click="${() => killProspect(agent.id)}">kick</button>
-						` : null}
-					</span>
+					${!!killProspect ? html`
+						<span x-buttons>
+							${(scenario.kind !== "local" && killProspect) ? html`
+								<button x-kick @click="${() => killProspect(agent.id)}">kick</button>
+							` : null}
+						</span>
+					` : null}
 				</li>
 			`)}
 		</ul>

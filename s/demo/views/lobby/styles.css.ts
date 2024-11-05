@@ -90,6 +90,13 @@ li {
 	[x-buttons] {
 		width: 3em;
 		text-align: center;
+
+		[x-kick] {
+			&:is(:hover, :focus) {
+				color: #f00;
+				background: #400;
+			}
+		}
 	}
 }
 
