@@ -6,5 +6,9 @@ export default css`
 	margin-top: 1em;
 }
 
+h2 {
+	text-align: center;
+}
+
 `
 

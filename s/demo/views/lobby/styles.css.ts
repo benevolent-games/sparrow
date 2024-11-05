@@ -30,7 +30,7 @@ li {
 			content: "You";
 			display: block;
 			position: absolute;
-			left: -1.5em;
+			right: calc(100% - 0.2em);
 			top: -0.2em;
 			padding: 0.3em;
 			border-radius: 0.5em;
@@ -51,7 +51,7 @@ li {
 			top: -0.2em;
 			padding: 0.3em;
 			border-radius: 0.5em;
-			background: #aaa;
+			background: #aaa4;
 			font-weight: bold;
 			box-shadow: .1em .2em .3em #0004;
 		}

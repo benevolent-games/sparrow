@@ -1,17 +1,21 @@
 
 import {html, shadowView} from "@benev/slate"
+
 import stylesCss from "./styles.css.js"
+import {LobbyView} from "../lobby/view.js"
 import {JoinerSituation} from "../../logic/situations/joiner.js"
 
 export const ClientView = shadowView(use => (situation: JoinerSituation) => {
 	use.styles(stylesCss)
 
-	const {id} = situation.joined.self
+	const {self, host} = situation.joined
+	const lobby = situation.lobby.value
 
 	return html`
-		<section>
-			<h2>Joined <code>${id.slice(0, 8)}</code></h2>
-		</section>
+		<h2>Joined <code>${host.id.slice(0, 5)}</code></h2>
+		${lobby
+			? LobbyView([self.id, lobby])
+			: null}
 	`
 })
 

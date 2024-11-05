@@ -1,5 +1,5 @@
 
-import {html, shadowView, Signal} from "@benev/slate"
+import {html, shadowView} from "@benev/slate"
 import {Lobby} from "../../logic/types.js"
 
 import stylesCss from "./styles.css.js"
@@ -7,7 +7,7 @@ import themeCss from "../../theme.css.js"
 
 export const LobbyView = shadowView(use => (
 		selfId: string,
-		lobby: Signal<Lobby>,
+		lobby: Lobby,
 		killProspect?: (id: string) => void,
 	) => {
 
@@ -16,11 +16,11 @@ export const LobbyView = shadowView(use => (
 
 	return html`
 		<ul>
-			${lobby.value.people.map(({agent, details, scenario}) => html`
+			${lobby.people.map(({agent, details, scenario}) => html`
 				<li
 					x-scenario="${scenario.kind}"
 					?x-self="${selfId === agent.id}"
-					?x-host="${lobby.value.hostId === agent.id}">
+					?x-host="${lobby.hostId === agent.id}">
 
 					<span x-icon>
 						${details.emoji}

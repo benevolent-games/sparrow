@@ -9,13 +9,16 @@ import {JoinOptions, StdDataCable} from "./types.js"
 
 export class Joined<Cable = StdDataCable> {
 	constructor(
+		public invite: string,
 		public self: AgentInfo,
+		public host: AgentInfo,
 		public prospect: Prospect<Cable>,
 		public connection: Connection<Cable>,
 	) {}
 }
 
 export async function join<Cable>(options: JoinOptions<Cable>) {
+	const {invite} = options
 	const allow = options.allow ?? (async() => true)
 	const connecting = options.connecting ?? (() => () => () => {})
 	const ready = deferPromise<[Prospect<Cable>, Connection<Cable>]>()
@@ -60,6 +63,6 @@ export async function join<Cable>(options: JoinOptions<Cable>) {
 			close()
 		})
 
-	return new Joined<Cable>(self, prospect, connection)
+	return new Joined<Cable>(invite, self, host, prospect, connection)
 }
 

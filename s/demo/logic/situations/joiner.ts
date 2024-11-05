@@ -10,10 +10,7 @@ export class JoinerSituation {
 		const joined = await Sparrow.join<StdDataCable>({
 			url,
 			invite,
-			disconnected: () => {
-				console.log("you've been disconnected")
-				disconnected()
-			},
+			disconnected,
 		})
 		return new JoinerSituation(url, joined)
 	}
@@ -24,6 +21,7 @@ export class JoinerSituation {
 			public url: string,
 			public joined: Joined
 		) {
+
 		joined.connection.cable.reliable.onmessage = event => {
 			this.lobby.value = JSON.parse(event.data)
 			console.log("got lobby", this.lobby.value)
