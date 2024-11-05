@@ -1,11 +1,9 @@
 #!/bin/bash
 
-#
 # don't run this locally on your dev machine,
 # it's supposed to be run on the signaller server in the cloud
-#
 
-source $HOME/.bashrc
+source $HOME/.nvm/nvm.sh
 cd $HOME/app
 npm ci --omit=dev
 pm2 restart app || pm2 start "npm start" --name app
