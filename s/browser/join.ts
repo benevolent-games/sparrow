@@ -28,16 +28,13 @@ export async function join<Cable>(options: JoinOptions<Cable>) {
 		allow,
 		closed: () => {},
 		connecting: prospect => {
-			console.log("NEW PROSPECT")
 			const next = connecting(prospect)
 
 			return connection => {
-				console.log("NEW CONNECTION")
 				const disconnected = next(connection)
 				ready.resolve([prospect, connection])
 
 				return () => {
-					console.log("DISCONNECTED")
 					disconnected()
 					options.disconnected()
 				}
@@ -58,10 +55,7 @@ export async function join<Cable>(options: JoinOptions<Cable>) {
 	const [prospect, connection] = await ready.promise
 
 	prospect.completedWait.promise
-		.then(() => {
-			console.log("completed; joiner closed the sparrow socket")
-			close()
-		})
+		.then(close)
 
 	return new Joined<Cable>(invite, self, host, prospect, connection)
 }

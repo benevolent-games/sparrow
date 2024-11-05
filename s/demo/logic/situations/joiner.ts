@@ -24,7 +24,6 @@ export class JoinerSituation {
 
 		joined.connection.cable.reliable.onmessage = event => {
 			this.lobby.value = JSON.parse(event.data)
-			console.log("got lobby", this.lobby.value)
 		}
 	}
 

@@ -13,26 +13,19 @@ export class Prospects<Cable> extends Pool<Prospect<Cable>> {
 			throw new Error("already engaged with this agent")
 
 		// create the new prospect
-		console.log("PROSPECT: CREATE")
 		const prospect = new Prospect<Cable>(options)
 		this.add(prospect)
 		const connected = this.connecting(prospect)
 
 		// remove the prospect when it dies
 		prospect.onDisconnected(() => {
-			console.log("PROSPECT: ON DISCONNECTED")
 			this.remove(prospect)
 		})
 
 		// wiring up the prospect to the provided connected fn
 		prospect.readyPromise.then(connection => {
-			console.log("PROSPECT: CONNECTED")
 			const disconnected = connected(connection)
-
-			connection.onDisconnected(() => {
-				console.log("CONNECTION: DISCONNECTED")
-				disconnected()
-			})
+			connection.onDisconnected(disconnected)
 		})
 
 		return prospect

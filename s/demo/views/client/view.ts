@@ -8,8 +8,8 @@ import {JoinerSituation} from "../../logic/situations/joiner.js"
 export const ClientView = shadowView(use => (situation: JoinerSituation) => {
 	use.styles(stylesCss)
 
-	const {self, host} = situation.joined
 	const lobby = situation.lobby.value
+	const {self, host} = situation.joined
 
 	return html`
 		<h2>Joined <code>${host.id.slice(0, 5)}</code></h2>
