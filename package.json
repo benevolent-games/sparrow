@@ -25,11 +25,11 @@
 	},
 	"dependencies": {
 		"@benev/slate": "^0.2.9",
-		"renraku": "^0.4.0-0"
+		"renraku": "^0.4.0-1"
 	},
 	"devDependencies": {
 		"@benev/turtle": "^0.6.3",
-		"@types/node": "^22.8.7",
+		"@types/node": "^22.9.0",
 		"chokidar": "^4.0.1",
 		"chokidar-cli": "^3.0.0",
 		"cynic": "^0.2.1",
