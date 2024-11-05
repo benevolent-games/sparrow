@@ -26,7 +26,7 @@ export type CableConfig<Cable> = {
 	answering: (peer: RTCPeerConnection) => Promise<Cable>
 }
 
-export type StdDataCable = {
+export type StdCable = {
 	reliable: RTCDataChannel
 	unreliable: RTCDataChannel
 }

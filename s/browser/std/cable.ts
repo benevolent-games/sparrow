@@ -1,9 +1,9 @@
 
 import {concurrent} from "@benev/slate"
-import {asCableConfig, StdDataCable} from "../types.js"
+import {asCableConfig, StdCable} from "../types.js"
 import {DataChanneler} from "../utils/data-channeler.js"
 
-export const stdDataCable = () => asCableConfig<StdDataCable>({
+export const stdCable = () => asCableConfig<StdCable>({
 
 	offering: async peer => {
 		return concurrent({

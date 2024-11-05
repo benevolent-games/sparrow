@@ -5,7 +5,7 @@ import {Map2, MemeNames, repeater, Repeater, signal, Signal, signals} from "@ben
 import {Hosted} from "../../../browser/host.js"
 import {Stats} from "../../../signaller/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
-import {StdDataCable} from "../../../browser/types.js"
+import {StdCable} from "../../../browser/types.js"
 import {Lobby, Person, UserDetails} from "../types.js"
 import {Prospect} from "../../../browser/utils/prospect.js"
 
@@ -14,10 +14,10 @@ export class HostingSituation {
 		const memeNames = new MemeNames()
 		const randomEmoji = new RandomUserEmojis()
 
-		const prospects = signal(new Set<Prospect<StdDataCable>>())
+		const prospects = signal(new Set<Prospect<StdCable>>())
 		const details = new Map2<string, UserDetails>()
 
-		const hosted = await Sparrow.host<StdDataCable>({
+		const hosted = await Sparrow.host<StdCable>({
 			url,
 			allow: async() => true,
 			closed: () => {
@@ -73,7 +73,7 @@ export class HostingSituation {
 	constructor(
 			public url: string,
 			public hosted: Hosted,
-			public prospects: Signal<Set<Prospect<StdDataCable>>>,
+			public prospects: Signal<Set<Prospect<StdCable>>>,
 			public stats: Signal<Stats>,
 			public details: Map2<string, UserDetails>,
 		) {

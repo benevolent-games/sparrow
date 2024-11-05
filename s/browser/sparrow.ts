@@ -6,7 +6,7 @@ import {asCableConfig} from "./types.js"
 import {invites} from "./utils/invites.js"
 import {mixedId} from "./utils/mixed-id.js"
 
-import {stdDataCable} from "./std/data-cable.js"
+import {stdCable} from "./std/cable.js"
 import {stdOptions} from "./std/options.js"
 import {rtcConfig, stdRtcConfig} from "./std/rtc-config.js"
 import {stdUrl} from "./std/url.js"
@@ -16,7 +16,7 @@ export class Sparrow {
 	static host = host
 	static join = join
 
-	static stdDataCable = stdDataCable
+	static stdCable = stdCable
 	static stdOptions = stdOptions
 	static stdRtcConfig = stdRtcConfig
 	static stdUrl = stdUrl

@@ -5,9 +5,9 @@ import {connect} from "./connect.js"
 import {Prospect} from "./utils/prospect.js"
 import {AgentInfo} from "../signaller/types.js"
 import {Connection} from "./utils/connection.js"
-import {JoinOptions, StdDataCable} from "./types.js"
+import {JoinOptions, StdCable} from "./types.js"
 
-export class Joined<Cable = StdDataCable> {
+export class Joined<Cable = StdCable> {
 	constructor(
 		public invite: string,
 		public self: AgentInfo,

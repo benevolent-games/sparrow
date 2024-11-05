@@ -96,7 +96,7 @@
   // import various helpers
   import {Sparrow, DataChanneler, concurrent} from "sparrow-rtc"
 
-  // define your own cable properties (default shown, available as StdDataCable)
+  // define your own cable properties (default shown, available as StdCable)
   export type MyCable = {
     reliable: RTCDataChannel
     unreliable: RTCDataChannel
