@@ -11,6 +11,8 @@ const port = process.argv[2]
 	? parseInt(process.argv[2])
 	: 8000
 
+const debug = !!process.argv[3]
+
 const salt = process.env["SPARROW_SALT"]
 
 if (!salt)
@@ -24,6 +26,11 @@ const server = new WebSocketServer({
 		const emoji = emojis.pull()
 		const remoteLogging = loggers.label({remote: true, label: `${emoji} <-`, prefix: "client"})
 		const localLogging = loggers.label({remote: false, label: `${emoji} ->`, prefix: "server"})
+
+		if (!debug) {
+			remoteLogging.onCall = () => {}
+			localLogging.onCall = () => {}
+		}
 
 		const browserApi = remote<BrowserApi>(remoteEndpoint, remoteLogging)
 		const {agent, signalingApi} = await core.acceptAgent(ip, browserApi, close)
