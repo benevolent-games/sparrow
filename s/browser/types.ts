@@ -31,13 +31,13 @@ export type StdDataCable = {
 	unreliable: RTCDataChannel
 }
 
-export function asCableConfig<E extends CableConfig<unknown>>(e: E) {
-	return e
+export function asCableConfig<Cable>(config: CableConfig<Cable>) {
+	return config
 }
 
 ///////////////////////////////////////////
 
-export type BasicOptions<Cable> = {
+export type CommonOptions<Cable> = {
 	url: string
 	rtcConfig: RTCConfiguration
 	cableConfig: CableConfig<Cable>
@@ -47,14 +47,14 @@ export type ConnectOptions<Cable> = {
 	allow: AllowFn
 	connecting: ConnectingFn<Cable>
 	closed: () => void
-} & Partial<BasicOptions<Cable>>
+} & Partial<CommonOptions<Cable>>
 
 export type JoinOptions<Cable> = {
 	invite: string
 	disconnected: () => void
 	allow?: AllowFn
 	connecting?: ConnectingFn<Cable>
-} & Partial<BasicOptions<Cable>>
+} & Partial<CommonOptions<Cable>>
 
 export type AllowFn = (agent: AgentInfo) => Promise<boolean>
 export type ConnectingFn<Cable> = (prospect: Prospect<Cable>) => (connection: Connection<Cable>) => () => void

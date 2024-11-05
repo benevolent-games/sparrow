@@ -1,17 +1,31 @@
 
-export const stdRtcConfig = (): RTCConfiguration => ({
-	iceServers: [
-		{
-			urls: [
-				"stun:server2024.stunprotocol.org:3478",
+export const rtcConfig = {
+	std: {
+		iceServers: [
+			{urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"]},
+			{urls: ["stun.services.mozilla.com:3478"]},
+			{urls: ["stun:server2024.stunprotocol.org:3478"]},
+		],
+	},
 
-				// "stun:stun.l.google.com:19302",
-				// "stun:stun1.l.google.com:19302",
-				// "stun:stun2.l.google.com:19302",
-				// "stun:stun3.l.google.com:19302",
-				// "stun:stun4.l.google.com:19302",
-			]
-		},
-	]
-})
+	google: {
+		iceServers: [
+			{urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"]},
+		],
+	},
+
+	mozilla: {
+		iceServers: [
+			{urls: ["stun.services.mozilla.com:3478"]},
+		],
+	},
+
+	stunprotocol: {
+		iceServers: [
+			{urls: ["stun:server2024.stunprotocol.org:3478"]},
+		],
+	},
+} satisfies Record<string, RTCConfiguration>
+
+export const stdRtcConfig = (): RTCConfiguration => rtcConfig.std
 

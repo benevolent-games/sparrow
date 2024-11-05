@@ -1,4 +1,6 @@
 
+export * from "@benev/slate/x/tools/concurrent.js"
+
 export * from "./browser/std/data-cable.js"
 export * from "./browser/std/options.js"
 export * from "./browser/std/rtc-config.js"
@@ -16,4 +18,6 @@ export * from "./browser/sparrow.js"
 export * from "./browser/types.js"
 
 export * from "./signaller/types.js"
+
+export {Sparrow as default} from "./browser/sparrow.js"
 
