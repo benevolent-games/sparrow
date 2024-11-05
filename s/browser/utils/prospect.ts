@@ -51,7 +51,6 @@ export class Prospect<Cable> {
 					this.peer,
 					cable,
 					conduit,
-					this.iceReport,
 				)
 				connection.onDisconnected(() => {
 					this.connection = null

@@ -1,7 +1,6 @@
 
 import {ev, pubsub} from "@benev/slate"
 import {StdCable} from "../types.js"
-import {IceReport} from "./ice-report.js"
 import {AgentInfo} from "../../signaller/types.js"
 
 export class Connection<Cable = StdCable> {
@@ -15,8 +14,7 @@ export class Connection<Cable = StdCable> {
 			public agent: AgentInfo,
 			public peer: RTCPeerConnection,
 			public cable: Cable,
-			public conduit: RTCDataChannel,
-			public iceReport: IceReport,
+			private conduit: RTCDataChannel,
 		) {
 
 		// react to changes in the peer connectionState
