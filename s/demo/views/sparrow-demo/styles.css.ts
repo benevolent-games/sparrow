@@ -14,5 +14,9 @@ slate-view {
 	width: 100%;
 }
 
+[view="loading-indicator"], [view="error-indicator"] {
+	text-align: center;
+}
+
 `
 

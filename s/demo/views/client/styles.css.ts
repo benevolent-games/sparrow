@@ -25,5 +25,9 @@ code {
 	text-align: center;
 }
 
+footer {
+	text-align: center;
+}
+
 `
 

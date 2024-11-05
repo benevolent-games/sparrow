@@ -3,6 +3,7 @@ import {host} from "./host.js"
 import {join} from "./join.js"
 import {connect} from "./connect.js"
 import {invites} from "./utils/invites.js"
+import {mixedId} from "./utils/mixed-id.js"
 
 import {stdDataCable} from "./std/data-cable.js"
 import {stdOptions} from "./std/options.js"
@@ -20,5 +21,6 @@ export class Sparrow {
 	static stdUrl = stdUrl
 
 	static invites = invites
+	static mixedId = mixedId
 }
 

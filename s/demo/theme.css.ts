@@ -7,16 +7,16 @@ a {
 	text-decoration: none;
 
 	&:visited {
-		color: color-mix(in srgb, purple, var(--link) 70%);
+		filter: brightness(90%);
 	}
 
-	&:hover {
-		color: color-mix(in srgb, white, var(--link) 90%);
+	&:is(:hover, :focus) {
+		filter: brightness(120%);
 		text-decoration: underline;
 	}
 
 	&:active {
-		color: color-mix(in srgb, white, var(--link) 50%);
+		filter: brightness(80%);
 	}
 }
 

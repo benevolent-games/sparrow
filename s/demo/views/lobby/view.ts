@@ -4,6 +4,7 @@ import {Lobby} from "../../logic/types.js"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
+import {Sparrow} from "../../../browser/sparrow.js"
 
 export const LobbyView = shadowView(use => (
 		selfId: string,
@@ -45,7 +46,7 @@ export const LobbyView = shadowView(use => (
 					</span>
 
 					<span x-id>
-						${agent.reputation.slice(0, 4)}:${agent.id.slice(0, 4)}
+						${Sparrow.mixedId(agent)}
 					</span>
 
 					<span x-ice>
