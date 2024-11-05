@@ -25,7 +25,7 @@ export const HostView = shadowView(use => (situation: HostingSituation) => {
 			<div x-cards>
 
 				<div x-card>
-					<h3>Session You're Hosting</h3>
+					<h3>You're Hosting a Session</h3>
 					<div x-unit>
 						<div>
 							${crownSvg}

@@ -18,7 +18,7 @@ export const LobbyView = shadowView(use => (
 		<ul>
 			${lobby.value.people.map(({agent, details, scenario}) => html`
 				<li
-					?x-scenario="${scenario.kind}"
+					x-scenario="${scenario.kind}"
 					?x-self="${selfId === agent.id}"
 					?x-host="${lobby.value.hostId === agent.id}">
 
@@ -34,17 +34,15 @@ export const LobbyView = shadowView(use => (
 						${agent.reputation.slice(0, 4)}.${agent.id.slice(0, 4)}
 					</span>
 
-					<span x-endcap>
-						<span x-ice>
-							${scenario.kind === "connecting" || scenario.kind === "connected"
-								? `${scenario.iceCounts.hostSide}/${scenario.iceCounts.remoteSide}`
-								: `local`}
-						</span>
+					<span x-ice>
+						${(scenario.kind === "connecting" || scenario.kind === "connected")
+							? `${scenario.iceCounts.hostSide}/${scenario.iceCounts.remoteSide}`
+							: `host`}
+					</span>
 
+					<span x-buttons>
 						${(scenario.kind !== "local" && killProspect) ? html`
-							<span x-buttons>
-								<button @click="${() => killProspect(agent.id)}">kick</button>
-							</span>
+							<button @click="${() => killProspect(agent.id)}">kick</button>
 						` : null}
 					</span>
 				</li>

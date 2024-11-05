@@ -14,6 +14,7 @@ ul {
 }
 
 li {
+	position: relative;
 	display: flex;
 	align-items: center;
 	gap: 1em;
@@ -22,6 +23,39 @@ li {
 	border-radius: 0.3em;
 	padding: 0.8em;
 	box-shadow: .1em .2em .3em #0004;
+
+	&[x-self] {
+		background: #724399;
+		&::before {
+			content: "You";
+			display: block;
+			position: absolute;
+			left: -1.5em;
+			top: -0.2em;
+			padding: 0.3em;
+			border-radius: 0.5em;
+			background: #aa0;
+			font-weight: bold;
+			box-shadow: .1em .2em .3em #0004;
+		}
+	}
+
+	&[x-scenario="connecting"] {
+		background: transparent;
+		box-shadow: none;
+		&::after {
+			content: "Connecting";
+			display: block;
+			position: absolute;
+			right: -0.2em;
+			top: -0.2em;
+			padding: 0.3em;
+			border-radius: 0.5em;
+			background: #aaa;
+			font-weight: bold;
+			box-shadow: .1em .2em .3em #0004;
+		}
+	}
 
 	[x-icon] {
 		font-size: 2em;
@@ -32,28 +66,27 @@ li {
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
-
 		font-weight: bold;
 	}
 
-	[x-endcap] {
-		display: flex;
-		gap: 1em;
-		min-width: 5em;
-		justify-content: end;
-		align-items: center;
-
-		> [x-ice] { margin-right: auto; }
-	}
-
 	[x-id] {
-		display: flex;
 		font-family: monospace;
 		color: #00ff1c;
+
+		width: 6em;
+		text-align: center;
 	}
 
 	[x-ice] {
 		font-family: monospace;
+
+		width: 3em;
+		text-align: center;
+	}
+
+	[x-buttons] {
+		width: 3em;
+		text-align: center;
 	}
 }
 
