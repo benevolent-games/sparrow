@@ -52,7 +52,7 @@ export const HostView = shadowView(use => (situation: HostingSituation) => {
 				</div>
 
 				<div x-card>
-					<h3>Global Sparrow Stats</h3>
+					<h3>Signaller Stats</h3>
 					<div x-unit>
 						<div>
 							${chartBarPopularSvg}
