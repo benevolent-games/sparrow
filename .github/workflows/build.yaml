@@ -1,33 +1,20 @@
 
-name: build
+name: 🛠️ build
 on:
   push:
-    branches:
-    - master
+    branches: ["main"]
   pull_request:
-    branches:
-    - master
-
+    branches: ["main"]
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'chase-moskal'
     steps:
 
-    - name: 🔔 checkout
-      uses: actions/checkout@v2
-
-    - name: 🔧 set up node
-      uses: actions/setup-node@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
-        node-version: '17'
+        node-version: '22'
+    - run: npm ci
+    - run: npm run build -s
+    - run: npm test
 
-    - name: 📦 install dependencies
-      run: npm ci
-
-    - name: 🔨🧪 build and test
-      run: npm run build
-
-    - name: 📦 npm install and build
-      shell: bash
-      run: npm ci && npm run build

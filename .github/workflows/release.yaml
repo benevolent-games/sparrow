@@ -1,0 +1,62 @@
+
+name: 🚀 release
+on:
+  push:
+    branches: ["release"]
+jobs:
+  release:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - uses: actions/configure-pages@v5
+    - run: npm ci
+    - run: npm run build -s
+    - run: npm test
+
+    - name: delete dev symlinks
+      run: |
+        rm x/assets
+        rm x/node_modules
+        rm x/s
+
+    - uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SPARROW_DEPLOYER_PRIVATE_KEY }}
+
+    - name: upload to signaller server
+      run: |
+        rsync --delete -hamz \
+          --exclude ".git" \
+          --exclude "node_modules" \
+          -e "ssh -o StrictHostKeyChecking=no" \
+          ./ deployer@signaller.sparrow.benev.gg:/home/deployer/app/
+
+    - name: serverside deployment script
+      run: |
+        ssh \
+          -o StrictHostKeyChecking=no \
+          deployer@signaller.sparrow.benev.gg \
+          "~/app/bin/deploy"
+
+    - name: reconstitute node_modules for production
+      run: npm ci --omit=dev
+
+    - name: moving files into x
+      run: |
+        mv node_modules x/node_modules
+        mv s x/s
+        mv assets/x x/assets
+
+    - uses: actions/upload-pages-artifact@v3
+      with:
+        path: 'x'
+
+    - uses: actions/deploy-pages@v4
+
