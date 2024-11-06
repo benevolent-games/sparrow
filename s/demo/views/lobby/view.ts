@@ -1,10 +1,11 @@
 
 import {html, shadowView} from "@benev/slate"
-import {Lobby} from "../../logic/types.js"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
+import {Lobby} from "../../logic/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
+import {AgentInfo} from "../../../signaller/types.js"
 
 export const LobbyView = shadowView(use => (
 		selfId: string,
@@ -15,10 +16,19 @@ export const LobbyView = shadowView(use => (
 	use.name("lobby")
 	use.styles(themeCss, stylesCss)
 
+	const clickKick = killProspect
+		? ((agent: AgentInfo) => ({currentTarget}: PointerEvent) => {
+			if (currentTarget instanceof HTMLElement)
+				currentTarget.blur()
+			killProspect(agent.id)
+		})
+		: null
+
 	return html`
 		<ul>
 			${lobby.people.map(({agent, details, scenario}) => html`
 				<li
+					data-id="${agent.id}"
 					x-scenario="${scenario.kind}"
 					?x-self="${agent.id === selfId}"
 					?x-host="${agent.id === lobby.hostId}"
@@ -59,10 +69,10 @@ export const LobbyView = shadowView(use => (
 							: `host`}
 					</span>
 
-					${!!killProspect ? html`
+					${clickKick ? html`
 						<span x-buttons>
-							${(scenario.kind !== "local" && killProspect) ? html`
-								<button x-kick @click="${() => killProspect(agent.id)}">kick</button>
+							${(scenario.kind !== "local") ? html`
+								<button x-kick @click="${clickKick(agent)}">kick</button>
 							` : null}
 						</span>
 					` : null}
