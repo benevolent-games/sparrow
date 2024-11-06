@@ -45,13 +45,17 @@ export const LobbyView = shadowView(use => (
 						${details.name}
 					</span>
 
-					<span x-id>
+					<span x-id title="id=${agent.id.slice(0, 10)}, reputation=${agent.reputation.slice(0, 10)}">
 						${Sparrow.mixedId(agent)}
 					</span>
 
 					<span x-ice>
 						${(scenario.kind === "connecting" || scenario.kind === "connected")
-							? `${scenario.iceCounts.hostSide}/${scenario.iceCounts.remoteSide}`
+							? html`
+								<span title="ice report (host:client)">
+									${scenario.iceCounts.hostSide}:${scenario.iceCounts.remoteSide}
+								</span>
+							`
 							: `host`}
 					</span>
 

@@ -9,6 +9,12 @@ export function gather_ice(
 		iceReport: IceReport,
 	) {
 
+	let failures = 0
+	const logFailures = () => {
+		if (failures > 0)
+			console.error(`${failures} local ice candidates failed`)
+	}
+
 	return new Promise<void>((resolve, reject) => {
 		const unattach = ev(peer, {
 
@@ -19,13 +25,14 @@ export function gather_ice(
 				}
 			},
 
-			icecandidateerror: () => {
-				unattach()
-				reject(new Error("ice gathering failed"))
+			icecandidateerror: (event: RTCPeerConnectionIceErrorEvent) => {
+				console.error("ice candidate error:", event.errorCode, event.errorText, event.url)
+				failures += 1
 			},
 
 			icegatheringstatechange: () => {
 				if (peer.iceGatheringState === "complete") {
+					logFailures()
 					unattach()
 					resolve()
 				}
@@ -35,6 +42,7 @@ export function gather_ice(
 				switch (peer.connectionState) {
 					case "failed":
 					case "closed":
+						logFailures()
 						unattach()
 						reject(new Error("connection failed"))
 				}

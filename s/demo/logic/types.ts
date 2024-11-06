@@ -12,6 +12,11 @@ export type Person = {
 	scenario: ConnectingScenario | ConnectedScenario | LocalScenario
 }
 
+export type IceCounts = {
+	hostSide: number
+	joinSide: number
+}
+
 export type ConnectingScenario = {
 	kind: "connecting"
 	iceCounts: {
