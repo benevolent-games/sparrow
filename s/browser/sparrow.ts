@@ -10,6 +10,7 @@ import {stdCable} from "./std/cable.js"
 import {stdOptions} from "./std/options.js"
 import {rtcConfig, stdRtcConfig} from "./std/rtc-config.js"
 import {stdUrl} from "./std/url.js"
+import {errorLogging, noLogging, stdLogging} from "./std/logging.js"
 
 export class Sparrow {
 	static connect = connect
@@ -20,6 +21,10 @@ export class Sparrow {
 	static stdOptions = stdOptions
 	static stdRtcConfig = stdRtcConfig
 	static stdUrl = stdUrl
+
+	static stdLogging = stdLogging
+	static errorLogging = errorLogging
+	static noLogging = noLogging
 
 	static rtcConfig = rtcConfig
 	static invites = invites

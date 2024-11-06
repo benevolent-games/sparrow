@@ -136,3 +136,23 @@
   ```
 - Note that Sparrow creates its own special utility rtc data channel called the `conduit`, which is reserved for sparrow internal functionality (it sends "bye" notifications when you call `connection.disconnect()` to immediately notify the other side)
 
+<br/>
+
+## 🐦 Logging
+
+- You can specify to only log errors like this
+  ```ts
+  const joined = await Sparrow.join({
+    invite: "8ab469956da27aff3825a3681b4f6452",
+    disconnected: () => console.log(`disconnected from host`),
+
+    // only log errors
+    logging: Sparrow.errorLogging,
+  })
+  ```
+- Of course you can set this `logging` option on `Sparrow.host` as well
+- Three available settings are:
+  - `Sparrow.stdLogging` -- log everything (default)
+  - `Sparrow.errorLogging` -- only log errors
+  - `Sparrow.noLogging` -- log nothing at all
+

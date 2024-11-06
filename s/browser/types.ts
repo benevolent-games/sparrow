@@ -4,6 +4,7 @@ import {Prospects} from "./utils/prospects.js"
 import {AgentInfo} from "../signaller/types.js"
 import {SignalingApi} from "../signaller/api.js"
 import {Connection} from "./utils/connection.js"
+import {Logging} from "./std/logging.js"
 
 export type BrowserApiOptions<Cable> = {
 	allow: AllowFn
@@ -41,6 +42,7 @@ export type CommonOptions<Cable> = {
 	url: string
 	rtcConfig: RTCConfiguration
 	cableConfig: CableConfig<Cable>
+	logging: Logging
 }
 
 export type ConnectOptions<Cable> = {
