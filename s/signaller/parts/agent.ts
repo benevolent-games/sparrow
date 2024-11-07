@@ -1,9 +1,6 @@
 
-import {pubsub} from "@benev/slate"
-
+import {hash, hexId, pubsub} from "@benev/slate"
 import {AgentInfo} from "../types.js"
-import {hash} from "../../tools/hash.js"
-import {hexId} from "../../tools/hex-id.js"
 import {BrowserApi} from "../../browser/api.js"
 
 export class Agent {

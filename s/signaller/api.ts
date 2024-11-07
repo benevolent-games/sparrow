@@ -1,10 +1,10 @@
 
+import {hexId} from "@benev/slate"
 import {ExposedError} from "renraku"
 
 import {Core} from "./core.js"
 import {Stats} from "./types.js"
 import {Agent} from "./parts/agent.js"
-import {hexId} from "../tools/hex-id.js"
 import {Partner} from "../negotiation/types.js"
 import {negotiate_rtc_connection} from "../negotiation/negotiate-rtc-connection.js"
 
