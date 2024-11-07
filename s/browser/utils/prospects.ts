@@ -23,7 +23,7 @@ export class Prospects<Cable> extends Pool<Prospect<Cable>> {
 		})
 
 		// wiring up the prospect to the provided connected fn
-		prospect.readyPromise.then(connection => {
+		prospect.connectionPromise.then(connection => {
 			const disconnected = connected(connection)
 			connection.onDisconnected(disconnected)
 		})

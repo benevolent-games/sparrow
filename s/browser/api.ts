@@ -22,7 +22,7 @@ export function makeBrowserApi<Cable>({
 
 	const signaller = signalingApi.v1
 
-	const timeout = <R>(
+	const timeLimit = <R>(
 		label: string,
 		promise: Promise<R>,
 	) => deadline(10_000, label, async() => promise)
@@ -45,10 +45,10 @@ export function makeBrowserApi<Cable>({
 		async produceOffer(agentId: string): Promise<any> {
 			return await prospects.attempt(agentId, async prospect => {
 				const {peer, cableWait, conduitWait} = prospect
-				timeout("offer conduit", Conduit.offering(peer))
+				timeLimit("offer conduit", Conduit.offering(peer))
 					.then(conduitWait.resolve)
 					.catch(conduitWait.reject)
-				timeout("offer cable", cableConfig.offering(peer))
+				timeLimit("offer cable", cableConfig.offering(peer))
 					.then(cableWait.resolve)
 					.catch(cableWait.reject)
 				const offer = await peer.createOffer()
@@ -60,10 +60,10 @@ export function makeBrowserApi<Cable>({
 		async produceAnswer(agentId: string, offer: RTCSessionDescription): Promise<any> {
 			return await prospects.attempt(agentId, async prospect => {
 				const {peer, cableWait, conduitWait} = prospect
-				timeout("answer conduit", Conduit.answering(peer))
+				timeLimit("answer conduit", Conduit.answering(peer))
 					.then(conduitWait.resolve)
 					.catch(conduitWait.reject)
-				timeout("answer cable", cableConfig.answering(peer))
+				timeLimit("answer cable", cableConfig.answering(peer))
 					.then(cableWait.resolve)
 					.catch(cableWait.reject)
 				await peer.setRemoteDescription(offer)
@@ -87,7 +87,7 @@ export function makeBrowserApi<Cable>({
 
 		async waitUntilReady(agentId: string): Promise<void> {
 			return await prospects.attempt(agentId, async prospect => {
-				await prospect.readyPromise
+				await prospect.connectionPromise
 			})
 		},
 

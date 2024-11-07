@@ -22,7 +22,7 @@ export class Prospect<Cable> {
 	conduitWait = deferPromise<RTCDataChannel>()
 
 	connection: Connection<Cable> | null = null
-	readyPromise: Promise<Connection<Cable>>
+	connectionPromise: Promise<Connection<Cable>>
 	completedWait = deferPromise<void>()
 
 	onDisconnected = pubsub()
@@ -37,7 +37,7 @@ export class Prospect<Cable> {
 			this.iceReport,
 		)
 
-		this.readyPromise = (
+		this.connectionPromise = (
 			Promise.all([
 				this.cableWait.promise,
 				this.conduitWait.promise,
@@ -75,7 +75,7 @@ export class Prospect<Cable> {
 	async handleFailure<R>(fn: () => Promise<R>) {
 		try { return await fn() }
 		catch (error) {
-			this.cableWait.reject(error)
+			this.completedWait.reject(error)
 			if (this.connection)
 				this.connection.disconnect()
 			throw error

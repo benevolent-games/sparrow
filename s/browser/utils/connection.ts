@@ -48,9 +48,13 @@ export class Connection<Cable = StdCable> {
 	/** manually kill this connection */
 	disconnect() {
 		if (this.peer.connectionState !== "closed") {
-			this.conduit.send("bye")
-			this.peer.close()
-			this.onDisconnected.publish()
+			try {
+				this.conduit.send("bye")
+				this.peer.close()
+			}
+			finally {
+				this.onDisconnected.publish()
+			}
 		}
 	}
 }
