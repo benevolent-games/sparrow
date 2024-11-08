@@ -35,6 +35,7 @@ export function makeBrowserApi<Cable>({
 	const attempts = new Map2<string, Attempt>()
 
 	function destroy(attemptId: string) {
+		console.log("destroy", attemptId)
 		const attempt = attempts.get(attemptId)
 		if (!attempt) return
 		attempts.delete(attemptId)
@@ -64,9 +65,12 @@ export function makeBrowserApi<Cable>({
 	async function maybeAttempt<R>(attemptId: string, fn: (attempt: Attempt) => Promise<R>) {
 		try {
 			const attempt = attempts.get(attemptId)
-			return (attempt)
-				? await fn(attempt)
-				: undefined
+			if (attempt) {
+				return await fn(attempt)
+			}
+			else {
+				console.log("maybe attempt: did not find", attemptId)
+			}
 		}
 		catch (error) {
 			destroy(attemptId)
@@ -169,6 +173,7 @@ export function makeBrowserApi<Cable>({
 					peer,
 					cable,
 					disconnect: () => {
+						console.log("connection.disconnect() called")
 						conduit.send("bye")
 						died()
 					},
@@ -177,15 +182,16 @@ export function makeBrowserApi<Cable>({
 				const disconnected = attempt.connected(connection)
 
 				function died() {
+					console.log("DIED")
 					destroy(attemptId)
 					disconnected()
 				}
 
-				attempt.prospect.onFailed(died)
-
 				ev(peer, {connectionstatechange: () => {
-					if (peer.connectionState === "closed" || peer.connectionState === "failed")
+					if (peer.connectionState === "closed" || peer.connectionState === "failed") {
+						console.log("PEER REMOTELY CLOSED (connectionstatechange)")
 						died()
+					}
 				}})
 
 				conduit.onmessage = event => {
