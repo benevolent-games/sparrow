@@ -1,5 +1,5 @@
 
-import {ev, Map2, nap, pubsub} from "@benev/slate"
+import {ev, Map2, pubsub} from "@benev/slate"
 import {Conduit} from "./utils/conduit.js"
 import {AgentInfo} from "../signaller/types.js"
 import {gather_ice} from "./utils/gather-ice.js"
@@ -140,18 +140,26 @@ export function makeBrowserApi<Cable>({
 		},
 
 		async acceptIceCandidate(attemptId: string, candidate: RTCIceCandidate): Promise<void> {
+			console.log("got ice", attemptId, candidate)
 			return maybeAttempt(attemptId, async attempt => {
 				await attempt.prospect.peer.addIceCandidate(candidate)
+				console.log("accepted ice", attemptId, candidate)
 			})
 		},
 
 		async waitUntilReady(attemptId: string): Promise<void> {
 			return requireAttempt(attemptId, async attempt => {
+				if (!attempt.cablePromise) throw new Error("required cablePromise missing")
+				if (!attempt.conduitPromise) throw new Error("required cablePromise missing")
+				const log = (label: string) => async<R>(r: R): Promise<R> => {
+					console.log(`READY ${label} - `, r)
+					return r
+				}
 				await Promise.all([
-					attempt.icePromise,
-					attempt.cablePromise,
-					attempt.conduitPromise,
-					wait_for_connection(attempt.prospect.peer),
+					attempt.icePromise.then(log("ICE")),
+					attempt.cablePromise.then(log("CABLE")),
+					attempt.conduitPromise.then(log("CONDUIT")),
+					wait_for_connection(attempt.prospect.peer).then(log("CONNECTION")),
 				])
 			})
 		},
