@@ -77,7 +77,7 @@ export const HostView = shadowView(use => (situation: HostingSituation) => {
 			</div>
 		</section>
 
-		${LobbyView([id, situation.lobby.value, id => situation.killProspect(id)])}
+		${LobbyView([id, situation.lobby.value, id => situation.killUser(id)])}
 	`
 })
 

@@ -1,21 +1,25 @@
 
 import {RandomUserEmojis} from "renraku"
-import {Map2, MemeNames, Pubsub, pubsub, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
+import {ev, Map2, MemeNames, Pubsub, pubsub, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
 
 import {Hosted} from "../../../browser/host.js"
 import {Stats} from "../../../signaller/types.js"
-import {StdCable} from "../../../browser/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
 import {Lobby, Person, UserDetails} from "../types.js"
-import {Prospect} from "../../../browser/utils/prospect.js"
+import {Connection, Prospect, StdCable} from "../../../browser/types.js"
+
+type User = {
+	id: string
+	reputation: string
+	details: UserDetails
+	connection: Connection<StdCable> | null
+}
 
 export class HostingSituation {
 	static async start(url: string, closed: () => void) {
 		const memeNames = new MemeNames()
 		const randomEmoji = new RandomUserEmojis()
-
-		const prospects = signal(new Set<Prospect<StdCable>>())
-		const details = new Map2<string, UserDetails>()
+		const users = signal(new Set<User>)
 		const onClosed = pubsub()
 
 		const hosted = await Sparrow.host<StdCable>({
@@ -27,43 +31,58 @@ export class HostingSituation {
 			},
 
 			// new person is attempting to connect
-			connecting: prospect => {
-				prospects.value.add(prospect)
-				prospects.publish()
-				prospect.iceReport.onChange(() => prospects.publish())
-				const userDetails: UserDetails = {
-					name: memeNames.generate(),
-					emoji: randomEmoji.pull(),
-					stable: true,
+			welcome: prospect => {
+				const {id} = prospect
+				const user: User = {
+					id,
+					reputation: prospect.reputation,
+					connection: null,
+					details: {
+						name: memeNames.generate(),
+						emoji: randomEmoji.pull(),
+						stable: true,
+					},
 				}
-				details.set(prospect.id, userDetails)
+
+				users.value.add(user)
+				users.publish()
+
+				const perished = () => {
+					users.value.delete(user)
+					users.publish()
+				}
+
+				prospect.onFailed(perished)
 
 				// connection is successful
 				return connection => {
-					prospects.publish()
-					connection.onStabilityUpdate(stable => {
-						userDetails.stable = stable
-						prospects.publish()
-					})
+					user.connection = connection
+					users.publish()
+
+					ev(connection.peer, {connectionstatechange: () => {
+						user.details.stable = (connection.peer.connectionState !== "disconnected")
+					}})
 
 					// person has disconnected
-					return () => {
-						prospects.value.delete(prospect)
-						prospects.publish()
-						details.delete(prospect.id)
-					}
+					return perished
 				}
 			},
 		})
 
-		details.set(hosted.self.id, {
-			name: memeNames.generate(),
-			emoji: randomEmoji.pull(),
-			stable: true,
+		// adding self
+		users.value.add({
+			id: hosted.self.id,
+			reputation: hosted.self.id,
+			connection: null,
+			details: {
+				name: memeNames.generate(),
+				emoji: randomEmoji.pull(),
+				stable: true,
+			},
 		})
 
 		const stats = signal(await hosted.getStats())
-		return new this(url, hosted, prospects, stats, details, onClosed)
+		return new this(url, hosted, users, stats, onClosed)
 	}
 
 	repeater: Repeater
@@ -73,9 +92,8 @@ export class HostingSituation {
 	constructor(
 			public url: string,
 			public hosted: Hosted,
-			public prospects: Signal<Set<Prospect<StdCable>>>,
+			public users: Signal<Set<User>>,
 			public stats: Signal<Stats>,
-			public details: Map2<string, UserDetails>,
 			onClosed: Pubsub,
 		) {
 
@@ -89,36 +107,19 @@ export class HostingSituation {
 	}
 
 	getLobby(): Lobby {
-		const selfPerson: Person = {
-			agent: this.hosted.self,
-			details: this.details.require(this.hosted.self.id),
-			scenario: {kind: "local"}
-		}
-
-		const remotePeople = [...this.prospects.value].map((prospect): Person => ({
-			agent: prospect.agent,
-			details: this.details.require(prospect.agent.id),
-			scenario: (!!prospect.connection
-				? {
-					kind: "connected",
-					iceCounts: {
-						hostSide: prospect.iceReport.locals.length,
-						remoteSide: prospect.iceReport.remotes.length,
-					},
-				}
-				: {
-					kind: "connecting",
-					iceCounts: {
-						hostSide: prospect.iceReport.locals.length,
-						remoteSide: prospect.iceReport.remotes.length,
-					},
-				}
-			),
-		}))
-
 		return {
 			hostId: this.hosted.self.id,
-			people: [selfPerson, ...remotePeople],
+			people: [...this.users.value].map((user): Person => ({
+				agent: {id: user.id, reputation: user.reputation},
+				details: user.details,
+				scenario: (
+					user.id === this.hosted.self.id ?
+						{kind: "local"} :
+					!!user.connection ?
+						{kind: "connected"} :
+						{kind: "connecting"}
+				),
+			})),
 		}
 	}
 
@@ -127,12 +128,12 @@ export class HostingSituation {
 		this.stopUpdates()
 	}
 
-	findProspect(id: string) {
-		return [...this.prospects.value].find(p => p.id === id)
+	findUser(id: string) {
+		return [...this.users.value].find(u => u.id === id)
 	}
 
-	killProspect(id: string) {
-		const prospect = this.findProspect(id)
+	killUser(id: string) {
+		const prospect = this.findUser(id)
 		if (prospect) {
 			const {connection} = prospect
 			if (connection) {
@@ -144,7 +145,7 @@ export class HostingSituation {
 	}
 
 	getConnections() {
-		return [...this.prospects.value]
+		return [...this.users.value]
 			.map(p => p.connection)
 			.filter(c => !!c)
 	}

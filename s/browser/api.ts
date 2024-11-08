@@ -1,23 +1,12 @@
 
+import {ev, Map2, pubsub} from "@benev/slate"
 import {Conduit} from "./utils/conduit.js"
-import {BrowserApiOptions} from "./types.js"
 import {AgentInfo} from "../signaller/types.js"
-import {Map2} from "@benev/slate"
-import {wait_for_connection} from "./utils/wait-for-connection.js"
 import {gather_ice} from "./utils/gather-ice.js"
+import {BrowserApiOptions, Connection, Prospect} from "./types.js"
+import {wait_for_connection} from "./utils/wait-for-connection.js"
 
 export type BrowserApi = ReturnType<typeof makeBrowserApi>
-
-export type Prospect = {
-	id: string
-	reputation: string
-	peer: RTCPeerConnection
-}
-
-export type Connection<Cable> = {
-	cable: Cable
-	disconnect: () => void
-} & Prospect
 
 /**
  * each browser peer exposes these functions to the signalling server.
@@ -26,12 +15,11 @@ export type Connection<Cable> = {
  * think of the signalling server as a traffic cop (with the whistle) commanding each browser peer throughout the negotation process.
  */
 export function makeBrowserApi<Cable>({
-		allow,
-		signallerApi,
 		rtcConfig,
 		cableConfig,
-		onProspect,
-		onConnection,
+		signallerApi,
+		allow,
+		welcome,
 	}: BrowserApiOptions<Cable>) {
 
 	const signaller = signallerApi.v1
@@ -41,6 +29,7 @@ export function makeBrowserApi<Cable>({
 		icePromise: Promise<void>
 		cablePromise?: Promise<Cable>
 		conduitPromise?: Promise<RTCDataChannel>
+		connected: (connection: Connection<Cable>) => () => void
 	}
 
 	const lanes = new Map2<string, Lane>()
@@ -48,8 +37,9 @@ export function makeBrowserApi<Cable>({
 	function kill(buddyId: string) {
 		const lane = lanes.get(buddyId)
 		if (!lane) return
-		lane.prospect.peer.close()
 		lanes.delete(buddyId)
+		lane.prospect.peer.close()
+		lane.prospect.onFailed.publish()
 	}
 
 	function catcher(buddyId: string) {
@@ -83,18 +73,20 @@ export function makeBrowserApi<Cable>({
 			if (lane) kill(buddy.id)
 
 			const peer = new RTCPeerConnection(rtcConfig)
-			const prospect: Prospect = {...buddy, peer}
+			const onFailed = pubsub()
+			const prospect: Prospect = {...buddy, peer, onFailed}
 			const icePromise = gather_ice(peer, signaller.sendIceCandidate)
 				.catch(catcher(buddy.id))
+
+			const connected = welcome(prospect)
 
 			lanes.set(buddy.id, {
 				prospect,
 				icePromise,
 				cablePromise: undefined,
 				conduitPromise: undefined,
+				connected,
 			})
-
-			onProspect(prospect)
 		},
 
 		async produceOffer(buddyId: string): Promise<any> {
@@ -170,7 +162,13 @@ export function makeBrowserApi<Cable>({
 					},
 				}
 
-				onConnection(connection)
+				const disconnected = lane.connected(connection)
+
+				ev(peer, {connectionstatechange: () => {
+					if (peer.connectionState === "closed" || peer.connectionState === "failed")
+						disconnected()
+				}})
+
 				lanes.delete(buddyId)
 			})
 		},

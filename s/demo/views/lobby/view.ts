@@ -61,12 +61,8 @@ export const LobbyView = shadowView(use => (
 
 					<span x-ice>
 						${(scenario.kind === "connecting" || scenario.kind === "connected")
-							? html`
-								<span title="ice report (host:client)">
-									${scenario.iceCounts.hostSide}:${scenario.iceCounts.remoteSide}
-								</span>
-							`
-							: `host`}
+							? "client"
+							: "host"}
 					</span>
 
 					${clickKick ? html`
