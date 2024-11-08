@@ -3,6 +3,7 @@ import {Partner} from "./types.js"
 import {deadline} from "@benev/slate"
 import {generalTimeout} from "../browser/types.js"
 import {attempt_rtc_connection} from "./utils/attempt-rtc-connection.js"
+import {Id} from "../tools/id.js"
 
 /**
  * the signaller server uses this algorithm to connect two webrtc browser peers.
@@ -20,16 +21,22 @@ export async function negotiate_rtc_connection(
 		throw error
 	}
 
-	return await (
+	async function attempt(alice: Partner, bob: Partner) {
+		const attemptId = Id.random()
+		return deadline(generalTimeout, () => attempt_rtc_connection(
+			attemptId,
+			alice,
+			bob,
+		))
+	}
 
-		// try it this way
-		deadline(generalTimeout, () => attempt_rtc_connection(alice, bob))
+	// try it this way
+	return attempt(alice, bob)
 
-			// try it that way
-			.catch(() => deadline(generalTimeout, () => attempt_rtc_connection(bob, alice)))
+		// try it that way
+		.catch(() => attempt(bob, alice))
 
-			// cancel on final error
-			.catch(cancel)
-	)
+		// cancel on final error
+		.catch(cancel)
 }
 

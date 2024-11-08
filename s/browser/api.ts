@@ -24,7 +24,7 @@ export function makeBrowserApi<Cable>({
 
 	const signaller = signallerApi.v1
 
-	type Lane = {
+	type Attempt = {
 		prospect: Prospect
 		icePromise: Promise<void>
 		cablePromise?: Promise<Cable>
@@ -32,31 +32,44 @@ export function makeBrowserApi<Cable>({
 		connected: (connection: Connection<Cable>) => () => void
 	}
 
-	const lanes = new Map2<string, Lane>()
+	const attempts = new Map2<string, Attempt>()
 
-	function kill(buddyId: string) {
-		const lane = lanes.get(buddyId)
-		if (!lane) return
-		lanes.delete(buddyId)
-		lane.prospect.peer.close()
-		lane.prospect.onFailed.publish()
+	function destroy(attemptId: string) {
+		const attempt = attempts.get(attemptId)
+		if (!attempt) return
+		attempts.delete(attemptId)
+		attempt.prospect.peer.close()
+		attempt.prospect.onFailed.publish()
 	}
 
-	function catcher(buddyId: string) {
+	function catcher(attemptId: string) {
 		return (error: any) => {
 			console.error(error)
-			kill(buddyId)
+			destroy(attemptId)
 			throw error
 		}
 	}
 
-	async function attempt<R>(buddyId: string, fn: (lane: Lane) => Promise<R>) {
+	async function requireAttempt<R>(attemptId: string, fn: (attempt: Attempt) => Promise<R>) {
 		try {
-			const lane = lanes.require(buddyId)
-			return await fn(lane)
+			const attempt = attempts.require(attemptId)
+			return await fn(attempt)
 		}
 		catch (error) {
-			kill(buddyId)
+			destroy(attemptId)
+			throw error
+		}
+	}
+
+	async function maybeAttempt<R>(attemptId: string, fn: (attempt: Attempt) => Promise<R>) {
+		try {
+			const attempt = attempts.get(attemptId)
+			return (attempt)
+				? await fn(attempt)
+				: undefined
+		}
+		catch (error) {
+			destroy(attemptId)
 			throw error
 		}
 	}
@@ -68,19 +81,19 @@ export function makeBrowserApi<Cable>({
 			return allow(buddy)
 		},
 
-		async startPeerConnection(buddy: AgentInfo) {
-			const lane = lanes.get(buddy.id)
-			if (lane) kill(buddy.id)
+		async startPeerConnection(attemptId: string, buddy: AgentInfo) {
+			const attempt = attempts.get(attemptId)
+			if (attempt) destroy(attemptId)
 
 			const peer = new RTCPeerConnection(rtcConfig)
 			const onFailed = pubsub()
 			const prospect: Prospect = {...buddy, peer, onFailed}
 			const icePromise = gather_ice(peer, signaller.sendIceCandidate)
-				.catch(catcher(buddy.id))
+				.catch(catcher(attemptId))
 
 			const connected = welcome(prospect)
 
-			lanes.set(buddy.id, {
+			attempts.set(attemptId, {
 				prospect,
 				icePromise,
 				cablePromise: undefined,
@@ -89,26 +102,26 @@ export function makeBrowserApi<Cable>({
 			})
 		},
 
-		async produceOffer(buddyId: string): Promise<any> {
-			return attempt(buddyId, async lane => {
-				const {prospect: {peer}} = lane
-				lane.cablePromise = cableConfig.offering(peer)
-					.catch(catcher(buddyId))
-				lane.conduitPromise = Conduit.offering(peer)
-					.catch(catcher(buddyId))
+		async produceOffer(attemptId: string): Promise<any> {
+			return requireAttempt(attemptId, async attempt => {
+				const {prospect: {peer}} = attempt
+				attempt.cablePromise = cableConfig.offering(peer)
+					.catch(catcher(attemptId))
+				attempt.conduitPromise = Conduit.offering(peer)
+					.catch(catcher(attemptId))
 				const offer = await peer.createOffer()
 				await peer.setLocalDescription(offer)
 				return offer
 			})
 		},
 
-		async produceAnswer(buddyId: string, offer: RTCSessionDescription): Promise<any> {
-			return attempt(buddyId, async lane => {
-				const {prospect: {peer}} = lane
-				lane.cablePromise = cableConfig.answering(peer)
-					.catch(catcher(buddyId))
-				lane.conduitPromise = Conduit.answering(peer)
-					.catch(catcher(buddyId))
+		async produceAnswer(attemptId: string, offer: RTCSessionDescription): Promise<any> {
+			return requireAttempt(attemptId, async attempt => {
+				const {prospect: {peer}} = attempt
+				attempt.cablePromise = cableConfig.answering(peer)
+					.catch(catcher(attemptId))
+				attempt.conduitPromise = Conduit.answering(peer)
+					.catch(catcher(attemptId))
 				await peer.setRemoteDescription(offer)
 				const answer = await peer.createAnswer()
 				await peer.setLocalDescription(answer)
@@ -116,33 +129,37 @@ export function makeBrowserApi<Cable>({
 			})
 		},
 
-		async acceptAnswer(buddyId: string, answer: RTCSessionDescription): Promise<void> {
-			return attempt(buddyId, async lane => {
-				await lane.prospect.peer.setRemoteDescription(answer)
+		async acceptAnswer(attemptId: string, answer: RTCSessionDescription): Promise<void> {
+			return requireAttempt(attemptId, async attempt => {
+				await attempt.prospect.peer.setRemoteDescription(answer)
 			})
 		},
 
-		async acceptIceCandidate(buddyId: string, candidate: RTCIceCandidate): Promise<void> {
-			return attempt(buddyId, async lane => {
-				await lane.prospect.peer.addIceCandidate(candidate)
+		async acceptIceCandidate(attemptId: string, candidate: RTCIceCandidate): Promise<void> {
+			return maybeAttempt(attemptId, async attempt => {
+				await attempt.prospect.peer.addIceCandidate(candidate)
 			})
 		},
 
-		async waitUntilReady(buddyId: string): Promise<void> {
-			return attempt(buddyId, async lane => {
+		async waitUntilReady(attemptId: string): Promise<void> {
+			return requireAttempt(attemptId, async attempt => {
 				await Promise.all([
-					lane.icePromise,
-					lane.cablePromise,
-					lane.conduitPromise,
-					wait_for_connection(lane.prospect.peer),
+					attempt.icePromise,
+					attempt.cablePromise,
+					attempt.conduitPromise,
+					wait_for_connection(attempt.prospect.peer),
 				])
 			})
 		},
 
-		async completed(buddyId: string): Promise<void> {
-			return attempt(buddyId, async lane => {
-				const {peer, id, reputation} = lane.prospect
-				const [cable, conduit] = await Promise.all([lane.cablePromise, lane.conduitPromise])
+		async completed(attemptId: string): Promise<void> {
+			return requireAttempt(attemptId, async attempt => {
+				const {peer, id, reputation} = attempt.prospect
+				const [cable, conduit] = await Promise.all([
+					attempt.cablePromise,
+					attempt.conduitPromise,
+				])
+
 				if (!cable) throw new Error("missing cable")
 				if (!conduit) throw new Error("missing conduit")
 
@@ -157,10 +174,10 @@ export function makeBrowserApi<Cable>({
 					},
 				}
 
-				const disconnected = lane.connected(connection)
+				const disconnected = attempt.connected(connection)
 
 				function died() {
-					kill(buddyId)
+					destroy(attemptId)
 					disconnected()
 				}
 
@@ -174,12 +191,12 @@ export function makeBrowserApi<Cable>({
 						died()
 				}
 
-				lanes.delete(buddyId)
+				attempts.delete(attemptId)
 			})
 		},
 
-		async cancel(buddyId: string) {
-			kill(buddyId)
+		async cancel(attemptId: string) {
+			destroy(attemptId)
 		}
 	}
 

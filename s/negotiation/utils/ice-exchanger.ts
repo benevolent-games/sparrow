@@ -9,6 +9,7 @@ export class IceExchanger {
 	toBob: RTCIceCandidate[] = []
 
 	constructor(
+			public attemptId: string,
 			public alice: Partner,
 			public bob: Partner,
 		) {
@@ -31,16 +32,16 @@ export class IceExchanger {
 	}
 
 	async send() {
-		const {alice, bob, toAlice, toBob} = this
+		const {attemptId, alice, bob, toAlice, toBob} = this
 		this.toAlice = []
 		this.toBob = []
 
 		await Promise.all([
 			Promise.all(
-				toAlice.map(ice => alice.api.v1.acceptIceCandidate(bob.agent.id, ice))
+				toAlice.map(ice => alice.api.v1.acceptIceCandidate(attemptId, ice))
 			),
 			Promise.all(
-				toBob.map(ice => bob.api.v1.acceptIceCandidate(alice.agent.id, ice))
+				toBob.map(ice => bob.api.v1.acceptIceCandidate(attemptId, ice))
 			),
 		])
 	}
