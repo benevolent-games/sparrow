@@ -181,6 +181,8 @@ export function makeBrowserApi<Cable>({
 					disconnected()
 				}
 
+				attempt.prospect.onFailed(died)
+
 				ev(peer, {connectionstatechange: () => {
 					if (peer.connectionState === "closed" || peer.connectionState === "failed")
 						died()
