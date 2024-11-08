@@ -3,8 +3,8 @@ import {ev, Map2, pubsub} from "@benev/slate"
 import {Conduit} from "./utils/conduit.js"
 import {AgentInfo} from "../signaller/types.js"
 import {gather_ice} from "./utils/gather-ice.js"
-import {BrowserApiOptions, Connection, Prospect} from "./types.js"
 import {wait_for_connection} from "./utils/wait-for-connection.js"
+import {BrowserApiOptions, Connection, Prospect} from "./types.js"
 
 export type BrowserApi = ReturnType<typeof makeBrowserApi>
 

@@ -1,12 +1,13 @@
 
+import {Map2} from "@benev/slate"
 import {Agent} from "./parts/agent.js"
-import {Agents} from "./parts/agents.js"
 import {makeSignallerApi} from "./api.js"
 import {BrowserApi} from "../browser/api.js"
 import {Statistician} from "./parts/statistician.js"
 
 export class Core {
-	agents = new Agents()
+	agents = new Set<Agent>()
+	invites = new Map2<string, Agent>()
 	statistician = new Statistician(this.agents)
 
 	constructor(private salt: string) {}
@@ -27,8 +28,10 @@ export class Core {
 		return {agent, signallerApi}
 	}
 
-	agentDisconnected(agent: Agent) {
-		this.agents.remove(agent)
+	deleteAgent(agent: Agent) {
+		this.agents.delete(agent)
+		for (const invite of agent.invites)
+			this.invites.delete(invite)
 	}
 }
 

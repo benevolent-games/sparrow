@@ -1,5 +1,5 @@
 
-import {Agents} from "./agents.js"
+import {Agent} from "./agent.js"
 import {Stats, StatsTimeframe} from "../types.js"
 
 type StatName = "connection" | "failure"
@@ -12,7 +12,7 @@ export class Statistician {
 		connections: 0,
 	}
 
-	constructor(private agents: Agents) {}
+	constructor(private agents: Set<Agent>) {}
 
 	#recompute() {
 		const hour = 1000 * 60 * 60

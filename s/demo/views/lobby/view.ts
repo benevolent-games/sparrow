@@ -1,10 +1,9 @@
 
-import {Base58, Bytename, html, shadowView} from "@benev/slate"
+import {html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {Lobby} from "../../logic/types.js"
-import {Sparrow} from "../../../browser/sparrow.js"
 import {AgentInfo} from "../../../signaller/types.js"
 
 export const LobbyView = shadowView(use => (
