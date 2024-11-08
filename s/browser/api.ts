@@ -29,6 +29,7 @@ export function makeBrowserApi<Cable>({
 		icePromise: Promise<void>
 		cablePromise?: Promise<Cable>
 		conduitPromise?: Promise<RTCDataChannel>
+		connectionPromise: Promise<RTCPeerConnection>
 		connected: (connection: Connection<Cable>) => () => void
 	}
 
@@ -102,6 +103,7 @@ export function makeBrowserApi<Cable>({
 				icePromise,
 				cablePromise: undefined,
 				conduitPromise: undefined,
+				connectionPromise: wait_for_connection(peer),
 				connected,
 			})
 		},
@@ -159,8 +161,8 @@ export function makeBrowserApi<Cable>({
 					attempt.icePromise.then(log("ICE")),
 					attempt.cablePromise.then(log("CABLE")),
 					attempt.conduitPromise.then(log("CONDUIT")),
-					wait_for_connection(attempt.prospect.peer).then(log("CONNECTION")),
-				])
+					attempt.connectionPromise.then(log("CONNECTION")),
+				]).then(log("EVERYTHING"))
 			})
 		},
 
