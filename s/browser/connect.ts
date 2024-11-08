@@ -1,12 +1,12 @@
 
-import {ev, Map2} from "@benev/slate"
+import {ev} from "@benev/slate"
 import {endpoint, loggers, webSocketRemote} from "renraku"
 
 import {stdOptions} from "./std/options.js"
 import {AgentInfo} from "../signaller/types.js"
 import {SignallerApi} from "../signaller/api.js"
 import {makeBrowserApi} from "../browser/api.js"
-import {CableConfig, Connection, ConnectOptions} from "./types.js"
+import {CableConfig, Connection, ConnectOptions, generalTimeout} from "./types.js"
 
 export class Connected {
 	constructor(
@@ -35,6 +35,7 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 		...remoteLogging,
 		url: o.url,
 		onClose: o.closed,
+		timeout: generalTimeout,
 		getLocalEndpoint: signallerApi => endpoint(
 			makeBrowserApi({
 				allow: async agent => !!(

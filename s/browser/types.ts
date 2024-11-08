@@ -4,6 +4,8 @@ import {Logging} from "./std/logging.js"
 import {AgentInfo} from "../signaller/types.js"
 import {SignallerApi} from "../signaller/api.js"
 
+export const generalTimeout = 30_000
+
 export type Prospect = {
 	id: string
 	reputation: string
