@@ -14,13 +14,13 @@ export type BrowserApi = ReturnType<typeof makeBrowserApi>
  */
 export function makeBrowserApi<Cable>({
 		allow,
-		signalingApi,
+		signallerApi,
 		rtcConfig,
 		cableConfig,
 		prospects,
 	}: BrowserApiOptions<Cable>) {
 
-	const signaller = signalingApi.v1
+	const signaller = signallerApi.v1
 
 	const timeLimit = <R>(
 		label: string,

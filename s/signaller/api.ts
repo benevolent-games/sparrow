@@ -8,9 +8,9 @@ import {Agent} from "./parts/agent.js"
 import {Partner} from "../negotiation/types.js"
 import {negotiate_rtc_connection} from "../negotiation/negotiate-rtc-connection.js"
 
-export type SignalingApi = ReturnType<typeof makeSignalingApi>
+export type SignallerApi = ReturnType<typeof makeSignallerApi>
 
-export const makeSignalingApi = (core: Core, agent: Agent) => ({v1: {
+export const makeSignallerApi = (core: Core, agent: Agent) => ({v1: {
 	async hello() {
 		return agent.info()
 	},

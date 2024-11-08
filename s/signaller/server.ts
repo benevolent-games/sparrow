@@ -33,10 +33,10 @@ const server = new WebSocketServer({
 		}
 
 		const browserApi = remote<BrowserApi>(remoteEndpoint, remoteLogging)
-		const {agent, signalingApi} = await core.acceptAgent(ip, browserApi, close)
+		const {agent, signallerApi} = await core.acceptAgent(ip, browserApi, close)
 		return {
 			closed: () => core.agentDisconnected(agent),
-			localEndpoint: endpoint(signalingApi, localLogging),
+			localEndpoint: endpoint(signallerApi, localLogging),
 		}
 	},
 })

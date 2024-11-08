@@ -1,7 +1,7 @@
 
 import {Agent} from "./parts/agent.js"
 import {Agents} from "./parts/agents.js"
-import {makeSignalingApi} from "./api.js"
+import {makeSignallerApi} from "./api.js"
 import {BrowserApi} from "../browser/api.js"
 import {Statistician} from "./parts/statistician.js"
 
@@ -22,9 +22,9 @@ export class Core {
 		this.agents.add(agent)
 
 		// create the api available to this agent
-		const signalingApi = makeSignalingApi(this, agent)
+		const signallerApi = makeSignallerApi(this, agent)
 
-		return {agent, signalingApi}
+		return {agent, signallerApi}
 	}
 
 	agentDisconnected(agent: Agent) {

@@ -31,7 +31,7 @@ export class Agent {
 		/** browser api remote functionality */
 		public browserApi: BrowserApi,
 
-		/** call this to disconnect this agent from the signaling server */
+		/** call this to disconnect this agent from the signaller server */
 		public disconnect: () => void,
 	) {}
 

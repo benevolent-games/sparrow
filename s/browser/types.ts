@@ -3,12 +3,12 @@ import {Logging} from "./std/logging.js"
 import {Prospect} from "./utils/prospect.js"
 import {Prospects} from "./utils/prospects.js"
 import {AgentInfo} from "../signaller/types.js"
-import {SignalingApi} from "../signaller/api.js"
+import {SignallerApi} from "../signaller/api.js"
 import {Connection} from "./utils/connection.js"
 
 export type BrowserApiOptions<Cable> = {
 	allow: AllowFn
-	signalingApi: SignalingApi
+	signallerApi: SignallerApi
 	rtcConfig: RTCConfiguration
 	cableConfig: CableConfig<Cable>
 	prospects: Prospects<Cable>
