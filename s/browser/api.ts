@@ -1,5 +1,5 @@
 
-import {ev, Map2, pubsub} from "@benev/slate"
+import {ev, Map2, nap, pubsub} from "@benev/slate"
 import {Conduit} from "./utils/conduit.js"
 import {AgentInfo} from "../signaller/types.js"
 import {gather_ice} from "./utils/gather-ice.js"
@@ -151,6 +151,8 @@ export function makeBrowserApi<Cable>({
 						lane.prospect.peer.close()
 				}
 
+				const onDisconnected = pubsub()
+
 				const connection: Connection<Cable> = {
 					id,
 					reputation,
@@ -158,20 +160,28 @@ export function makeBrowserApi<Cable>({
 					cable,
 					disconnect: () => {
 						conduit.send("bye")
-						lane.prospect.peer.close()
+						kill(buddyId)
+						onDisconnected.publish()
 					},
 				}
 
 				const disconnected = lane.connected(connection)
+				onDisconnected(disconnected)
 
 				ev(peer, {connectionstatechange: () => {
-					if (peer.connectionState === "closed" || peer.connectionState === "failed")
-						disconnected()
+					if (peer.connectionState === "closed" || peer.connectionState === "failed") {
+						kill(buddyId)
+						onDisconnected.publish()
+					}
 				}})
 
 				lanes.delete(buddyId)
 			})
 		},
+
+		async cancel(buddyId: string) {
+			kill(buddyId)
+		}
 	}
 
 	return {v1}

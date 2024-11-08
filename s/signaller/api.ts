@@ -3,8 +3,8 @@ import {ExposedError} from "renraku"
 
 import {Core} from "./core.js"
 import {Stats} from "./types.js"
+import {Id} from "../tools/id.js"
 import {Agent} from "./parts/agent.js"
-import {makeId} from "../tools/make-id.js"
 import {Partner} from "../negotiation/types.js"
 import {negotiate_rtc_connection} from "../negotiation/negotiate-rtc-connection.js"
 
@@ -20,7 +20,7 @@ export const makeSignallerApi = (core: Core, agent: Agent) => ({v1: {
 	},
 
 	async createInvite(): Promise<string> {
-		const invite = makeId()
+		const invite = Id.random()
 		if (core.invites.has(invite))
 			throw new Error("invite collision")
 		agent.invites.add(invite)

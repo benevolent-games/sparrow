@@ -2,6 +2,7 @@
 import {RandomUserEmojis} from "renraku"
 import {ev, MemeNames, Pubsub, pubsub, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
 
+import {Id} from "../../../tools/id.js"
 import {Hosted} from "../../../browser/host.js"
 import {Stats} from "../../../signaller/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
@@ -32,13 +33,14 @@ export class HostingSituation {
 
 			// new person is attempting to connect
 			welcome: prospect => {
-				const {id} = prospect
+				const {id, reputation} = prospect
 				const user: User = {
 					id,
-					reputation: prospect.reputation,
+					reputation,
 					connection: null,
 					details: {
-						name: memeNames.generate(),
+						// name: memeNames.generate(),
+						name: Id.toDisplayName(id, reputation),
 						emoji: randomEmoji.pull(),
 						stable: true,
 					},
@@ -75,7 +77,8 @@ export class HostingSituation {
 			reputation: hosted.self.reputation,
 			connection: null,
 			details: {
-				name: memeNames.generate(),
+				name: Id.toDisplayName(hosted.self.id, hosted.self.reputation),
+				// name: memeNames.generate(),
 				emoji: randomEmoji.pull(),
 				stable: true,
 			},
@@ -133,9 +136,9 @@ export class HostingSituation {
 	}
 
 	killUser(id: string) {
-		const prospect = this.findUser(id)
-		if (prospect) {
-			const {connection} = prospect
+		const user = this.findUser(id)
+		if (user) {
+			const {connection} = user
 			if (connection) {
 				connection.cable.reliable.close()
 				connection.cable.unreliable.close()

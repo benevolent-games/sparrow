@@ -1,8 +1,8 @@
 
+import {hash, Hex, pubsub} from "@benev/slate"
 import {AgentInfo} from "../types.js"
 import {BrowserApi} from "../../browser/api.js"
-import {idSize, makeId} from "../../tools/make-id.js"
-import {Base58, hash, Hex, pubsub} from "@benev/slate"
+import {Id} from "../../tools/id.js"
 
 export class Agent {
 	static make = async(
@@ -12,13 +12,13 @@ export class Agent {
 			salt: string,
 		) => {
 		const hex = await hash(ip + salt)
-		const bytes = Hex.bytes(hex).slice(0, idSize)
-		const reputation = Base58.string(bytes)
+		const bytes = Hex.bytes(hex).slice(0, Id.size)
+		const reputation = Hex.string(bytes)
 		return new this(reputation, browserApi, disconnect)
 	}
 
 	/** id for this specific agent connection to the sparrow server */
-	id = makeId()
+	id = Id.random()
 
 	/** all invites issued by this agent */
 	invites = new Set<string>()
