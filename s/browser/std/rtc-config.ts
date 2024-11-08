@@ -27,5 +27,6 @@ export const rtcConfig = {
 	},
 } satisfies Record<string, RTCConfiguration>
 
-export const stdRtcConfig = (): RTCConfiguration => rtcConfig.std
+// TODO switch back to std
+export const stdRtcConfig = (): RTCConfiguration => rtcConfig.stunprotocol
 
