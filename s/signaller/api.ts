@@ -1,5 +1,5 @@
 
-import {hexId} from "@benev/slate"
+import {Base58} from "@benev/slate"
 import {ExposedError} from "renraku"
 
 import {Core} from "./core.js"
@@ -20,7 +20,9 @@ export const makeSignallerApi = (core: Core, agent: Agent) => ({v1: {
 	},
 
 	async createInvite(): Promise<string> {
-		const invite = hexId()
+		const invite = Base58.random(8)
+		if (core.agents.invites.has(invite))
+			throw new Error("invite collision")
 		agent.invites.add(invite)
 		core.agents.invites.set(invite, agent)
 		return invite

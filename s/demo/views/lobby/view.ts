@@ -1,5 +1,5 @@
 
-import {html, shadowView} from "@benev/slate"
+import {Base58, Bytename, html, shadowView} from "@benev/slate"
 
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
@@ -55,8 +55,8 @@ export const LobbyView = shadowView(use => (
 						${details.name}
 					</span>
 
-					<span x-id title="id=${agent.id.slice(0, 10)}, reputation=${agent.reputation.slice(0, 10)}">
-						${Sparrow.mixedId(agent)}
+					<span x-id title="id=${agent.id}, reputation=${agent.reputation}">
+						${agent.id.slice(0, 5)}:${agent.reputation.slice(0, 5)}
 					</span>
 
 					<span x-ice>

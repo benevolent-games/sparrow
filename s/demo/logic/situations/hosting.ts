@@ -1,12 +1,12 @@
 
 import {RandomUserEmojis} from "renraku"
-import {ev, Map2, MemeNames, Pubsub, pubsub, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
+import {ev, MemeNames, Pubsub, pubsub, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
 
 import {Hosted} from "../../../browser/host.js"
 import {Stats} from "../../../signaller/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
 import {Lobby, Person, UserDetails} from "../types.js"
-import {Connection, Prospect, StdCable} from "../../../browser/types.js"
+import {Connection, StdCable} from "../../../browser/types.js"
 
 type User = {
 	id: string
@@ -72,7 +72,7 @@ export class HostingSituation {
 		// adding self
 		users.value.add({
 			id: hosted.self.id,
-			reputation: hosted.self.id,
+			reputation: hosted.self.reputation,
 			connection: null,
 			details: {
 				name: memeNames.generate(),
