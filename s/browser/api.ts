@@ -146,13 +146,6 @@ export function makeBrowserApi<Cable>({
 				if (!cable) throw new Error("missing cable")
 				if (!conduit) throw new Error("missing conduit")
 
-				conduit.onmessage = event => {
-					if (event.data === "bye")
-						lane.prospect.peer.close()
-				}
-
-				const onDisconnected = pubsub()
-
 				const connection: Connection<Cable> = {
 					id,
 					reputation,
@@ -160,20 +153,26 @@ export function makeBrowserApi<Cable>({
 					cable,
 					disconnect: () => {
 						conduit.send("bye")
-						kill(buddyId)
-						onDisconnected.publish()
+						died()
 					},
 				}
 
 				const disconnected = lane.connected(connection)
-				onDisconnected(disconnected)
+
+				function died() {
+					kill(buddyId)
+					disconnected()
+				}
 
 				ev(peer, {connectionstatechange: () => {
-					if (peer.connectionState === "closed" || peer.connectionState === "failed") {
-						kill(buddyId)
-						onDisconnected.publish()
-					}
+					if (peer.connectionState === "closed" || peer.connectionState === "failed")
+						died()
 				}})
+
+				conduit.onmessage = event => {
+					if (event.data === "bye")
+						died()
+				}
 
 				lanes.delete(buddyId)
 			})

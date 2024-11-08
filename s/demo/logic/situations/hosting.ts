@@ -1,6 +1,6 @@
 
 import {RandomUserEmojis} from "renraku"
-import {ev, MemeNames, Pubsub, pubsub, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
+import {ev, Pubsub, pubsub, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
 
 import {Id} from "../../../tools/id.js"
 import {Hosted} from "../../../browser/host.js"
@@ -18,7 +18,7 @@ type User = {
 
 export class HostingSituation {
 	static async start(url: string, closed: () => void) {
-		const memeNames = new MemeNames()
+		// const memeNames = new MemeNames()
 		const randomEmoji = new RandomUserEmojis()
 		const users = signal(new Set<User>)
 		const onClosed = pubsub()
