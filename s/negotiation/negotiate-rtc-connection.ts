@@ -1,5 +1,6 @@
 
 import {Partner} from "./types.js"
+import {deadline} from "@benev/slate"
 import {attempt_rtc_connection} from "./utils/attempt-rtc-connection.js"
 
 /**
@@ -13,10 +14,12 @@ export async function negotiate_rtc_connection(
 	return await (
 
 		// try it this way
-		attempt_rtc_connection(alice, bob)
+		deadline(10_000, () => attempt_rtc_connection(alice, bob))
 
 			// try it that way
-			.catch(() => attempt_rtc_connection(bob, alice))
+			.catch(() =>
+				deadline(10_000, () => attempt_rtc_connection(bob, alice))
+			)
 	)
 }
 

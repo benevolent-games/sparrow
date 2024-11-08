@@ -34,7 +34,7 @@ export class Prospect<Cable> {
 		this.iceGatheredPromise = gather_ice(
 			this.peer,
 			options.sendIceCandidate,
-			this.iceReport,
+			// this.iceReport,
 		)
 
 		this.connectionPromise = (

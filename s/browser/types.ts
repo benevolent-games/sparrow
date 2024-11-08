@@ -1,7 +1,6 @@
 
 import {Logging} from "./std/logging.js"
 import {Prospect} from "./utils/prospect.js"
-import {Prospects} from "./utils/prospects.js"
 import {AgentInfo} from "../signaller/types.js"
 import {SignallerApi} from "../signaller/api.js"
 import {Connection} from "./utils/connection.js"
@@ -11,7 +10,10 @@ export type BrowserApiOptions<Cable> = {
 	signallerApi: SignallerApi
 	rtcConfig: RTCConfiguration
 	cableConfig: CableConfig<Cable>
-	prospects: Prospects<Cable>
+
+	// TODO
+	onProspect: (prospect: any) => void
+	onConnection: (connection: any) => void
 }
 
 export type ProspectOptions = {

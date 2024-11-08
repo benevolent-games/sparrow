@@ -40,10 +40,11 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 					agent.id !== selfId &&
 					await o.allow(agent)
 				),
-				prospects,
 				signallerApi,
 				rtcConfig: o.rtcConfig,
 				cableConfig: o.cableConfig as CableConfig<Cable>,
+				onProspect: prospect => {},
+				onConnection: connection => {},
 			}),
 			localLogging,
 		),

@@ -1,10 +1,23 @@
 
-import {deadline} from "renraku"
 import {Conduit} from "./utils/conduit.js"
 import {BrowserApiOptions} from "./types.js"
 import {AgentInfo} from "../signaller/types.js"
+import {Map2} from "@benev/slate"
+import {wait_for_connection} from "./utils/wait-for-connection.js"
+import {gather_ice} from "./utils/gather-ice.js"
 
 export type BrowserApi = ReturnType<typeof makeBrowserApi>
+
+export type Prospect = {
+	id: string
+	reputation: string
+	peer: RTCPeerConnection
+}
+
+export type Connection<Cable> = {
+	cable: Cable
+	disconnect: () => void
+} & Prospect
 
 /**
  * each browser peer exposes these functions to the signalling server.
@@ -17,55 +30,93 @@ export function makeBrowserApi<Cable>({
 		signallerApi,
 		rtcConfig,
 		cableConfig,
-		prospects,
+		onProspect,
+		onConnection,
 	}: BrowserApiOptions<Cable>) {
 
 	const signaller = signallerApi.v1
 
-	const timeLimit = <R>(
-		label: string,
-		promise: Promise<R>,
-	) => deadline(10_000, label, async() => promise)
+	type Lane = {
+		prospect: Prospect
+		icePromise: Promise<void>
+		cablePromise?: Promise<Cable>
+		conduitPromise?: Promise<RTCDataChannel>
+	}
+
+	const lanes = new Map2<string, Lane>()
+
+	function kill(buddyId: string) {
+		const lane = lanes.get(buddyId)
+		if (!lane) return
+		lane.prospect.peer.close()
+		lanes.delete(buddyId)
+	}
+
+	function catcher(buddyId: string) {
+		return (error: any) => {
+			console.error(error)
+			kill(buddyId)
+			throw error
+		}
+	}
+
+	async function attempt<R>(buddyId: string, fn: (lane: Lane) => Promise<R>) {
+		try {
+			const lane = lanes.require(buddyId)
+			return await fn(lane)
+		}
+		catch (error) {
+			kill(buddyId)
+			throw error
+		}
+	}
 
 	const v1 = {
 
 		/** somebody wants to join a room you are hosting.. will you allow it? */
-		async knock(agent: AgentInfo) {
-			return await allow(agent)
+		async knock(buddy: AgentInfo) {
+			return allow(buddy)
 		},
 
-		async startPeerConnection(agent: AgentInfo) {
-			prospects.create({
-				agent,
-				rtcConfig,
-				sendIceCandidate: signaller.sendIceCandidate,
+		async startPeerConnection(buddy: AgentInfo) {
+			const lane = lanes.get(buddy.id)
+			if (lane) kill(buddy.id)
+
+			const peer = new RTCPeerConnection(rtcConfig)
+			const prospect: Prospect = {...buddy, peer}
+			const icePromise = gather_ice(peer, signaller.sendIceCandidate)
+				.catch(catcher(buddy.id))
+
+			lanes.set(buddy.id, {
+				prospect,
+				icePromise,
+				cablePromise: undefined,
+				conduitPromise: undefined,
 			})
+
+			onProspect(prospect)
 		},
 
-		async produceOffer(agentId: string): Promise<any> {
-			return await prospects.attempt(agentId, async prospect => {
-				const {peer, cableWait, conduitWait} = prospect
-				timeLimit("offer conduit", Conduit.offering(peer))
-					.then(conduitWait.resolve)
-					.catch(conduitWait.reject)
-				timeLimit("offer cable", cableConfig.offering(peer))
-					.then(cableWait.resolve)
-					.catch(cableWait.reject)
+		async produceOffer(buddyId: string): Promise<any> {
+			return attempt(buddyId, async lane => {
+				const {prospect: {peer}} = lane
+				lane.cablePromise = cableConfig.offering(peer)
+					.catch(catcher(buddyId))
+				lane.conduitPromise = Conduit.offering(peer)
+					.catch(catcher(buddyId))
 				const offer = await peer.createOffer()
 				await peer.setLocalDescription(offer)
 				return offer
 			})
 		},
 
-		async produceAnswer(agentId: string, offer: RTCSessionDescription): Promise<any> {
-			return await prospects.attempt(agentId, async prospect => {
-				const {peer, cableWait, conduitWait} = prospect
-				timeLimit("answer conduit", Conduit.answering(peer))
-					.then(conduitWait.resolve)
-					.catch(conduitWait.reject)
-				timeLimit("answer cable", cableConfig.answering(peer))
-					.then(cableWait.resolve)
-					.catch(cableWait.reject)
+		async produceAnswer(buddyId: string, offer: RTCSessionDescription): Promise<any> {
+			return attempt(buddyId, async lane => {
+				const {prospect: {peer}} = lane
+				lane.cablePromise = cableConfig.answering(peer)
+					.catch(catcher(buddyId))
+				lane.conduitPromise = Conduit.answering(peer)
+					.catch(catcher(buddyId))
 				await peer.setRemoteDescription(offer)
 				const answer = await peer.createAnswer()
 				await peer.setLocalDescription(answer)
@@ -73,27 +124,54 @@ export function makeBrowserApi<Cable>({
 			})
 		},
 
-		async acceptAnswer(agentId: string, answer: RTCSessionDescription): Promise<void> {
-			return await prospects.attempt(agentId, async prospect => {
-				await prospect.peer.setRemoteDescription(answer)
+		async acceptAnswer(buddyId: string, answer: RTCSessionDescription): Promise<void> {
+			return attempt(buddyId, async lane => {
+				await lane.prospect.peer.setRemoteDescription(answer)
 			})
 		},
 
-		async acceptIceCandidate(agentId: string, candidate: RTCIceCandidate): Promise<void> {
-			return await prospects.attempt(agentId, async prospect => {
-				await prospect.acceptIceCandidate(candidate)
+		async acceptIceCandidate(buddyId: string, candidate: RTCIceCandidate): Promise<void> {
+			return attempt(buddyId, async lane => {
+				await lane.prospect.peer.addIceCandidate(candidate)
 			})
 		},
 
-		async waitUntilReady(agentId: string): Promise<void> {
-			return await prospects.attempt(agentId, async prospect => {
-				await prospect.connectionPromise
+		async waitUntilReady(buddyId: string): Promise<void> {
+			return attempt(buddyId, async lane => {
+				await Promise.all([
+					lane.icePromise,
+					lane.cablePromise,
+					lane.conduitPromise,
+					wait_for_connection(lane.prospect.peer),
+				])
 			})
 		},
 
-		async completed(agentId: string): Promise<void> {
-			return await prospects.attempt(agentId, async prospect => {
-				prospect.completedWait.resolve()
+		async completed(buddyId: string): Promise<void> {
+			return attempt(buddyId, async lane => {
+				const {peer, id, reputation} = lane.prospect
+				const [cable, conduit] = await Promise.all([lane.cablePromise, lane.conduitPromise])
+				if (!cable) throw new Error("missing cable")
+				if (!conduit) throw new Error("missing conduit")
+
+				conduit.onmessage = event => {
+					if (event.data === "bye")
+						lane.prospect.peer.close()
+				}
+
+				const connection: Connection<Cable> = {
+					id,
+					reputation,
+					peer,
+					cable,
+					disconnect: () => {
+						conduit.send("bye")
+						lane.prospect.peer.close()
+					},
+				}
+
+				onConnection(connection)
+				lanes.delete(buddyId)
 			})
 		},
 	}

@@ -1,12 +1,10 @@
 
 import {ev} from "@benev/slate"
-import {IceReport} from "./ice-report.js"
 import {SendIceCandidateFn} from "../types.js"
 
 export function gather_ice(
 		peer: RTCPeerConnection,
 		sendIceCandidate: SendIceCandidateFn,
-		iceReport: IceReport,
 	) {
 
 	let failures = 0
@@ -21,7 +19,7 @@ export function gather_ice(
 			icecandidate: (event: RTCPeerConnectionIceEvent) => {
 				if (event.candidate) {
 					sendIceCandidate(event.candidate)
-					iceReport.recordLocal(event.candidate)
+					// iceReport.recordLocal(event.candidate)
 				}
 			},
 

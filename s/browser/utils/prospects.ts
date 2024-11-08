@@ -39,8 +39,8 @@ export class Prospects<Cable> extends Pool<Prospect<Cable>> {
 	}
 
 	async attempt<R>(id: string, fn: (prospect: Prospect<Cable>) => Promise<R>) {
-		const connection = this.require(id)
-		return await connection.handleFailure(async() => await fn(connection))
+		const prospect = this.require(id)
+		return await prospect.handleFailure(async() => await fn(prospect))
 	}
 }
 
