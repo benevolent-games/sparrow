@@ -19,18 +19,10 @@ export type IceCounts = {
 
 export type ConnectingScenario = {
 	kind: "connecting"
-	iceCounts: {
-		hostSide: number
-		remoteSide: number
-	}
 }
 
 export type ConnectedScenario = {
 	kind: "connected"
-	iceCounts: {
-		hostSide: number
-		remoteSide: number
-	}
 }
 
 export type LocalScenario = {

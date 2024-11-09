@@ -3,11 +3,10 @@ import {ev} from "@benev/slate"
 import {endpoint, loggers, webSocketRemote} from "renraku"
 
 import {stdOptions} from "./std/options.js"
-import {Prospects} from "./utils/prospects.js"
 import {AgentInfo} from "../signaller/types.js"
 import {SignallerApi} from "../signaller/api.js"
 import {makeBrowserApi} from "../browser/api.js"
-import {CableConfig, ConnectOptions} from "./types.js"
+import {CableConfig, Connection, ConnectOptions, generalTimeout} from "./types.js"
 
 export class Connected {
 	constructor(
@@ -24,26 +23,39 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 	const localLogging = loggers.label({remote: false, label: `${emoji} <-`, prefix: "client"})
 
 	let selfId: string | undefined
-
-	const prospects = new Prospects(options.connecting)
+	const connections = new Set<Connection<Cable>>()
 
 	// disconnect everybody when the user kills the tab
-	ev(window, {beforeunload: () => prospects.disconnectEverybody()})
+	ev(window, {beforeunload: () => {
+		for (const connection of connections)
+			connection.disconnect()
+	}})
 
 	const {socket, remote: signallerApi} = await webSocketRemote<SignallerApi>({
 		...remoteLogging,
 		url: o.url,
 		onClose: o.closed,
+		timeout: generalTimeout,
 		getLocalEndpoint: signallerApi => endpoint(
 			makeBrowserApi({
 				allow: async agent => !!(
 					agent.id !== selfId &&
 					await o.allow(agent)
 				),
-				prospects,
 				signallerApi,
 				rtcConfig: o.rtcConfig,
 				cableConfig: o.cableConfig as CableConfig<Cable>,
+				welcome: prospect => {
+					const connected = o.welcome(prospect)
+					return connection => {
+						connections.add(connection)
+						const disconnected = connected(connection)
+						return () => {
+							connections.delete(connection)
+							disconnected()
+						}
+					}
+				}
 			}),
 			localLogging,
 		),

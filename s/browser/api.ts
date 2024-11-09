@@ -1,8 +1,10 @@
 
-import {deadline} from "renraku"
 import {Conduit} from "./utils/conduit.js"
-import {BrowserApiOptions} from "./types.js"
+import {ev, Map2, pubsub} from "@benev/slate"
 import {AgentInfo} from "../signaller/types.js"
+import {gather_ice} from "./utils/gather-ice.js"
+import {wait_for_connection} from "./utils/wait-for-connection.js"
+import {BrowserApiOptions, Connection, Prospect} from "./types.js"
 
 export type BrowserApi = ReturnType<typeof makeBrowserApi>
 
@@ -13,59 +15,115 @@ export type BrowserApi = ReturnType<typeof makeBrowserApi>
  * think of the signalling server as a traffic cop (with the whistle) commanding each browser peer throughout the negotation process.
  */
 export function makeBrowserApi<Cable>({
-		allow,
-		signallerApi,
 		rtcConfig,
 		cableConfig,
-		prospects,
+		signallerApi,
+		allow,
+		welcome,
 	}: BrowserApiOptions<Cable>) {
 
 	const signaller = signallerApi.v1
 
-	const timeLimit = <R>(
-		label: string,
-		promise: Promise<R>,
-	) => deadline(10_000, label, async() => promise)
+	type Attempt = {
+		prospect: Prospect
+		icePromise: Promise<void>
+		cablePromise?: Promise<Cable>
+		conduitPromise?: Promise<RTCDataChannel>
+		connectionPromise: Promise<RTCPeerConnection>
+		connected: (connection: Connection<Cable>) => () => void
+	}
+
+	const attempts = new Map2<string, Attempt>()
+
+	function destroy(attemptId: string) {
+		const attempt = attempts.get(attemptId)
+		if (!attempt) return
+		attempts.delete(attemptId)
+		attempt.prospect.peer.close()
+		attempt.prospect.onFailed.publish()
+	}
+
+	function catcher(attemptId: string) {
+		return (error: any) => {
+			console.error(error)
+			destroy(attemptId)
+			throw error
+		}
+	}
+
+	async function requireAttempt<R>(attemptId: string, fn: (attempt: Attempt) => Promise<R>) {
+		try {
+			const attempt = attempts.require(attemptId)
+			return await fn(attempt)
+		}
+		catch (error) {
+			destroy(attemptId)
+			throw error
+		}
+	}
+
+	async function maybeAttempt<R>(attemptId: string, fn: (attempt: Attempt) => Promise<R>) {
+		try {
+			const attempt = attempts.get(attemptId)
+			return (attempt)
+				? await fn(attempt)
+				: undefined
+		}
+		catch (error) {
+			destroy(attemptId)
+			throw error
+		}
+	}
 
 	const v1 = {
 
 		/** somebody wants to join a room you are hosting.. will you allow it? */
-		async knock(agent: AgentInfo) {
-			return await allow(agent)
+		async knock(buddy: AgentInfo) {
+			return allow(buddy)
 		},
 
-		async startPeerConnection(agent: AgentInfo) {
-			prospects.create({
-				agent,
-				rtcConfig,
-				sendIceCandidate: signaller.sendIceCandidate,
+		async startPeerConnection(attemptId: string, buddy: AgentInfo) {
+			const attempt = attempts.get(attemptId)
+			if (attempt) destroy(attemptId)
+
+			const peer = new RTCPeerConnection(rtcConfig)
+			const onFailed = pubsub()
+			const prospect: Prospect = {...buddy, peer, onFailed}
+			const icePromise = gather_ice(peer, signaller.sendIceCandidate)
+				.catch(catcher(attemptId))
+
+			const connected = welcome(prospect)
+
+			attempts.set(attemptId, {
+				prospect,
+				icePromise,
+				cablePromise: undefined,
+				conduitPromise: undefined,
+				connectionPromise: wait_for_connection(peer),
+				connected,
 			})
 		},
 
-		async produceOffer(agentId: string): Promise<any> {
-			return await prospects.attempt(agentId, async prospect => {
-				const {peer, cableWait, conduitWait} = prospect
-				timeLimit("offer conduit", Conduit.offering(peer))
-					.then(conduitWait.resolve)
-					.catch(conduitWait.reject)
-				timeLimit("offer cable", cableConfig.offering(peer))
-					.then(cableWait.resolve)
-					.catch(cableWait.reject)
+		async produceOffer(attemptId: string): Promise<any> {
+			return requireAttempt(attemptId, async attempt => {
+				const {prospect: {peer}} = attempt
+				attempt.cablePromise = cableConfig.offering(peer)
+					.catch(catcher(attemptId))
+				attempt.conduitPromise = Conduit.offering(peer)
+					.catch(catcher(attemptId))
 				const offer = await peer.createOffer()
 				await peer.setLocalDescription(offer)
 				return offer
 			})
 		},
 
-		async produceAnswer(agentId: string, offer: RTCSessionDescription): Promise<any> {
-			return await prospects.attempt(agentId, async prospect => {
-				const {peer, cableWait, conduitWait} = prospect
-				timeLimit("answer conduit", Conduit.answering(peer))
-					.then(conduitWait.resolve)
-					.catch(conduitWait.reject)
-				timeLimit("answer cable", cableConfig.answering(peer))
-					.then(cableWait.resolve)
-					.catch(cableWait.reject)
+		async produceAnswer(attemptId: string, offer: RTCSessionDescription): Promise<any> {
+			return requireAttempt(attemptId, async attempt => {
+				const {prospect: {peer}} = attempt
+				attempt.cablePromise = cableConfig.answering(peer)
+					.catch(catcher(attemptId))
+				attempt.conduitPromise = Conduit.answering(peer)
+					.catch(catcher(attemptId))
 				await peer.setRemoteDescription(offer)
 				const answer = await peer.createAnswer()
 				await peer.setLocalDescription(answer)
@@ -73,29 +131,77 @@ export function makeBrowserApi<Cable>({
 			})
 		},
 
-		async acceptAnswer(agentId: string, answer: RTCSessionDescription): Promise<void> {
-			return await prospects.attempt(agentId, async prospect => {
-				await prospect.peer.setRemoteDescription(answer)
+		async acceptAnswer(attemptId: string, answer: RTCSessionDescription): Promise<void> {
+			return requireAttempt(attemptId, async attempt => {
+				await attempt.prospect.peer.setRemoteDescription(answer)
 			})
 		},
 
-		async acceptIceCandidate(agentId: string, candidate: RTCIceCandidate): Promise<void> {
-			return await prospects.attempt(agentId, async prospect => {
-				await prospect.acceptIceCandidate(candidate)
+		async acceptIceCandidate(attemptId: string, candidate: RTCIceCandidate): Promise<void> {
+			return maybeAttempt(attemptId, async attempt => {
+				await attempt.prospect.peer.addIceCandidate(candidate)
 			})
 		},
 
-		async waitUntilReady(agentId: string): Promise<void> {
-			return await prospects.attempt(agentId, async prospect => {
-				await prospect.connectionPromise
+		async waitUntilReady(attemptId: string): Promise<void> {
+			return requireAttempt(attemptId, async attempt => {
+				if (!attempt.cablePromise) throw new Error("required cablePromise missing")
+				if (!attempt.conduitPromise) throw new Error("required cablePromise missing")
+				await Promise.all([
+					attempt.icePromise,
+					attempt.cablePromise,
+					attempt.conduitPromise,
+					attempt.connectionPromise,
+				])
 			})
 		},
 
-		async completed(agentId: string): Promise<void> {
-			return await prospects.attempt(agentId, async prospect => {
-				prospect.completedWait.resolve()
+		async completed(attemptId: string): Promise<void> {
+			return requireAttempt(attemptId, async attempt => {
+				const {peer, id, reputation} = attempt.prospect
+				const [cable, conduit] = await Promise.all([
+					attempt.cablePromise,
+					attempt.conduitPromise,
+				])
+
+				if (!cable) throw new Error("missing cable")
+				if (!conduit) throw new Error("missing conduit")
+
+				const connection: Connection<Cable> = {
+					id,
+					reputation,
+					peer,
+					cable,
+					disconnect: () => {
+						conduit.send("bye")
+						died()
+					},
+				}
+
+				const disconnected = attempt.connected(connection)
+
+				function died() {
+					destroy(attemptId)
+					disconnected()
+				}
+
+				ev(peer, {connectionstatechange: () => {
+					if (peer.connectionState === "closed" || peer.connectionState === "failed")
+						died()
+				}})
+
+				conduit.onmessage = event => {
+					if (event.data === "bye")
+						died()
+				}
+
+				attempts.delete(attemptId)
 			})
 		},
+
+		async cancel(attemptId: string) {
+			destroy(attemptId)
+		}
 	}
 
 	return {v1}

@@ -1,23 +1,32 @@
 
+import {Pubsub} from "@benev/slate"
 import {Logging} from "./std/logging.js"
-import {Prospect} from "./utils/prospect.js"
-import {Prospects} from "./utils/prospects.js"
 import {AgentInfo} from "../signaller/types.js"
 import {SignallerApi} from "../signaller/api.js"
-import {Connection} from "./utils/connection.js"
 
-export type BrowserApiOptions<Cable> = {
-	allow: AllowFn
-	signallerApi: SignallerApi
-	rtcConfig: RTCConfiguration
-	cableConfig: CableConfig<Cable>
-	prospects: Prospects<Cable>
+export const generalTimeout = 30_000
+
+export type Prospect = {
+	id: string
+	reputation: string
+	peer: RTCPeerConnection
+	onFailed: Pubsub
 }
 
-export type ProspectOptions = {
-	agent: AgentInfo
+export type Connection<Cable> = {
+	id: string
+	reputation: string
+	peer: RTCPeerConnection
+	cable: Cable
+	disconnect: () => void
+}
+
+export type BrowserApiOptions<Cable> = {
 	rtcConfig: RTCConfiguration
-	sendIceCandidate: SendIceCandidateFn
+	cableConfig: CableConfig<Cable>
+	signallerApi: SignallerApi
+	allow: AllowFn
+	welcome: WelcomeFn<Cable>
 }
 
 export type SendIceCandidateFn = (candidate: RTCIceCandidate) => Promise<void>
@@ -47,7 +56,7 @@ export type CommonOptions<Cable> = {
 
 export type ConnectOptions<Cable> = {
 	allow: AllowFn
-	connecting: ConnectingFn<Cable>
+	welcome: WelcomeFn<Cable>
 	closed: () => void
 } & Partial<CommonOptions<Cable>>
 
@@ -55,9 +64,9 @@ export type JoinOptions<Cable> = {
 	invite: string
 	disconnected: () => void
 	allow?: AllowFn
-	connecting?: ConnectingFn<Cable>
+	welcome?: WelcomeFn<Cable>
 } & Partial<CommonOptions<Cable>>
 
 export type AllowFn = (agent: AgentInfo) => Promise<boolean>
-export type ConnectingFn<Cable> = (prospect: Prospect<Cable>) => (connection: Connection<Cable>) => () => void
+export type WelcomeFn<Cable> = (prospect: Prospect) => (connection: Connection<Cable>) => () => void
 

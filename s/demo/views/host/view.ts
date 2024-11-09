@@ -1,6 +1,7 @@
 
 import {html, shadowView} from "@benev/slate"
 
+import {Id} from "../../../tools/id.js"
 import {LobbyView} from "../lobby/view.js"
 import {Sparrow} from "../../../browser/sparrow.js"
 import {HostingSituation} from "../../logic/situations/hosting.js"
@@ -33,17 +34,17 @@ export const HostView = shadowView(use => (situation: HostingSituation) => {
 						<ul>
 							<li>
 								<span>Id</span>
-								<code>${id.slice(0, 8)}</code>
+								<code>${Id.toDisplay(id)}</code>
 							</li>
 							<li>
 								<span>Reputation</span>
-								<code>${reputation.slice(0, 8)}</code>
+								<code>${Id.toDisplay(reputation)}</code>
 							</li>
 							<li>
 								<span>Invite</span>
 								<span>
-									<a href="${Sparrow.invites.makeLinkUrl(invite)}" target="_blank">
-										${Sparrow.invites.makeLinkDisplay(invite)}
+									<a href="${Sparrow.invites.makeLinkUrl(Id.toDisplay(invite))}" target="_blank">
+										${Sparrow.invites.makeLinkDisplay(Id.toDisplay(invite))}
 									</a>
 								</span>
 							</li>
@@ -77,7 +78,7 @@ export const HostView = shadowView(use => (situation: HostingSituation) => {
 			</div>
 		</section>
 
-		${LobbyView([id, situation.lobby.value, id => situation.killProspect(id)])}
+		${LobbyView([id, situation.lobby.value, id => situation.killUser(id)])}
 	`
 })
 

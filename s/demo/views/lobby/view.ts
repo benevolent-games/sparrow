@@ -4,8 +4,8 @@ import {html, shadowView} from "@benev/slate"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {Lobby} from "../../logic/types.js"
-import {Sparrow} from "../../../browser/sparrow.js"
 import {AgentInfo} from "../../../signaller/types.js"
+import {Id} from "../../../tools/id.js"
 
 export const LobbyView = shadowView(use => (
 		selfId: string,
@@ -51,22 +51,14 @@ export const LobbyView = shadowView(use => (
 						${details.emoji}
 					</span>
 
-					<span x-name>
+					<span x-name title="id ${Id.toDisplay(agent.id)}, reputation ${Id.toDisplay(agent.reputation)}">
 						${details.name}
-					</span>
-
-					<span x-id title="id=${agent.id.slice(0, 10)}, reputation=${agent.reputation.slice(0, 10)}">
-						${Sparrow.mixedId(agent)}
 					</span>
 
 					<span x-ice>
 						${(scenario.kind === "connecting" || scenario.kind === "connected")
-							? html`
-								<span title="ice report (host:client)">
-									${scenario.iceCounts.hostSide}:${scenario.iceCounts.remoteSide}
-								</span>
-							`
-							: `host`}
+							? "client"
+							: "host"}
 					</span>
 
 					${clickKick ? html`

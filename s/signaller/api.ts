@@ -1,9 +1,9 @@
 
-import {hexId} from "@benev/slate"
 import {ExposedError} from "renraku"
 
 import {Core} from "./core.js"
 import {Stats} from "./types.js"
+import {Id} from "../tools/id.js"
 import {Agent} from "./parts/agent.js"
 import {Partner} from "../negotiation/types.js"
 import {negotiate_rtc_connection} from "../negotiation/negotiate-rtc-connection.js"
@@ -20,20 +20,22 @@ export const makeSignallerApi = (core: Core, agent: Agent) => ({v1: {
 	},
 
 	async createInvite(): Promise<string> {
-		const invite = hexId()
+		const invite = Id.random()
+		if (core.invites.has(invite))
+			throw new Error("invite collision")
 		agent.invites.add(invite)
-		core.agents.invites.set(invite, agent)
+		core.invites.set(invite, agent)
 		return invite
 	},
 
 	async deleteInvite(invite: string): Promise<void> {
 		agent.invites.delete(invite)
-		core.agents.invites.delete(invite)
+		core.invites.delete(invite)
 	},
 
 	async query(invite: string) {
 		try {
-			const host = core.agents.invites.require(invite)
+			const host = core.invites.require(invite)
 			return host.info()
 		}
 		catch (error) {
@@ -43,7 +45,7 @@ export const makeSignallerApi = (core: Core, agent: Agent) => ({v1: {
 
 	async join(invite: string) {
 		try {
-			const alice = core.agents.invites.require(invite)
+			const alice = core.invites.require(invite)
 			const bob = agent
 
 			const allowances = await Promise.all([
