@@ -1,6 +1,6 @@
 
-import {ev, Map2, pubsub} from "@benev/slate"
 import {Conduit} from "./utils/conduit.js"
+import {ev, Map2, pubsub} from "@benev/slate"
 import {AgentInfo} from "../signaller/types.js"
 import {gather_ice} from "./utils/gather-ice.js"
 import {wait_for_connection} from "./utils/wait-for-connection.js"
@@ -36,7 +36,6 @@ export function makeBrowserApi<Cable>({
 	const attempts = new Map2<string, Attempt>()
 
 	function destroy(attemptId: string) {
-		console.log("destroy", attemptId)
 		const attempt = attempts.get(attemptId)
 		if (!attempt) return
 		attempts.delete(attemptId)
@@ -66,12 +65,9 @@ export function makeBrowserApi<Cable>({
 	async function maybeAttempt<R>(attemptId: string, fn: (attempt: Attempt) => Promise<R>) {
 		try {
 			const attempt = attempts.get(attemptId)
-			if (attempt) {
-				return await fn(attempt)
-			}
-			else {
-				console.log("maybe attempt: did not find", attemptId)
-			}
+			return (attempt)
+				? await fn(attempt)
+				: undefined
 		}
 		catch (error) {
 			destroy(attemptId)
@@ -142,10 +138,8 @@ export function makeBrowserApi<Cable>({
 		},
 
 		async acceptIceCandidate(attemptId: string, candidate: RTCIceCandidate): Promise<void> {
-			console.log("got ice", attemptId, candidate)
 			return maybeAttempt(attemptId, async attempt => {
 				await attempt.prospect.peer.addIceCandidate(candidate)
-				console.log("accepted ice", attemptId, candidate)
 			})
 		},
 
@@ -153,16 +147,12 @@ export function makeBrowserApi<Cable>({
 			return requireAttempt(attemptId, async attempt => {
 				if (!attempt.cablePromise) throw new Error("required cablePromise missing")
 				if (!attempt.conduitPromise) throw new Error("required cablePromise missing")
-				const log = (label: string) => async<R>(r: R): Promise<R> => {
-					console.log(`READY ${label} - `, r)
-					return r
-				}
 				await Promise.all([
-					attempt.icePromise.then(log("ICE")),
-					attempt.cablePromise.then(log("CABLE")),
-					attempt.conduitPromise.then(log("CONDUIT")),
-					attempt.connectionPromise.then(log("CONNECTION")),
-				]).then(log("EVERYTHING"))
+					attempt.icePromise,
+					attempt.cablePromise,
+					attempt.conduitPromise,
+					attempt.connectionPromise,
+				])
 			})
 		},
 
@@ -183,7 +173,6 @@ export function makeBrowserApi<Cable>({
 					peer,
 					cable,
 					disconnect: () => {
-						console.log("connection.disconnect() called")
 						conduit.send("bye")
 						died()
 					},
@@ -192,16 +181,13 @@ export function makeBrowserApi<Cable>({
 				const disconnected = attempt.connected(connection)
 
 				function died() {
-					console.log("DIED")
 					destroy(attemptId)
 					disconnected()
 				}
 
 				ev(peer, {connectionstatechange: () => {
-					if (peer.connectionState === "closed" || peer.connectionState === "failed") {
-						console.log("PEER REMOTELY CLOSED (connectionstatechange)")
+					if (peer.connectionState === "closed" || peer.connectionState === "failed")
 						died()
-					}
 				}})
 
 				conduit.onmessage = event => {
