@@ -43,7 +43,7 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 					await o.allow(agent)
 				),
 				signallerApi,
-				rtcConfig: o.rtcConfig,
+				rtcConfigurator: o.rtcConfigurator,
 				cableConfig: o.cableConfig as CableConfig<Cable>,
 				welcome: prospect => {
 					const connected = o.welcome(prospect)
@@ -62,11 +62,6 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 	})
 
 	const signaller = signallerApi.v1 as SignallerApi["v1"]
-
-	// // TODO
-	// const creds = await signaller.turnCloudflare()
-	// console.log("CREDS", creds)
-
 	const self = await signaller.hello()
 	const close = () => socket.close()
 	return new Connected(self, signaller, close)

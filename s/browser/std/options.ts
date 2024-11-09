@@ -2,13 +2,13 @@
 import {stdUrl} from "./url.js"
 import {stdCable} from "./cable.js"
 import {stdLogging} from "./logging.js"
-import {stdRtcConfig} from "./rtc-config.js"
+import {stdRtcConfigurator} from "./rtc-configurator.js"
 import {CommonOptions, StdCable} from "../types.js"
 
 export function stdOptions(): CommonOptions<StdCable> {
 	return {
 		url: stdUrl(),
-		rtcConfig: stdRtcConfig(),
+		rtcConfigurator: stdRtcConfigurator,
 		cableConfig: stdCable(),
 		logging: stdLogging(),
 	}

@@ -15,7 +15,7 @@ export type BrowserApi = ReturnType<typeof makeBrowserApi>
  * think of the signalling server as a traffic cop (with the whistle) commanding each browser peer throughout the negotation process.
  */
 export function makeBrowserApi<Cable>({
-		rtcConfig,
+		rtcConfigurator,
 		cableConfig,
 		signallerApi,
 		allow,
@@ -86,6 +86,7 @@ export function makeBrowserApi<Cable>({
 			const attempt = attempts.get(attemptId)
 			if (attempt) destroy(attemptId)
 
+			const rtcConfig = await rtcConfigurator({signaller})
 			const peer = new RTCPeerConnection(rtcConfig)
 			const onFailed = pubsub()
 			const prospect: Prospect = {...buddy, peer, onFailed}

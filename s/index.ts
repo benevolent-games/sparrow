@@ -4,7 +4,7 @@ export * from "@benev/slate/x/tools/concurrent.js"
 export * from "./browser/std/cable.js"
 export * from "./browser/std/logging.js"
 export * from "./browser/std/options.js"
-export * from "./browser/std/rtc-config.js"
+export * from "./browser/std/rtc-configurator.js"
 export * from "./browser/std/url.js"
 
 export * from "./browser/utils/conduit.js"

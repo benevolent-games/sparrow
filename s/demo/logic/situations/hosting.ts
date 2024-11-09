@@ -6,7 +6,6 @@ import {Id} from "../../../tools/id.js"
 import {Hosted} from "../../../browser/host.js"
 import {Stats} from "../../../signaller/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
-import {customRtcConfig} from "./custom-rtc-config.js"
 import {Lobby, Person, UserDetails} from "../types.js"
 import {Connection, StdCable} from "../../../browser/types.js"
 
@@ -24,8 +23,8 @@ export class HostingSituation {
 		const onClosed = pubsub()
 
 		const hosted = await Sparrow.host<StdCable>({
-			rtcConfig: customRtcConfig(),
 			url,
+			rtcConfigurator: Sparrow.cloudflareRtcConfigurator,
 			allow: async() => true,
 			closed: () => {
 				onClosed.publish()

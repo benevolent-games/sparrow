@@ -21,8 +21,10 @@ export type Connection<Cable> = {
 	disconnect: () => void
 }
 
+export type RtcConfigurator = (options: {signaller: SignallerApi["v1"]}) => Promise<RTCConfiguration>
+
 export type BrowserApiOptions<Cable> = {
-	rtcConfig: RTCConfiguration
+	rtcConfigurator: RtcConfigurator
 	cableConfig: CableConfig<Cable>
 	signallerApi: SignallerApi
 	allow: AllowFn
@@ -49,7 +51,7 @@ export function asCableConfig<Cable>(config: CableConfig<Cable>) {
 
 export type CommonOptions<Cable> = {
 	url: string
-	rtcConfig: RTCConfiguration
+	rtcConfigurator: RtcConfigurator
 	cableConfig: CableConfig<Cable>
 	logging: Logging
 }
