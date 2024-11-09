@@ -19,7 +19,6 @@ type User = {
 
 export class HostingSituation {
 	static async start(url: string, closed: () => void) {
-		// const memeNames = new MemeNames()
 		const randomEmoji = new RandomUserEmojis()
 		const users = signal(new Set<User>)
 		const onClosed = pubsub()
@@ -41,7 +40,6 @@ export class HostingSituation {
 					reputation,
 					connection: null,
 					details: {
-						// name: memeNames.generate(),
 						name: Id.toDisplayName(id, reputation),
 						emoji: randomEmoji.pull(),
 						stable: true,
@@ -80,7 +78,6 @@ export class HostingSituation {
 			connection: null,
 			details: {
 				name: Id.toDisplayName(hosted.self.id, hosted.self.reputation),
-				// name: memeNames.generate(),
 				emoji: randomEmoji.pull(),
 				stable: true,
 			},

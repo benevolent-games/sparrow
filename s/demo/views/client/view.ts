@@ -18,7 +18,7 @@ export const ClientView = shadowView(use => (situation: JoinerSituation) => {
 		: Op.loading<Lobby>()
 
 	return html`
-		<h2>Joined <code>${Id.toFancy(invite)}</code></h2>
+		<h2>Joined <code>${Id.toDisplay(invite)}</code></h2>
 
 		${loading.binary(op, lobby => LobbyView([self.id, lobby]))}
 	`

@@ -5,6 +5,7 @@ import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import {Lobby} from "../../logic/types.js"
 import {AgentInfo} from "../../../signaller/types.js"
+import {Id} from "../../../tools/id.js"
 
 export const LobbyView = shadowView(use => (
 		selfId: string,
@@ -50,7 +51,7 @@ export const LobbyView = shadowView(use => (
 						${details.emoji}
 					</span>
 
-					<span x-name>
+					<span x-name title="id ${Id.toDisplay(agent.id)}, reputation ${Id.toDisplay(agent.reputation)}">
 						${details.name}
 					</span>
 
