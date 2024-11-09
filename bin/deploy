@@ -4,7 +4,9 @@
 # it's supposed to be run on the signaller server in the cloud
 
 source $HOME/.nvm/nvm.sh
+
+cp $HOME/.env.prod $HOME/app/.env.prod
 cd $HOME/app
 npm ci --omit=dev
-pm2 restart app || pm2 start "node x/signaller/server.js 8000" --name app
+pm2 restart app || pm2 start "node --env-file=.env.prod x/signaller/server.js" --name app
 

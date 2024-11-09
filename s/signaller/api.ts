@@ -2,21 +2,38 @@
 import {ExposedError} from "renraku"
 
 import {Core} from "./core.js"
-import {Stats} from "./types.js"
 import {Id} from "../tools/id.js"
 import {Agent} from "./parts/agent.js"
 import {Partner} from "../negotiation/types.js"
+import {SignallerParams, Stats} from "./types.js"
+import {fetchCloudflareTurn} from "./parts/fetch-cloudflare-turn.js"
 import {negotiate_rtc_connection} from "../negotiation/negotiate-rtc-connection.js"
 
 export type SignallerApi = ReturnType<typeof makeSignallerApi>
 
-export const makeSignallerApi = (core: Core, agent: Agent) => ({v1: {
+export const makeSignallerApi = (
+		core: Core,
+		agent: Agent,
+		params: SignallerParams,
+		origin: string | undefined,
+	) => ({v1: {
+
 	async hello() {
 		return agent.info()
 	},
 
 	async stats(): Promise<Stats> {
 		return core.statistician.stats()
+	},
+
+	async turnCloudflare() {
+		if (!params.turn.cloudflare)
+			throw new ExposedError("this server is not configured for cloudflare")
+		if (!origin)
+			throw new ExposedError("request origin is mysteriously missing")
+		if (!params.turn.allow.has(origin))
+			throw new ExposedError(`origin "${origin}" is not configured to be allowed to use the turn server`)
+		return fetchCloudflareTurn(params.turn.cloudflare)
 	},
 
 	async createInvite(): Promise<string> {

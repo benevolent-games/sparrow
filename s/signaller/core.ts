@@ -2,7 +2,9 @@
 import {Map2} from "@benev/slate"
 import {Agent} from "./parts/agent.js"
 import {makeSignallerApi} from "./api.js"
+import {SignallerParams} from "./types.js"
 import {BrowserApi} from "../browser/api.js"
+import {SimpleHeaders} from "renraku/x/server.js"
 import {Statistician} from "./parts/statistician.js"
 
 export class Core {
@@ -10,20 +12,21 @@ export class Core {
 	invites = new Map2<string, Agent>()
 	statistician = new Statistician(this.agents)
 
-	constructor(private salt: string) {}
+	constructor(private params: SignallerParams) {}
 
 	async acceptAgent(
 			ip: string,
+			headers: SimpleHeaders,
 			browserApi: BrowserApi,
 			disconnect: () => void,
 		) {
 
 		// create the agent
-		const agent = await Agent.make(ip, browserApi, disconnect, this.salt)
+		const agent = await Agent.make(ip, browserApi, disconnect, this.params.salt)
 		this.agents.add(agent)
 
 		// create the api available to this agent
-		const signallerApi = makeSignallerApi(this, agent)
+		const signallerApi = makeSignallerApi(this, agent, this.params, headers["origin"])
 
 		return {agent, signallerApi}
 	}

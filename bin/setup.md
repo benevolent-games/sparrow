@@ -71,3 +71,8 @@
     ```
     - follow its interactive instructions
 
+### establish `.env.prod`
+1. login as the deployer `su - deployer`
+1. create file `~/.env.prod` with contents copied from the `.env.dev` in the repo
+1. the app deployment script will copy from that `~/.env.prod` each deployment
+

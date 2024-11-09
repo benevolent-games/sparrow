@@ -62,6 +62,11 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 	})
 
 	const signaller = signallerApi.v1 as SignallerApi["v1"]
+
+	// // TODO
+	// const creds = await signaller.turnCloudflare()
+	// console.log("CREDS", creds)
+
 	const self = await signaller.hello()
 	const close = () => socket.close()
 	return new Connected(self, signaller, close)

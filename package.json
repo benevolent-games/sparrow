@@ -18,12 +18,13 @@
 		"build-links": "ln -s \"$(realpath s)\" x/s && ln -s \"$(realpath assets)\" x/assets",
 		"watch": "turtle watch -v --in=s,x --out=x",
 		"http": "http-server x",
-		"start": "SPARROW_SALT=a5ee36a21e3d624ca6e0940c08cd380e51768124b5cbb2f971ccfaa4cf12bba8 node x/signaller/server.js 8000 debug",
+		"start": "node --env-file=.env.dev x/signaller/server.js",
+		"start-prod": "node --env-file=.env.prod x/signaller/server.js",
 		"test": "cynic node --label='sparrow-rtc test suite' x/tests.test.js",
 		"test-watch": "chokidar 'x/**/*.js' -c 'npm test'"
 	},
 	"dependencies": {
-		"@benev/slate": "^0.2.11",
+		"@benev/slate": "^0.2.12",
 		"renraku": "^0.4.1"
 	},
 	"devDependencies": {
