@@ -1,11 +1,12 @@
 
 import {ev} from "@benev/slate"
-import {endpoint, loggers, webSocketRemote} from "renraku"
+import {endpoint, webSocketRemote} from "renraku"
 
 import {stdOptions} from "./std/options.js"
 import {AgentInfo} from "../signaller/types.js"
 import {SignallerApi} from "../signaller/api.js"
 import {makeBrowserApi} from "../browser/api.js"
+import {clientLogging} from "./utils/client-logging.js"
 import {CableConfig, Connection, ConnectOptions, generalTimeout} from "./types.js"
 
 export class Connected {
@@ -18,9 +19,7 @@ export class Connected {
 
 export async function connect<Cable>(options: ConnectOptions<Cable>) {
 	const o = {...stdOptions(), ...options}
-	const emoji = "👤"
-	const remoteLogging = loggers.label({remote: true, label: `${emoji} ->`, prefix: "server"})
-	const localLogging = loggers.label({remote: false, label: `${emoji} <-`, prefix: "client"})
+	const logging = clientLogging("👤")
 
 	let selfId: string | undefined
 	const connections = new Set<Connection<Cable>>()
@@ -32,7 +31,7 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 	}})
 
 	const {socket, remote: signallerApi} = await webSocketRemote<SignallerApi>({
-		...remoteLogging,
+		...logging.remote,
 		url: o.url,
 		onClose: o.closed,
 		timeout: generalTimeout,
@@ -57,7 +56,7 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 					}
 				}
 			}),
-			localLogging,
+			logging.local,
 		),
 	})
 
