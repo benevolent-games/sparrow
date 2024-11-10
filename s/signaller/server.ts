@@ -6,6 +6,7 @@ import {BrowserApi} from "../browser/api.js"
 import {getSignallerParams} from "./params.js"
 import {generalTimeout} from "../browser/types.js"
 import {serverLogging} from "./parts/server-logging.js"
+import {ipToReputation} from "./parts/ip-to-reputation.js"
 import {WebSocketServer, remote, endpoint, loggers, RandomUserEmojis, deathWithDignity} from "renraku/x/server.js"
 
 deathWithDignity()
@@ -19,8 +20,9 @@ const emojis = new RandomUserEmojis()
 const server = new WebSocketServer({
 	timeout: generalTimeout,
 	acceptConnection: async({ip, headers, remoteEndpoint, close}) => {
+		const reputation = await ipToReputation(ip, params.salt)
 		const emoji = emojis.pull()
-		const logging = serverLogging(ip, emoji)
+		const logging = serverLogging(reputation, emoji)
 
 		if (!params.debug) {
 			logging.remote.onCall = () => {}
@@ -28,7 +30,7 @@ const server = new WebSocketServer({
 		}
 
 		const browserApi = remote<BrowserApi>(remoteEndpoint, logging.remote)
-		const {agent, signallerApi} = await core.acceptAgent(ip, headers, browserApi, close)
+		const {agent, signallerApi} = await core.acceptAgent(reputation, headers, browserApi, close)
 		return {
 			closed: () => core.deleteAgent(agent),
 			localEndpoint: endpoint(signallerApi, logging.local),

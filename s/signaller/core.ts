@@ -15,19 +15,13 @@ export class Core {
 	constructor(private params: SignallerParams) {}
 
 	async acceptAgent(
-			ip: string,
+			reputation: string,
 			headers: SimpleHeaders,
 			browserApi: BrowserApi,
 			disconnect: () => void,
 		) {
 
-		const agent = await Agent.make(
-			ip,
-			browserApi,
-			disconnect,
-			this.params.salt,
-		)
-
+		const agent = new Agent(reputation, browserApi, disconnect)
 		this.agents.add(agent)
 
 		const signallerApi = makeSignallerApi(
