@@ -27,22 +27,19 @@
 
     const hosted = await Sparrow.host({
 
-      // somebody's requesting to join, will you allow it?
-      allow: async({reputation}) => true,
-
       // accept people joining
       welcome: prospect => connection => {
-        console.log(`somebody connected: ${connection.id}`)
+        console.log(`peer connected: ${connection.id}`)
 
         // send and receive data
         connection.cable.reliable.send("hello")
         connection.cable.reliable.onmessage = e => console.log("received", m.data)
 
-        return () => console.log(`somebody disconnected: ${connection.id}`)
+        return () => console.log(`peer disconnected: ${connection.id}`)
       },
 
-      // handler for when connection to sparrow signaller is severed
-      close: () => console.log(`connection to sparrow server has died`),
+      // oops, sparrow crashed or something, nobody can join anymore
+      close: () => console.log(`connection to sparrow signaller has died`),
     })
 
     // anybody with this invite code can join
@@ -85,8 +82,15 @@
 
 ## 🛂 Who will you allow?
 - Even when they have your invite code, a user must knock before they can enter.
-- Each user has a `reputation`, is a salted hash of their IP address.
-- This makes it easy for you to build mechanisms like ban lists:
+- The default, is to allow everybody who knocks, like this:
+  ```js
+  const hosted = await Sparrow.host({
+
+    // allow everybody
+    allow: async() => true,
+  })
+  ```
+- Each user has a `reputation` which is a salted hash of their IP address -- making it easy for you to setup a ban list:
   ```js
   const myBanList = new Set()
     .add("a332f6646c65f738")
@@ -94,7 +98,7 @@
 
   const hosted = await Sparrow.host({
 
-    // Allow people who are not on the ban list.
+    // allow people who are not banned
     allow: async({reputation}) => {
       return !myBanList.has(reputation)
     },
@@ -104,10 +108,10 @@
   ```ts
   const joined = await Sparrow.join({
 
-    // I want to join this invite I found
+    // i want to join this invite i found
     invite: "215fe776f758bc44",
 
-    // But not if it's this creep!
+    // but not if it's this creep!
     allow: async({reputation}) => reputation !== "a332f6646c65f738",
   })
   ```
@@ -116,15 +120,13 @@
   let doorIsOpen = true
 
   const hosted = await Sparrow.host({
-    allow: async({reputation}) => {
-      return doorIsOpen
-    },
+    allow: async() => doorIsOpen,
   })
 
   // Close the door!
   doorIsOpen = false
   ```
-- And it's async, in case you want to consult your own service or something.
+- And it's async, in case you want to consult your own remote service or something.
 
 <br/>
 

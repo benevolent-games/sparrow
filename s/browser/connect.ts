@@ -19,6 +19,7 @@ export class Connected {
 
 export async function connect<Cable>(options: ConnectOptions<Cable>) {
 	const o = {...stdOptions(), ...options}
+	const allow = o.allow ?? (async() => true)
 	const logging = clientLogging("👤")
 
 	let selfId: string | undefined
@@ -39,7 +40,7 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 			makeBrowserApi({
 				allow: async agent => !!(
 					agent.id !== selfId &&
-					await o.allow(agent)
+					await allow(agent)
 				),
 				signallerApi,
 				rtcConfigurator: o.rtcConfigurator,

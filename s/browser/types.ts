@@ -57,9 +57,9 @@ export type CommonOptions<Cable> = {
 }
 
 export type ConnectOptions<Cable> = {
-	allow: AllowFn
 	welcome: WelcomeFn<Cable>
 	closed: () => void
+	allow?: AllowFn
 } & Partial<CommonOptions<Cable>>
 
 export type JoinOptions<Cable> = {
