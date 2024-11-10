@@ -70,5 +70,5 @@ export type JoinOptions<Cable> = {
 } & Partial<CommonOptions<Cable>>
 
 export type AllowFn = (agent: AgentInfo) => Promise<boolean>
-export type WelcomeFn<Cable> = (prospect: Prospect) => (connection: Connection<Cable>) => () => void
+export type WelcomeFn<Cable = StdCable> = (prospect: Prospect) => (connection: Connection<Cable>) => () => void
 
