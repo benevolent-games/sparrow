@@ -166,9 +166,9 @@ export class HostingSituation {
 		for (const user of this.users.value) {
 			if (user.connection) {
 				promises.push(
-					reportConnectivity(user.connection.peer).then(report => {
-						user.report = report
-					})
+					reportConnectivity(user.connection.peer)
+						.then(report => { user.report = report })
+						.catch(() => { user.report = null })
 				)
 			}
 		}

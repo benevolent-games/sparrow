@@ -15,7 +15,6 @@ type CandidatePair = {
 	bytesSent: number
 	bytesReceived: number
 	nominated: boolean
-	selected: boolean
 	state: string
 }
 
@@ -62,7 +61,7 @@ export async function reportConnectivity(peer: RTCPeerConnection) {
 	const activeCandidates = new Set<Candidate>()
 
 	for (const pair of stats.candidatePairs.values()) {
-		if (pair.selected !== true) continue
+		if (pair.nominated !== true) continue
 		aggregate.bytesSent += pair.bytesSent
 		aggregate.bytesReceived += pair.bytesReceived
 		const local = stats.candidates.get(pair.localCandidateId)
