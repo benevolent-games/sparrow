@@ -43,8 +43,8 @@ export const HostView = shadowView(use => (situation: HostingSituation) => {
 							<li>
 								<span>Invite</span>
 								<span>
-									<a href="${Sparrow.invites.makeLinkUrl(Id.toDisplay(invite))}" target="_blank">
-										${Sparrow.invites.makeLinkDisplay(Id.toDisplay(invite))}
+									<a href="${Sparrow.invites.url(Id.toDisplay(invite))}" target="_blank">
+										${Sparrow.invites.url(Id.toDisplay(invite).slice(0, 5))}
 									</a>
 								</span>
 							</li>

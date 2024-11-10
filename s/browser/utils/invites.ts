@@ -8,13 +8,8 @@ export const invites = {
 	},
 
 	/** make link url */
-	makeLinkUrl: (invite: string) => {
+	url: (invite: string) => {
 		return `#invite=${invite}`
-	},
-
-	/** a truncated version of the link url, for display purposes */
-	makeLinkDisplay: (invite: string) => {
-		return `#invite=${invite.slice(0, 5)}..`
 	},
 }
 
