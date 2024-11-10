@@ -23,7 +23,6 @@ const server = new WebSocketServer({
 		const localLogging = loggers.label({remote: false, label: `${emoji} ->`, prefix: "server"})
 
 		if (!params.debug) {
-			loggers.log("production mode (debug disabled)")
 			remoteLogging.onCall = () => {}
 			localLogging.onCall = () => {}
 		}
