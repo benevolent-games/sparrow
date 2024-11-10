@@ -1,22 +1,21 @@
 
 ![](https://i.imgur.com/p0EFnnU.png)
 
-# 🐦 Sparrow RTC
+# 🐦 Sparrow-RTC
 
 🌟 ***Sparrow makes WebRTC easy.***  
-🫂 WebRTC is peer-to-peer networking between browser tabs.  
+🤝 WebRTC is peer-to-peer networking between browser tabs.  
 🎮 Perfect for making player-hosted multiplayer web games.  
-🚦 *Signaller* is a free service that negotiates connections.    
 🚀 Try the demo at [**https://sparrow.benev.gg/**](https://sparrow.benev.gg/)  
 💪 Self-hostable, read [self-hosting.md](./self-hosting.md) for instructions.  
 💖 Free and open source.  
 
 <br/>
 
-## 🐦 Connecting peers together
+## 🫂 Connecting peers together
 
 > **The Objective:**  
-> Connect two players together, and establish [RTC Data Channels](https://developer.mozilla.org/en-US/docs/Web/API/RTCDataChannel) between them, so you can make a player-hosted multiplayer video game.
+> Connect two players together, and establish [RTC Data Channels](https://developer.mozilla.org/en-US/docs/Web/API/RTCDataChannel) between them.
 
 1. **Install `sparrow-rtc`**
     ```sh
@@ -29,7 +28,7 @@
     const hosted = await Sparrow.host({
 
       // somebody's requesting to join, will you allow it?
-      allow: async({id, reputation}) => true,
+      allow: async({reputation}) => true,
 
       // accept people joining
       welcome: prospect => connection => {
@@ -48,14 +47,14 @@
 
     // anybody with this invite code can join
     hosted.invite
-      // "8ab469956da27aff3825a3681b4f6452"
+      // "215fe776f758bc44"
     ```
 1. **Join that session**
     ```ts
     import Sparrow from "sparrow-rtc"
 
     const joined = await Sparrow.join({
-      invite: "8ab469956da27aff3825a3681b4f6452",
+      invite: "215fe776f758bc44",
       disconnected: () => console.log(`disconnected from host`),
     })
 
@@ -66,22 +65,147 @@
 
 <br/>
 
-## 🐦 Get the Cable!
-
-- The `cable` is what you want. The cable is what you need.
+## 🔌 Get the Cable!
+- The `cable` is what you want. *The cable is what you need.*
 - The default cable that sparrow gives you has two [RTC Data Channels](https://developer.mozilla.org/en-US/docs/Web/API/RTCDataChannel).
-  - **`cable.reliable` — Steadfast orderly delivery of your messages. *(TCP-like)***
-    - Every message is accounted for. Guaranteed to have no losses (unless a disconnect occurs).
-    - When a message goes missing — massive catastrophic lag spike, everything halts until the missing message is successfully retransmitted.
-    - Ideal for important game events like "this player picked up this inventory item" or something like that.
-  - **`cable.unreliable` — Chaotic shouting of your messages toward the other side. *(UDP-like)***
-    - Not every message will arrive. There will be losses.
-    - When a message goes missing — it's ignored, and everything continues like nothing happened.
-    - Ideal for "continuous data" like "now this player is located here" 30 times per second.
+- Each data channel has a `channel.send(data)` method, so you can send data.
+- Each data channel has a `channel.onmessage = event => {}` function, so you can receive messages.
+
+### 🦸 `cable.reliable` — orderly message delivery
+- Every message is accounted for. Guaranteed to have no losses (unless a disconnect occurs).
+- When a message goes missing — massive catastrophic lag spike, everything halts until the missing message is successfully retransmitted.
+- Ideal for important game events like *"this player picked up this inventory item"* or something like that.
+
+### 🦹 `cable.unreliable` — chaotic shouting message shouting
+- Not every message will arrive. There will be losses.
+- When a message goes missing — it's ignored, and everything continues like nothing happened.
+- Ideal for *"continuous data"* like *"now this player is located here"* 30 times per second.
 
 <br/>
 
-## 🐦 Custom URLs
+## 🛂 Who will you allow?
+- Even when they have your invite code, a user must knock before they can enter.
+- Each user has a `reputation`, is a salted hash of their IP address.
+- This makes it easy for you to build mechanisms like ban lists:
+  ```js
+  const myBanList = new Set()
+    .add("a332f6646c65f738")
+    .add("0d506addf169c407")
+
+  const hosted = await Sparrow.host({
+
+    // Allow people who are not on the ban list.
+    allow: async({reputation}) => {
+      return !myBanList.has(reputation)
+    },
+  })
+  ```
+- Hosts can use `allow` to ban unwanted joiners, but conversely, joiners can ban unwanted hosts:
+  ```ts
+  const joined = await Sparrow.join({
+
+    // I want to join this invite I found
+    invite: "215fe776f758bc44",
+
+    // But not if it's this creep!
+    allow: async({reputation}) => reputation !== "a332f6646c65f738",
+  })
+  ```
+- You can also use the allow function as a global switch, to just close the door and prevent any more joiners:
+  ```ts
+  let doorIsOpen = true
+
+  const hosted = await Sparrow.host({
+    allow: async({reputation}) => {
+      return doorIsOpen
+    },
+  })
+
+  // Close the door!
+  doorIsOpen = false
+  ```
+- And it's async, in case you want to consult your own service or something.
+
+<br/>
+
+## 👥 How to deal with people
+- Okay, so you can pass this kind of `welcome` function to `Sparrow.host`. Here's some notes about the connection object you'll get:
+  ```ts
+  const hosted = await Sparrow.host({
+    welcome: prospect => connection => {
+
+      // ephemeral id
+      connection.id
+
+      // persistent id (based on ip address)
+      connection.reputation
+
+      // RTCPeerConnection (webrtc internals)
+      connection.peer
+
+      // the cable you need
+      connection.cable
+
+      // destroy this connection
+      connection.disconnect()
+
+      // react to the other side disconnecting
+      return () => {}
+    },
+  })
+  ```
+  - Note, you can also pass a `welcome` function like this to `Sparrow.join`, but, you don't have to..
+- You can gather some useful stats with this helper function:
+  ```ts
+  const report = await Sparrow.reportConnectivity(connection.peer)
+
+  report.kind
+    // "local" -- connected directly over local area network
+    // "direct" -- connected directly over the internet
+    // "relay" -- connected via indirect proxy TURN server
+
+  report.bytesSent
+    // number of bytes sent
+
+  report.bytesSent
+    // number of bytes received
+  ```
+- Optionally, you can react to `prospect`, which is an ongoing connection attempt:
+  ```ts
+  const hosted = await Sparrow.host({
+    welcome: prospect => {
+      console.log(`${prospect.id} is attempting to connect..`)
+
+      // ephemeral id
+      prospect.id
+
+      // persistent id (based on ip address)
+      prospect.reputation
+
+      // RTCPeerConnection (webrtc internals)
+      prospect.peer
+
+      // react to connection failure
+      prospect.onFailed(() => {
+        console.log(`${prospect.id} failed to connect`)
+      })
+
+      // react to successful connection
+      return connection => {
+        console.log(`${prospect.id} successfully connected`)
+
+        // react to disconnected
+        return () => {}
+      }
+    },
+  })
+  ```
+  - This isn't necessary, you can just ignore prospects and only concern yourself with connections.
+  - Prospects are an opportunity for you to display the activity of attempted connections as they're in progress.
+
+<br/>
+
+## 🔗 Custom URLs
 
 - `Sparrow.host` and `Sparrow.join` both accept these common options
   ```ts
@@ -112,7 +236,7 @@
 
 <br/>
 
-## 🐦 Understanding Sparrow's *Signaller* Service
+## 🚦 Understanding Sparrow's *Signaller* Service
 - We host a free official Sparrow signaller for everybody:
   - `https://signaller.sparrow.benev.gg/`
   - https://signaller.sparrow.benev.gg/health — shows a timestamp if the signaller is up and running
@@ -123,8 +247,7 @@
 
 <br/>
 
-## 🐦 Understanding STUN Servers
-
+## ⚡ Understanding STUN Servers
 - To allow users to connect to each other, they need to know each other's IP addresses.
 - WebRTC usees STUN servers to discover the user IP addresses.
 - STUN servers are efficient and cheap to operate, and so there are many publicly available free STUN servers you can use.
@@ -132,8 +255,7 @@
 
 <br/>
 
-## 🐦 Understanding TURN Servers
-
+## 💈 Understanding TURN Servers
 - Sometimes users are under network conditions that makes direct connections impossible.
   - This happens because the internet is badly designed.
 - To save the day, you can configure a TURN server which will act as a reliable relay.
@@ -146,8 +268,7 @@
 
 <br/>
 
-## 🐦 Custom Cables
-
+## 🔌 Custom Cables
 - You can prepare any kinds of RTC Data Channels you like, by establishing your own `cableConfig`
   ```ts
   // import various helpers
@@ -195,8 +316,7 @@
 
 <br/>
 
-## 🐦 Logging
-
+## 📜 Logging
 - You can specify to only log errors like this
   ```ts
   const joined = await Sparrow.join({
@@ -212,4 +332,10 @@
   - `Sparrow.stdLogging` -- log everything (default)
   - `Sparrow.errorLogging` -- only log errors
   - `Sparrow.noLogging` -- log nothing at all
+
+<br/>
+
+## 💖 Free and open source
+- Gimme a star on github!
+- Join our [Benevolent Discord Community](https://discord.gg/BnZx2utdev), shout at `Chase` and say sparrow-rtc is rad!
 
