@@ -266,7 +266,8 @@
   - Sparrow does not offer TURN service for free, you'd need to configure your own.
   - You can run your own TURN server, like [coturn](https://github.com/coturn/coturn), or you can use a paid cloud service provider like [Cloudflare's](https://developers.cloudflare.com/calls/turn/).
   - For some reason these are all a total pain to setup properly.
-- Sparrow's signaller has a little cloudflare integration for my own personal convenience, but you have to [self-host](./self-hosting.md) the signaller and follow the cloudflare instructions there.
+- To use a TURN server, you just need to include the URL for it in your rtcConfigurator's `iceServers`.
+- Sparrow's signaller does have a little cloudflare integration for my own personal convenience, which you can also take advantage of, but you'd have to [self-host](./self-hosting.md) the signaller and follow the cloudflare instructions there, to wire it up to your own cloudflare account -- however, you might instead consider spinning up your own coturn TURN server and continue to use the sparrow signaller for free -- either strategy would be a perfectly valid approach.
 
 <br/>
 
