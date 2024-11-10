@@ -4,9 +4,9 @@
 # 🐦 Sparrow-RTC
 
 🌟 ***Sparrow makes WebRTC easy.***  
+🚀 Try the demo at [**https://sparrow.benev.gg/**](https://sparrow.benev.gg/)  
 🤝 WebRTC is peer-to-peer networking between browser tabs.  
 🎮 Perfect for making player-hosted multiplayer web games.  
-🚀 Try the demo at [**https://sparrow.benev.gg/**](https://sparrow.benev.gg/)  
 💪 Self-hostable, read [self-hosting.md](./self-hosting.md) for instructions.  
 💖 Free and open source.  
 
