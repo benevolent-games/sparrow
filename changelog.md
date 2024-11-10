@@ -7,12 +7,22 @@
 
 <br/>
 
-## v0.2.0
+## v0.2
+
+### v0.2.1
+- 🍏 fix project links in package.json
+- 🍏 readme tweaks
+
+### v0.2.0
 - 🟥 super cool rewrite
 
-## v0.1.0
+<br/>
+
+## v0.1
 - 🟥 massive extreme rewrite
 
-## v0.0.0
+<br/>
+
+## v0.0
 - 🍏 initial release
 
