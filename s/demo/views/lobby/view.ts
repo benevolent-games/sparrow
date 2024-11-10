@@ -26,7 +26,7 @@ export const LobbyView = shadowView(use => (
 
 	return html`
 		<ul>
-			${lobby.people.map(({agent, details, scenario}) => html`
+			${lobby.people.map(({agent, details, scenario, report}) => html`
 				<li
 					data-id="${agent.id}"
 					x-scenario="${scenario.kind}"
@@ -55,10 +55,10 @@ export const LobbyView = shadowView(use => (
 						${details.name}
 					</span>
 
-					<span x-ice>
-						${(scenario.kind === "connecting" || scenario.kind === "connected")
-							? "client"
-							: "host"}
+					<span x-report>
+						${scenario.kind === "local"
+							? "host"
+							: report?.kind ?? "--"}
 					</span>
 
 					${clickKick ? html`

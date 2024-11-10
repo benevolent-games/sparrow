@@ -1,11 +1,20 @@
 
 import {RtcConfigurator} from "../types.js"
-import {rtcPresets} from "../std/rtc-configurator.js"
+
+// see https://developers.cloudflare.com/calls/turn/generate-credentials/
 
 export const cloudflareRtcConfigurator: RtcConfigurator = async({signaller}) => {
-	const rtc = rtcPresets.std()
-	const turn = await signaller.turnCloudflare()
-	rtc.iceServers.push(turn)
-	return rtc
+	const cloudflare = await signaller.turn.cloudflare()
+	return {
+		iceServers: [
+			{urls: ["stun:stun.l.google.com:19302"]},
+			{urls: ["stun:stun.services.mozilla.com:3478"]},
+			{
+				urls: ["turn:turn.cloudflare.com:3478?transport=udp"],
+				username: cloudflare.username,
+				credential: cloudflare.credential,
+			},
+		],
+	}
 }
 

@@ -26,14 +26,16 @@ export const makeSignallerApi = (
 		return core.statistician.stats()
 	},
 
-	async turnCloudflare() {
-		if (!params.turn.cloudflare)
-			throw new ExposedError("this server is not configured for cloudflare")
-		if (!origin)
-			throw new ExposedError("request origin header is mysteriously missing")
-		if (!params.turn.allow.has(origin))
-			throw new ExposedError(`origin "${origin}" is not configured to be allowed to use the turn server`)
-		return fetchCloudflareTurn(params.turn.cloudflare)
+	turn: {
+		async cloudflare() {
+			if (!params.turn.cloudflare)
+				throw new ExposedError("this server is not configured for cloudflare")
+			if (!origin)
+				throw new ExposedError("request origin header is mysteriously missing")
+			if (!params.turn.allow.has(origin))
+				throw new ExposedError(`origin "${origin}" is not configured to be allowed to use the turn server`)
+			return fetchCloudflareTurn(params.turn.cloudflare)
+		},
 	},
 
 	async createInvite(): Promise<string> {

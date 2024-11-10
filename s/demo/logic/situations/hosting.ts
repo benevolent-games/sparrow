@@ -8,15 +8,43 @@ import {Stats} from "../../../signaller/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
 import {Lobby, Person, UserDetails} from "../types.js"
 import {Connection, StdCable} from "../../../browser/types.js"
+import {ConnectivityReport, reportConnectivity} from "../../../browser/utils/report-connectivity.js"
 
 type User = {
 	id: string
 	reputation: string
 	details: UserDetails
 	connection: Connection<StdCable> | null
+	report: ConnectivityReport | null
 }
 
 export class HostingSituation {
+	repeater: Repeater
+	lobby: Signal<Lobby>
+	stopUpdates: () => void
+
+	constructor(
+			public url: string,
+			public hosted: Hosted,
+			public users: Signal<Set<User>>,
+			public stats: Signal<Stats>,
+			onClosed: Pubsub,
+		) {
+		this.lobby = signals.computed(() => this.getLobby())
+		this.repeater = repeater(
+			5_000,
+			async() => {
+				await Promise.all([
+					this.#refreshStats(),
+					this.#refreshRtcStats(),
+				])
+				await this.#broadcastLobby()
+			},
+		)
+		this.stopUpdates = this.lobby.on(() => this.#broadcastLobby())
+		onClosed(() => this.#closed())
+	}
+
 	static async start(url: string, closed: () => void) {
 		const randomEmoji = new RandomUserEmojis()
 		const users = signal(new Set<User>)
@@ -38,6 +66,7 @@ export class HostingSituation {
 					id,
 					reputation,
 					connection: null,
+					report: null,
 					details: {
 						name: Id.toDisplayName(id, reputation),
 						emoji: randomEmoji.pull(),
@@ -75,6 +104,7 @@ export class HostingSituation {
 			id: hosted.self.id,
 			reputation: hosted.self.reputation,
 			connection: null,
+			report: null,
 			details: {
 				name: Id.toDisplayName(hosted.self.id, hosted.self.reputation),
 				emoji: randomEmoji.pull(),
@@ -86,33 +116,13 @@ export class HostingSituation {
 		return new this(url, hosted, users, stats, onClosed)
 	}
 
-	repeater: Repeater
-	lobby: Signal<Lobby>
-	stopUpdates: () => void
-
-	constructor(
-			public url: string,
-			public hosted: Hosted,
-			public users: Signal<Set<User>>,
-			public stats: Signal<Stats>,
-			onClosed: Pubsub,
-		) {
-
-		this.lobby = signals.computed(() => this.getLobby())
-		this.repeater = repeater(5_000, async() => void await Promise.all([
-			this.#refreshStats(),
-			this.#broadcastLobby(),
-		]))
-		this.stopUpdates = this.lobby.on(() => this.#broadcastLobby())
-		onClosed(() => this.#closed())
-	}
-
 	getLobby(): Lobby {
 		return {
 			hostId: this.hosted.self.id,
 			people: [...this.users.value].map((user): Person => ({
 				agent: {id: user.id, reputation: user.reputation},
 				details: user.details,
+				report: user.report,
 				scenario: (
 					user.id === this.hosted.self.id ?
 						{kind: "local"} :
@@ -149,6 +159,21 @@ export class HostingSituation {
 		return [...this.users.value]
 			.map(p => p.connection)
 			.filter(c => !!c)
+	}
+
+	async #refreshRtcStats() {
+		const promises: Promise<void>[] = []
+		for (const user of this.users.value) {
+			if (user.connection) {
+				promises.push(
+					reportConnectivity(user.connection.peer).then(report => {
+						user.report = report
+					})
+				)
+			}
+		}
+		await Promise.all(promises)
+		this.users.publish()
 	}
 
 	async #refreshStats() {

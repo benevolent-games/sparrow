@@ -80,10 +80,9 @@ li {
 		text-align: center;
 	}
 
-	[x-ice] {
+	[x-report] {
 		font-family: monospace;
-
-		width: 3em;
+		width: 6em;
 		text-align: center;
 	}
 
