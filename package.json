@@ -46,10 +46,10 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/chase-moskal/sparrow-rtc.git"
+		"url": "git+https://github.com/benevolent-games/sparrow.git"
 	},
 	"bugs": {
-		"url": "https://github.com/chase-moskal/sparrow-rtc/issues"
+		"url": "https://github.com/benevolent-games/sparrow/issues"
 	},
-	"homepage": "https://github.com/chase-moskal/sparrow-rtc#readme"
+	"homepage": "https://github.com/benevolent-games/sparrow#readme"
 }
