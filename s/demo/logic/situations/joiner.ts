@@ -9,9 +9,9 @@ export class JoinerSituation {
 	static async start(url: string, invite: string, disconnected: () => void) {
 		const joined = await Sparrow.join<StdCable>({
 			url,
-			rtcConfigurator: Sparrow.cloudflareRtcConfigurator,
 			invite,
 			disconnected,
+			rtcConfigurator: Sparrow.turnRtcConfigurator,
 		})
 		return new JoinerSituation(url, joined)
 	}

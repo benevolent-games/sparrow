@@ -16,11 +16,15 @@ export type CloudflareTurnParams = {
 	}
 }
 
-export type TurnConfig = {
+export type IceServer = {
 	urls: string[]
-	username: string
-	credential: string
+	username?: string
+	credential?: string
 }
+
+export type TurnYes = {turn: IceServer}
+export type TurnNo = {no: string}
+export type TurnResult = TurnYes | TurnNo
 
 ////////////////////////////////////////////////////////////
 

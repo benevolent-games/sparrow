@@ -1,6 +1,8 @@
 
+import {RtcConfigurator} from "../types.js"
+
 export const rtcPresets = {
-	std: () => ({
+	mixed: () => ({
 		iceServers: [
 			{urls: ["stun:stun.l.google.com:19302"]},
 			{urls: ["stun:stun.services.mozilla.com:3478"]},
@@ -27,5 +29,23 @@ export const rtcPresets = {
 	}),
 } satisfies Record<string, () => RTCConfiguration>
 
-export const stdRtcConfigurator = async(): Promise<RTCConfiguration> => rtcPresets.std()
+export const stdRtcConfigurator: RtcConfigurator = async() => rtcPresets.mixed()
+
+export const turnRtcConfigurator: RtcConfigurator = async({signaller}) => {
+	const result = await signaller.turn()
+
+	if ("turn" in result) {
+		return {
+			iceServers: [
+				{urls: ["stun:stun.l.google.com:19302"]},
+				{urls: ["stun:stun.services.mozilla.com:3478"]},
+				result.turn,
+			],
+		}
+	}
+	else {
+		console.warn(`turn failed: ${result.no}`)
+		return rtcPresets.mixed()
+	}
+}
 

@@ -1,6 +1,6 @@
 
 import {ExposedError} from "renraku/x/server.js"
-import {CloudflareTurnParams, TurnConfig} from "../types.js"
+import {CloudflareTurnParams, IceServer} from "../types.js"
 
 type CloudflareCreds = {
 	iceServers: {
@@ -10,7 +10,9 @@ type CloudflareCreds = {
 	}
 }
 
-export async function fetchCloudflareTurn({token}: CloudflareTurnParams) {
+// see https://developers.cloudflare.com/calls/turn/generate-credentials/
+
+export async function fetchCloudflareTurn({token}: CloudflareTurnParams): Promise<IceServer> {
 	const ttl = 60 * 5
 	const url = `https://rtc.live.cloudflare.com/v1/turn/keys/${token.id}/credentials/generate`
 
@@ -27,8 +29,11 @@ export async function fetchCloudflareTurn({token}: CloudflareTurnParams) {
 		throw new ExposedError(`failed to fetch turn credentials: ${response.statusText}`)
 
 	const {iceServers} = await response.json() as CloudflareCreds
-	const turnConfig: TurnConfig = iceServers
 
-	return turnConfig
+	return {
+		urls: ["turn:turn.cloudflare.com:3478?transport=udp"],
+		username: iceServers.username,
+		credential: iceServers.credential,
+	}
 }
 

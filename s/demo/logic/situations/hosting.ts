@@ -52,7 +52,7 @@ export class HostingSituation {
 
 		const hosted = await Sparrow.host<StdCable>({
 			url,
-			rtcConfigurator: Sparrow.cloudflareRtcConfigurator,
+			rtcConfigurator: Sparrow.turnRtcConfigurator,
 			allow: async() => true,
 			closed: () => {
 				onClosed.publish()

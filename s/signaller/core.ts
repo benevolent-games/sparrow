@@ -21,12 +21,21 @@ export class Core {
 			disconnect: () => void,
 		) {
 
-		// create the agent
-		const agent = await Agent.make(ip, browserApi, disconnect, this.params.salt)
+		const agent = await Agent.make(
+			ip,
+			browserApi,
+			disconnect,
+			this.params.salt,
+		)
+
 		this.agents.add(agent)
 
-		// create the api available to this agent
-		const signallerApi = makeSignallerApi(this, agent, this.params, headers["origin"])
+		const signallerApi = makeSignallerApi(
+			this,
+			agent,
+			this.params,
+			headers["origin"] ?? "",
+		)
 
 		return {agent, signallerApi}
 	}

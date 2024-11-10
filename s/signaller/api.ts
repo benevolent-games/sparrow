@@ -5,7 +5,7 @@ import {Core} from "./core.js"
 import {Id} from "../tools/id.js"
 import {Agent} from "./parts/agent.js"
 import {Partner} from "../negotiation/types.js"
-import {SignallerParams, Stats} from "./types.js"
+import {SignallerParams, Stats, TurnResult} from "./types.js"
 import {fetchCloudflareTurn} from "./parts/fetch-cloudflare-turn.js"
 import {negotiate_rtc_connection} from "../negotiation/negotiate-rtc-connection.js"
 
@@ -15,7 +15,7 @@ export const makeSignallerApi = (
 		core: Core,
 		agent: Agent,
 		params: SignallerParams,
-		origin: string | undefined,
+		origin: string,
 	) => ({v1: {
 
 	async hello() {
@@ -26,16 +26,12 @@ export const makeSignallerApi = (
 		return core.statistician.stats()
 	},
 
-	turn: {
-		async cloudflare() {
-			if (!params.turn.cloudflare)
-				throw new ExposedError("this server is not configured for cloudflare")
-			if (!origin)
-				throw new ExposedError("request origin header is mysteriously missing")
-			if (!params.turn.allow.has(origin))
-				throw new ExposedError(`origin "${origin}" is not configured to be allowed to use the turn server`)
-			return fetchCloudflareTurn(params.turn.cloudflare)
-		},
+	async turn(): Promise<TurnResult> {
+		if (!params.turn.cloudflare)
+			return {no: "this sparrow server is not configured for turn"}
+		if (!params.turn.allow.has(origin))
+			return {no: `your origin is not allowed to use the turn server "${origin}"`}
+		return {turn: await fetchCloudflareTurn(params.turn.cloudflare)}
 	},
 
 	async createInvite(): Promise<string> {
