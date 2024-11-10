@@ -8,5 +8,6 @@ source $HOME/.nvm/nvm.sh
 cp $HOME/.env.prod $HOME/app/.env.prod
 cd $HOME/app
 npm ci --omit=dev
-pm2 restart app || pm2 start "node --env-file=.env.prod x/signaller/server.js" --name app
+pm2 delete app
+pm2 start "FORCE_COLOR=1 node --env-file=.env.prod x/signaller/server.js" --name app
 
