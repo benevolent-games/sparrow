@@ -13,7 +13,7 @@ export type Prospect = {
 	onFailed: Pubsub
 }
 
-export type Connection<Cable> = {
+export type Connection<Cable = StdCable> = {
 	id: string
 	reputation: string
 	peer: RTCPeerConnection
