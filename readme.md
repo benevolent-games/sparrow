@@ -260,11 +260,11 @@
 ## 💈 Understanding TURN Servers
 - Sometimes users are under network conditions that makes direct connections impossible.
   - This happens because the internet is badly designed.
-- To save the day, you can configure a TURN server which will act as a reliable relay.
+- To save the day, you can configure a TURN server which will act as a reliable relay for those who are unable to achieve direct connections.
   - On the up side, with a TURN service, your users can basically always connect reliably.
-  - On the down side, your users will have an increased ping time, and this *costs you money* because you have to pay for all their relayed traffic bandwidth.
+  - On the down side, this *costs you money,* because you have to pay for all the relayed traffic bandwidth.
   - Sparrow does not offer TURN service for free, you'd need to configure your own.
-  - You can run your own TURN server, like [coturn](https://github.com/coturn/coturn), or you can use a paid cloud service provider like [Cloudflare Calls TURN service](https://developers.cloudflare.com/calls/turn/).
+  - You can run your own TURN server, like [coturn](https://github.com/coturn/coturn), or you can use a paid cloud service provider like [Cloudflare's](https://developers.cloudflare.com/calls/turn/).
   - For some reason these are all a total pain to setup properly.
 - Sparrow's signaller has a little cloudflare integration for my own personal convenience, but you have to [self-host](./self-hosting.md) the signaller and follow the cloudflare instructions there.
 
