@@ -8,7 +8,7 @@
 <br/>
 
 ## v0.2.0
-- 🟥 renamed `connecting` option to `welcome`
+- 🟥 super cool rewrite
 
 ## v0.1.0
 - 🟥 massive extreme rewrite
