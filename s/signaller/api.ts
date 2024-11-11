@@ -5,8 +5,8 @@ import {Core} from "./core.js"
 import {Id} from "../tools/id.js"
 import {Agent} from "./parts/agent.js"
 import {Partner} from "../negotiation/types.js"
-import {SignallerParams, Stats, TurnResult} from "./types.js"
 import {fetchCloudflareTurn} from "./parts/fetch-cloudflare-turn.js"
+import {SignallerParams, SignallerStats, TurnResult} from "./types.js"
 import {negotiate_rtc_connection} from "../negotiation/negotiate-rtc-connection.js"
 
 export type SignallerApi = ReturnType<typeof makeSignallerApi>
@@ -22,7 +22,7 @@ export const makeSignallerApi = (
 		return agent.info()
 	},
 
-	async stats(): Promise<Stats> {
+	async stats(): Promise<SignallerStats> {
 		return core.statistician.stats()
 	},
 

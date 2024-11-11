@@ -1,17 +1,17 @@
 
 import {deferPromise, Pubsub} from "@benev/slate"
 
-import {connect, Connected} from "./connect.js"
 import {SignallerApi} from "../signaller/api.js"
-import {AgentInfo, Stats} from "../signaller/types.js"
+import {connect, SparrowConnect} from "./connect.js"
+import {AgentInfo, SignallerStats} from "../signaller/types.js"
 import {Connection, JoinOptions, Prospect, StdCable} from "./types.js"
 
-export class Joined<Cable = StdCable> extends Connected {
+export class SparrowJoin<Cable = StdCable> extends SparrowConnect {
 	constructor(
 			signaller: SignallerApi["v1"],
 			self: AgentInfo,
-			stats: Stats,
-			onStats: Pubsub<[Stats]>,
+			stats: SignallerStats,
+			onStats: Pubsub<[SignallerStats]>,
 			close: () => void,
 			public invite: string,
 			public host: AgentInfo,
@@ -62,7 +62,7 @@ export async function join<Cable>(options: JoinOptions<Cable>) {
 	// close conneciton to signaller after we've joined
 	close()
 
-	return new Joined<Cable>(
+	return new SparrowJoin<Cable>(
 		signaller,
 		self,
 		stats,

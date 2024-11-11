@@ -5,16 +5,16 @@ import {ev, Pubsub, pubsub, repeat} from "@benev/slate"
 import {stdOptions} from "./std/options.js"
 import {SignallerApi} from "../signaller/api.js"
 import {makeBrowserApi} from "../browser/api.js"
-import {AgentInfo, Stats} from "../signaller/types.js"
 import {clientLogging} from "./utils/client-logging.js"
+import {AgentInfo, SignallerStats} from "../signaller/types.js"
 import {CableConfig, Connection, ConnectOptions, generalTimeout} from "./types.js"
 
-export class Connected {
+export class SparrowConnect {
 	constructor(
 		public signaller: SignallerApi["v1"],
 		public self: AgentInfo,
-		public stats: Stats,
-		public onStats: Pubsub<[Stats]>,
+		public stats: SignallerStats,
+		public onStats: Pubsub<[SignallerStats]>,
 		public close: () => void,
 	) {}
 }
@@ -79,8 +79,8 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 		stopKeepAlive()
 	}
 
-	const onStats = pubsub<[Stats]>()
-	const connected = new Connected(signaller, self, stats, onStats, close)
+	const onStats = pubsub<[SignallerStats]>()
+	const connected = new SparrowConnect(signaller, self, stats, onStats, close)
 
 	const keepAliveInterval = 0.45 * generalTimeout
 	const stopKeepAlive = repeat(keepAliveInterval, async() => {

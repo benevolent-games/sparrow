@@ -2,16 +2,16 @@
 import {Pubsub} from "@benev/slate"
 
 import {ConnectOptions} from "./types.js"
-import {connect, Connected} from "./connect.js"
 import {SignallerApi} from "../signaller/api.js"
-import {AgentInfo, Stats} from "../signaller/types.js"
+import {connect, SparrowConnect} from "./connect.js"
+import {AgentInfo, SignallerStats} from "../signaller/types.js"
 
-export class Hosted extends Connected {
+export class SparrowHost extends SparrowConnect {
 	constructor(
 			signaller: SignallerApi["v1"],
 			self: AgentInfo,
-			stats: Stats,
-			onStats: Pubsub<[Stats]>,
+			stats: SignallerStats,
+			onStats: Pubsub<[SignallerStats]>,
 			close: () => void,
 			public invite: string,
 		) {
@@ -22,6 +22,6 @@ export class Hosted extends Connected {
 export async function host<Cable>(options: ConnectOptions<Cable>) {
 	const {signaller, self, stats, onStats, close} = await connect(options)
 	const invite = await signaller.createInvite()
-	return new Hosted(signaller, self, stats, onStats, close, invite)
+	return new SparrowHost(signaller, self, stats, onStats, close, invite)
 }
 

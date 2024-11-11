@@ -1,9 +1,9 @@
 
 import {signal} from "@benev/slate"
 import {Lobby} from "../types.js"
-import {Joined} from "../../../browser/join.js"
 import {StdCable} from "../../../browser/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
+import {SparrowJoin} from "../../../browser/join.js"
 
 export class JoinerSituation {
 	static async start(url: string, invite: string, disconnected: () => void) {
@@ -20,7 +20,7 @@ export class JoinerSituation {
 
 	constructor(
 			public url: string,
-			public joined: Joined
+			public joined: SparrowJoin
 		) {
 
 		joined.connection.cable.reliable.onmessage = event => {

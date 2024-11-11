@@ -1,13 +1,13 @@
 
 import {Agent} from "./agent.js"
-import {Stats, StatsTimeframe} from "../types.js"
+import {SignallerStats, SignallerStatsTimeframe} from "../types.js"
 
 type StatName = "connection" | "failure"
 type StatEvent = [number, StatName]
 
 export class Statistician {
 	#events: StatEvent[] = []
-	#daily: StatsTimeframe = {
+	#daily: SignallerStatsTimeframe = {
 		failures: 0,
 		connections: 0,
 	}
@@ -18,7 +18,7 @@ export class Statistician {
 		const hour = 1000 * 60 * 60
 		const dayAgo = Date.now() - (24 * hour)
 
-		const daily: StatsTimeframe = {
+		const daily: SignallerStatsTimeframe = {
 			failures: 0,
 			connections: 0,
 		}
@@ -33,7 +33,7 @@ export class Statistician {
 		this.#daily = daily
 	}
 
-	stats(): Stats {
+	stats(): SignallerStats {
 		return {
 			daily: this.#daily,
 			agents: this.agents.size,

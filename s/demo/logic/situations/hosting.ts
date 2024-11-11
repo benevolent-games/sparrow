@@ -3,10 +3,10 @@ import {RandomUserEmojis} from "renraku"
 import {ev, Pubsub, pubsub, repeat, signal, Signal, signals} from "@benev/slate"
 
 import {Id} from "../../../tools/id.js"
-import {Hosted} from "../../../browser/host.js"
-import {Stats} from "../../../signaller/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"
+import {SparrowHost} from "../../../browser/host.js"
 import {Lobby, Person, UserDetails} from "../types.js"
+import {SignallerStats} from "../../../signaller/types.js"
 import {Connection, StdCable} from "../../../browser/types.js"
 import {ConnectivityReport, reportConnectivity} from "../../../browser/utils/report-connectivity.js"
 
@@ -27,9 +27,9 @@ export class HostingSituation {
 
 	constructor(
 			public url: string,
-			public hosted: Hosted,
+			public hosted: SparrowHost,
 			public users: Signal<Set<User>>,
-			public stats: Signal<Stats>,
+			public stats: Signal<SignallerStats>,
 			onClosed: Pubsub,
 		) {
 		this.lobby = signals.computed(() => this.getLobby())

@@ -33,12 +33,12 @@ export type AgentInfo = {
 	reputation: string
 }
 
-export type Stats = {
+export type SignallerStats = {
 	agents: number
-	daily: StatsTimeframe
+	daily: SignallerStatsTimeframe
 }
 
-export type StatsTimeframe = {
+export type SignallerStatsTimeframe = {
 	connections: number
 	failures: number
 }

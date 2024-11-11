@@ -157,7 +157,7 @@
   })
   ```
   - Note, you can also pass a `welcome` function like this to `Sparrow.join`, but, you don't have to..
-- You can gather some useful stats with this helper function:
+- You can gather some useful connectivity data for each connection with this helper function:
   ```ts
   const report = await Sparrow.reportConnectivity(connection.peer)
 
