@@ -25,39 +25,36 @@
     ```ts
     import Sparrow from "sparrow-rtc"
 
-    const hosted = await Sparrow.host({
+    const sparrow = await Sparrow.host({
 
-      // accept people joining
+      // accept people joining, send/receive some data
       welcome: prospect => connection => {
         console.log(`peer connected: ${connection.id}`)
-
-        // send and receive data
         connection.cable.reliable.send("hello")
         connection.cable.reliable.onmessage = e => console.log("received", m.data)
-
         return () => console.log(`peer disconnected: ${connection.id}`)
       },
 
-      // oops, sparrow crashed or something, nobody can join anymore
-      close: () => console.log(`connection to sparrow signaller has died`),
+      // lost connection to the sparrow signaller
+      close: () => console.warn(`connection to sparrow signaller has died`),
     })
 
     // anybody with this invite code can join
-    hosted.invite
+    sparrow.invite
       // "215fe776f758bc44"
     ```
 1. **Join that session**
     ```ts
     import Sparrow from "sparrow-rtc"
 
-    const joined = await Sparrow.join({
+    const sparrow = await Sparrow.join({
       invite: "215fe776f758bc44",
       disconnected: () => console.log(`disconnected from host`),
     })
 
     // send and receive data
-    joined.connection.cable.reliable.send("world")
-    joined.connection.cable.reliable.onmessage = m => console.log("received", m.data)
+    sparrow.connection.cable.reliable.send("world")
+    sparrow.connection.cable.reliable.onmessage = m => console.log("received", m.data)
     ```
 
 <br/>
@@ -80,11 +77,11 @@
 
 <br/>
 
-## 🛂 Who will you allow?
-- Even when they have your invite code, a user must knock before they can enter.
+## 🚪 Knock knock, who's there?
+- Even when they have your invite code, a user must knock before they can connect.
 - The default, is to allow everybody who knocks, like this:
   ```js
-  const hosted = await Sparrow.host({
+  const sparrow = await Sparrow.host({
 
     // allow everybody
     allow: async() => true,
@@ -96,7 +93,7 @@
     .add("a332f6646c65f738")
     .add("0d506addf169c407")
 
-  const hosted = await Sparrow.host({
+  const sparrow = await Sparrow.host({
 
     // allow people who are not banned
     allow: async({reputation}) => {
@@ -106,7 +103,7 @@
   ```
 - Hosts can use `allow` to ban unwanted joiners, but conversely, joiners can ban unwanted hosts:
   ```ts
-  const joined = await Sparrow.join({
+  const sparrow = await Sparrow.join({
 
     // i want to join this invite i found
     invite: "215fe776f758bc44",
@@ -119,7 +116,7 @@
   ```ts
   let doorIsOpen = true
 
-  const hosted = await Sparrow.host({
+  const sparrow = await Sparrow.host({
     allow: async() => doorIsOpen,
   })
 
@@ -133,7 +130,7 @@
 ## 👥 How to deal with people
 - Okay, so you can pass this kind of `welcome` function to `Sparrow.host`. Here's some notes about the connection object you'll get:
   ```ts
-  const hosted = await Sparrow.host({
+  const sparrow = await Sparrow.host({
     welcome: prospect => connection => {
 
       // ephemeral id
@@ -174,7 +171,7 @@
   ```
 - Optionally, you can react to `prospect`, which is an ongoing connection attempt:
   ```ts
-  const hosted = await Sparrow.host({
+  const sparrow = await Sparrow.host({
     welcome: prospect => {
       console.log(`${prospect.id} is attempting to connect..`)
 
@@ -213,7 +210,7 @@
   ```ts
   import {Sparrow} from "sparrow-rtc"
 
-  const hosted = await Sparrow.host({
+  const sparrow = await Sparrow.host({
     ...myOtherOptions,
 
     // sparrow's official signaller instance (default shown)
@@ -308,7 +305,7 @@
   ```ts
     //                    your custom cable type
     //                                 |
-  const hosted = await Sparrow.host<MyCable>({
+  const sparrow = await Sparrow.host<MyCable>({
     ...myOtherOptions,
 
     // your custom cable config
@@ -322,7 +319,7 @@
 ## 📜 Logging
 - You can specify to only log errors like this
   ```ts
-  const joined = await Sparrow.join({
+  const sparrow = await Sparrow.join({
     invite: "8ab469956da27aff3825a3681b4f6452",
     disconnected: () => console.log(`disconnected from host`),
 
