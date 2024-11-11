@@ -1,6 +1,6 @@
 
 import {RandomUserEmojis} from "renraku"
-import {ev, Pubsub, pubsub, repeater, Repeater, signal, Signal, signals} from "@benev/slate"
+import {ev, Pubsub, pubsub, repeat, signal, Signal, signals} from "@benev/slate"
 
 import {Id} from "../../../tools/id.js"
 import {Hosted} from "../../../browser/host.js"
@@ -19,7 +19,9 @@ type User = {
 }
 
 export class HostingSituation {
-	repeater: Repeater
+	stopRtcStats: () => void
+	stopSignallerStats: () => void
+
 	lobby: Signal<Lobby>
 	stopUpdates: () => void
 
@@ -31,13 +33,11 @@ export class HostingSituation {
 			onClosed: Pubsub,
 		) {
 		this.lobby = signals.computed(() => this.getLobby())
-		this.repeater = repeater(
+		this.stopSignallerStats = hosted.onStats(value => { stats.value = value })
+		this.stopRtcStats = repeat(
 			5_000,
 			async() => {
-				await Promise.all([
-					this.#refreshStats(),
-					this.#refreshRtcStats(),
-				])
+				await this.#refreshRtcStats(),
 				await this.#broadcastLobby()
 			},
 		)
@@ -112,8 +112,7 @@ export class HostingSituation {
 			},
 		})
 
-		const stats = signal(await hosted.getStats())
-		return new this(url, hosted, users, stats, onClosed)
+		return new this(url, hosted, users, signal(hosted.stats), onClosed)
 	}
 
 	getLobby(): Lobby {
@@ -135,7 +134,8 @@ export class HostingSituation {
 	}
 
 	#closed() {
-		this.repeater.stop()
+		this.stopRtcStats()
+		this.stopSignallerStats()
 		this.stopUpdates()
 	}
 
@@ -174,10 +174,6 @@ export class HostingSituation {
 		}
 		await Promise.all(promises)
 		this.users.publish()
-	}
-
-	async #refreshStats() {
-		this.stats.value = await this.hosted.getStats()
 	}
 
 	async #broadcastLobby() {

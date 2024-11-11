@@ -1,18 +1,20 @@
 
-import {ev} from "@benev/slate"
 import {endpoint, webSocketRemote} from "renraku"
+import {ev, Pubsub, pubsub, repeat} from "@benev/slate"
 
 import {stdOptions} from "./std/options.js"
-import {AgentInfo} from "../signaller/types.js"
 import {SignallerApi} from "../signaller/api.js"
 import {makeBrowserApi} from "../browser/api.js"
+import {AgentInfo, Stats} from "../signaller/types.js"
 import {clientLogging} from "./utils/client-logging.js"
 import {CableConfig, Connection, ConnectOptions, generalTimeout} from "./types.js"
 
 export class Connected {
 	constructor(
-		public self: AgentInfo,
 		public signaller: SignallerApi["v1"],
+		public self: AgentInfo,
+		public stats: Stats,
+		public onStats: Pubsub<[Stats]>,
 		public close: () => void,
 	) {}
 }
@@ -34,7 +36,11 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 	const {socket, remote: signallerApi} = await webSocketRemote<SignallerApi>({
 		...logging.remote,
 		url: o.url,
-		onClose: o.closed,
+		onClose: () => {
+			if (stopKeepAlive)
+				stopKeepAlive()
+			o.closed()
+		},
 		timeout: generalTimeout,
 		getLocalEndpoint: signallerApi => endpoint(
 			makeBrowserApi({
@@ -62,8 +68,27 @@ export async function connect<Cable>(options: ConnectOptions<Cable>) {
 	})
 
 	const signaller = signallerApi.v1 as SignallerApi["v1"]
-	const self = await signaller.hello()
-	const close = () => socket.close()
-	return new Connected(self, signaller, close)
+
+	const [self, stats] = await Promise.all([
+		signaller.hello(),
+		signaller.stats(),
+	])
+
+	const close = () => {
+		socket.close()
+		stopKeepAlive()
+	}
+
+	const onStats = pubsub<[Stats]>()
+	const connected = new Connected(signaller, self, stats, onStats, close)
+
+	const keepAliveInterval = 0.45 * generalTimeout
+	const stopKeepAlive = repeat(keepAliveInterval, async() => {
+		const stats = await signaller.stats()
+		connected.stats = stats
+		onStats.publish(stats)
+	})
+
+	return connected
 }
 

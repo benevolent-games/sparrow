@@ -1,21 +1,27 @@
 
-import {connect} from "./connect.js"
+import {Pubsub} from "@benev/slate"
+
 import {ConnectOptions} from "./types.js"
+import {connect, Connected} from "./connect.js"
+import {SignallerApi} from "../signaller/api.js"
 import {AgentInfo, Stats} from "../signaller/types.js"
 
-export class Hosted {
+export class Hosted extends Connected {
 	constructor(
-		public self: AgentInfo,
-		public invite: string,
-		public getStats: () => Promise<Stats>,
-		public close: () => void,
-	) {}
+			signaller: SignallerApi["v1"],
+			self: AgentInfo,
+			stats: Stats,
+			onStats: Pubsub<[Stats]>,
+			close: () => void,
+			public invite: string,
+		) {
+		super(signaller, self, stats, onStats, close)
+	}
 }
 
 export async function host<Cable>(options: ConnectOptions<Cable>) {
-	const {self, signaller, close} = await connect(options)
+	const {signaller, self, stats, onStats, close} = await connect(options)
 	const invite = await signaller.createInvite()
-	const getStats = async() => await signaller.stats()
-	return new Hosted(self, invite, getStats, close)
+	return new Hosted(signaller, self, stats, onStats, close, invite)
 }
 

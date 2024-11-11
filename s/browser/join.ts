@@ -1,18 +1,25 @@
 
-import {deferPromise} from "@benev/slate"
+import {deferPromise, Pubsub} from "@benev/slate"
 
-import {connect} from "./connect.js"
-import {AgentInfo} from "../signaller/types.js"
+import {connect, Connected} from "./connect.js"
+import {SignallerApi} from "../signaller/api.js"
+import {AgentInfo, Stats} from "../signaller/types.js"
 import {Connection, JoinOptions, Prospect, StdCable} from "./types.js"
 
-export class Joined<Cable = StdCable> {
+export class Joined<Cable = StdCable> extends Connected {
 	constructor(
-		public invite: string,
-		public self: AgentInfo,
-		public host: AgentInfo,
-		public prospect: Prospect,
-		public connection: Connection<Cable>,
-	) {}
+			signaller: SignallerApi["v1"],
+			self: AgentInfo,
+			stats: Stats,
+			onStats: Pubsub<[Stats]>,
+			close: () => void,
+			public invite: string,
+			public host: AgentInfo,
+			public prospect: Prospect,
+			public connection: Connection<Cable>,
+		) {
+		super(signaller, self, stats, onStats, close)
+	}
 }
 
 export async function join<Cable>(options: JoinOptions<Cable>) {
@@ -21,7 +28,7 @@ export async function join<Cable>(options: JoinOptions<Cable>) {
 	const connecting = options.welcome ?? (() => () => () => {})
 	const ready = deferPromise<[Prospect, Connection<Cable>]>()
 
-	const {self, signaller, close} = await connect({
+	const {signaller, self, stats, onStats, close} = await connect({
 		...options,
 		allow,
 		closed: () => {},
@@ -52,8 +59,19 @@ export async function join<Cable>(options: JoinOptions<Cable>) {
 
 	const [prospect, connection] = await ready.promise
 
+	// close conneciton to signaller after we've joined
 	close()
 
-	return new Joined<Cable>(invite, self, host, prospect, connection)
+	return new Joined<Cable>(
+		signaller,
+		self,
+		stats,
+		onStats,
+		close,
+		invite,
+		host,
+		prospect,
+		connection,
+	)
 }
 
