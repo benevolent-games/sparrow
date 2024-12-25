@@ -36,7 +36,7 @@
       },
 
       // lost connection to the sparrow signaller
-      close: () => console.warn(`connection to sparrow signaller has died`),
+      closed: () => console.warn(`connection to sparrow signaller has died`),
     })
 
     // anybody with this invite code can join
