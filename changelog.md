@@ -9,6 +9,11 @@
 
 ## v0.2
 
+### v0.2.3
+- 🍏 fix types, generics now use `StdCable` as defaults
+- 🍏 fix readme typo, `close` to `closed`
+- 🍏 update dependencies
+
 ### v0.2.2
 - 🔶 renames of some things you're unlikely to be using
   - `Connected` to `SparrowConnect`
