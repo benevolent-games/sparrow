@@ -1,6 +1,8 @@
 
-import {css} from "@benev/slate"
+import {css, cssReset} from "@benev/slate"
 export default css`
+
+${cssReset}
 
 a {
 	color: var(--link);

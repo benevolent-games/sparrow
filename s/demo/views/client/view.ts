@@ -3,12 +3,13 @@ import {html, loading, Op, shadowView} from "@benev/slate"
 
 import {Id} from "../../../tools/id.js"
 import stylesCss from "./styles.css.js"
+import themeCss from "../../theme.css.js"
 import {LobbyView} from "../lobby/view.js"
 import {Lobby} from "../../logic/types.js"
 import {JoinerSituation} from "../../logic/situations/joiner.js"
 
 export const ClientView = shadowView(use => (situation: JoinerSituation) => {
-	use.styles(stylesCss)
+	use.styles(themeCss, stylesCss)
 
 	const lobby = situation.lobby.value
 	const {self, invite} = situation.joined
