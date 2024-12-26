@@ -22,7 +22,7 @@ export class SparrowJoin<Cable = StdCable> extends SparrowConnect {
 	}
 }
 
-export async function join<Cable>(options: JoinOptions<Cable>) {
+export async function join<Cable = StdCable>(options: JoinOptions<Cable>) {
 	const {invite} = options
 	const allow = options.allow ?? (async() => true)
 	const connecting = options.welcome ?? (() => () => () => {})

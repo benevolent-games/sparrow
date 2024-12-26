@@ -7,7 +7,7 @@ import {SignallerApi} from "../signaller/api.js"
 import {makeBrowserApi} from "../browser/api.js"
 import {clientLogging} from "./utils/client-logging.js"
 import {AgentInfo, SignallerStats} from "../signaller/types.js"
-import {CableConfig, Connection, ConnectOptions, generalTimeout} from "./types.js"
+import {CableConfig, Connection, ConnectOptions, generalTimeout, StdCable} from "./types.js"
 
 export class SparrowConnect {
 	constructor(
@@ -19,7 +19,7 @@ export class SparrowConnect {
 	) {}
 }
 
-export async function connect<Cable>(options: ConnectOptions<Cable>) {
+export async function connect<Cable = StdCable>(options: ConnectOptions<Cable>) {
 	const o = {...stdOptions(), ...options}
 	const allow = o.allow ?? (async() => true)
 	const logging = clientLogging("👤")

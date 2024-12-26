@@ -1,8 +1,8 @@
 
 import {Pubsub} from "@benev/slate"
 
-import {ConnectOptions} from "./types.js"
 import {SignallerApi} from "../signaller/api.js"
+import {ConnectOptions, StdCable} from "./types.js"
 import {connect, SparrowConnect} from "./connect.js"
 import {AgentInfo, SignallerStats} from "../signaller/types.js"
 
@@ -19,7 +19,7 @@ export class SparrowHost extends SparrowConnect {
 	}
 }
 
-export async function host<Cable>(options: ConnectOptions<Cable>) {
+export async function host<Cable = StdCable>(options: ConnectOptions<Cable>) {
 	const {signaller, self, stats, onStats, close} = await connect(options)
 	const invite = await signaller.createInvite()
 	return new SparrowHost(signaller, self, stats, onStats, close, invite)
