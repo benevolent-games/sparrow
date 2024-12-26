@@ -1,11 +1,12 @@
 
 import {ev} from "@benev/slate"
+import {messageBuffering} from "./message-buffering.js"
 
 export const DataChanneller = {
 
 	async offering(peer: RTCPeerConnection, label: string, options?: RTCDataChannelInit) {
 		return new Promise<RTCDataChannel>((resolve, reject) => {
-			const channel = peer.createDataChannel(label, options)
+			const channel = messageBuffering(peer.createDataChannel(label, options))
 			channel.binaryType = "arraybuffer"
 			channel.onopen = () => resolve(channel)
 			channel.onerror = () => reject(new Error(`failed to offer rtc data channel "${label}"`))
@@ -18,7 +19,7 @@ export const DataChanneller = {
 				datachannel: ({channel}: RTCDataChannelEvent) => {
 					if (channel.label === label) {
 						detach()
-						resolve(channel)
+						resolve(messageBuffering(channel))
 					}
 				},
 			})

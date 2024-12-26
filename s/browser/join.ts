@@ -59,7 +59,7 @@ export async function join<Cable = StdCable>(options: JoinOptions<Cable>) {
 
 	const [prospect, connection] = await ready.promise
 
-	// close conneciton to signaller after we've joined
+	// close connection to signaller after we've joined
 	close()
 
 	return new SparrowJoin<Cable>(
