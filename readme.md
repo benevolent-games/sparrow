@@ -61,6 +61,10 @@
 
 ## 🔌 Get the Cable!
 - The `cable` is what you want. *The cable is what you need.*
+- Each sparrow connection comes with a `cable`.
+- You can make your own custom cable, there's a section later in the readme about custom cables.
+
+### The default cable — dual data channels
 - The default cable that sparrow gives you has two [RTC Data Channels](https://developer.mozilla.org/en-US/docs/Web/API/RTCDataChannel).
 - Each data channel has a `channel.send(data)` method, so you can send data.
 - Each data channel has a `channel.onmessage = event => {}` function, so you can receive messages.
@@ -81,6 +85,7 @@
 - Even when they have your invite code, a user must knock before they can connect.
 - The default, is to allow everybody who knocks, like this:
   ```js
+  // hosting a sparrow session
   const sparrow = await Sparrow.host({
 
     // allow everybody
@@ -89,10 +94,12 @@
   ```
 - Each user has a `reputation` which is a salted hash of their IP address -- making it easy for you to setup a ban list:
   ```js
+  // make your own ban list
   const myBanList = new Set()
     .add("a332f6646c65f738")
     .add("0d506addf169c407")
 
+  // hosting a sparrow session
   const sparrow = await Sparrow.host({
 
     // allow people who are not banned
@@ -101,8 +108,9 @@
     },
   })
   ```
-- Hosts can use `allow` to ban unwanted joiners, but conversely, joiners can ban unwanted hosts:
+- Joiners can also ban hosts!
   ```ts
+  // joining a sparrow session
   const sparrow = await Sparrow.join({
 
     // i want to join this invite i found
@@ -128,7 +136,7 @@
 <br/>
 
 ## 👥 How to deal with people
-- Okay, so you can pass this kind of `welcome` function to `Sparrow.host`. Here's some notes about the connection object you'll get:
+- `connection` — you get this object whenever somebody connects to you
   ```ts
   const sparrow = await Sparrow.host({
     welcome: prospect => connection => {
@@ -153,8 +161,8 @@
     },
   })
   ```
-  - Note, you can also pass a `welcome` function like this to `Sparrow.join`, but, you don't have to..
-- You can gather some useful connectivity data for each connection with this helper function:
+  - Note, you *can* also pass a `welcome` function like this to `Sparrow.join`, but, you don't have to..
+- `Sparrow.reportConnectivity` helps you gather statistics about the connection
   ```ts
   const report = await Sparrow.reportConnectivity(connection.peer)
 
@@ -166,10 +174,10 @@
   report.bytesSent
     // number of bytes sent
 
-  report.bytesSent
+  report.bytesReceived
     // number of bytes received
   ```
-- Optionally, you can react to `prospect`, which is an ongoing connection attempt:
+- `prospect` — you actually get this object whenever somebody *begins attempting a connection* to you
   ```ts
   const sparrow = await Sparrow.host({
     welcome: prospect => {
@@ -199,13 +207,12 @@
     },
   })
   ```
-  - This isn't necessary, you can just ignore prospects and only concern yourself with connections.
-  - Prospects are an opportunity for you to display the activity of attempted connections as they're in progress.
+  - This isn't necessary, you can just ignore prospects and only concern yourself with connections, if you like.
+  - Prospects exists as your opportunity to display the activity of attempted connections as they're in progress.
 
 <br/>
 
-## 🔗 Custom URLs
-
+## 🔗 Custom URLs and RTCConfiguration
 - `Sparrow.host` and `Sparrow.join` both accept these common options
   ```ts
   import {Sparrow} from "sparrow-rtc"
