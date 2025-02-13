@@ -56,6 +56,18 @@
     sparrow.connection.cable.reliable.send("world")
     sparrow.connection.cable.reliable.onmessage = m => console.log("received", m.data)
     ```
+1. **Shut it down**
+    - You can close each peer connection like this:
+      ```ts
+      connection.disconnect()
+      ```
+    - You can close the connection to the signaller server like this:
+      ```ts
+      sparrow.close()
+      ```
+    - These operations can be done independently from each other.
+      - If you close the signaller connection, you can still maintain your peer connections.
+      - When the signaller connection is closed, nobody can join you anymore because the signaller is required to negotiate connections.
 
 <br/>
 
