@@ -86,7 +86,7 @@
 - When a message goes missing — massive catastrophic lag spike, everything halts until the missing message is successfully retransmitted.
 - Ideal for important game events like *"this player picked up this inventory item"* or something like that.
 
-### 🦹 `cable.unreliable` — chaotic shouting message shouting
+### 🦹 `cable.unreliable` — chaotic message shouting
 - Not every message will arrive. There will be losses.
 - When a message goes missing — it's ignored, and everything continues like nothing happened.
 - Ideal for *"continuous data"* like *"now this player is located here"* 30 times per second.
