@@ -24,16 +24,16 @@
 		"test-watch": "chokidar 'x/**/*.js' -c 'npm test'"
 	},
 	"dependencies": {
-		"@benev/slate": "^0.3.0-11",
-		"renraku": "^0.4.4"
+		"@benev/slate": "^0.3.0-13",
+		"renraku": "^0.4.5"
 	},
 	"devDependencies": {
 		"@benev/turtle": "^0.6.8",
-		"@types/node": "^22.13.4",
+		"@types/node": "^22.13.5",
 		"chokidar": "^4.0.3",
 		"chokidar-cli": "^3.0.0",
 		"cynic": "^0.2.1",
-		"es-module-shims": "^2.0.9",
+		"es-module-shims": "^2.0.10",
 		"http-server": "^14.1.1",
 		"importly": "^0.2.3",
 		"mkdirp": "^3.0.1",

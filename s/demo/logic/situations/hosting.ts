@@ -1,6 +1,6 @@
 
 import {RandomUserEmojis} from "renraku"
-import {ev, Pubsub, pubsub, repeat, signal, Signal, signals} from "@benev/slate"
+import {ev, Pubsub, pubsub, repeating, signal, Signal, signals} from "@benev/slate"
 
 import {Id} from "../../../tools/id.js"
 import {Sparrow} from "../../../browser/sparrow.js"
@@ -34,7 +34,7 @@ export class HostingSituation {
 		) {
 		this.lobby = signals.computed(() => this.getLobby())
 		this.stopSignallerStats = hosted.onStats(value => { stats.value = value })
-		this.stopRtcStats = repeat(
+		this.stopRtcStats = repeating(
 			5_000,
 			async() => {
 				await this.#refreshRtcStats(),

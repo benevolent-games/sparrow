@@ -1,6 +1,6 @@
 
 import {endpoint, webSocketRemote} from "renraku"
-import {ev, Pubsub, pubsub, repeat} from "@benev/slate"
+import {ev, Pubsub, pubsub, repeating} from "@benev/slate"
 
 import {stdOptions} from "./std/options.js"
 import {SignallerApi} from "../signaller/api.js"
@@ -83,7 +83,7 @@ export async function connect<Cable = StdCable>(options: ConnectOptions<Cable>) 
 	const connected = new SparrowConnect(signaller, self, stats, onStats, close)
 
 	const keepAliveInterval = 0.45 * generalTimeout
-	const stopKeepAlive = repeat(keepAliveInterval, async() => {
+	const stopKeepAlive = repeating(keepAliveInterval, async() => {
 		const stats = await signaller.stats()
 		connected.stats = stats
 		onStats.publish(stats)
