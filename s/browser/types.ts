@@ -4,7 +4,7 @@ import {Logging} from "./std/logging.js"
 import {AgentInfo} from "../signaller/types.js"
 import {SignallerApi} from "../signaller/api.js"
 
-export const generalTimeout = 30_000
+export const generalTimeout = 60_000
 
 export type Prospect = {
 	id: string
@@ -51,6 +51,7 @@ export function asCableConfig<Cable>(config: CableConfig<Cable>) {
 
 export type CommonOptions<Cable> = {
 	url: string
+	timeout: number
 	rtcConfigurator: RtcConfigurator
 	cableConfig: CableConfig<Cable>
 	logging: Logging

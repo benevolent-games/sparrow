@@ -7,7 +7,7 @@ import {SignallerApi} from "../signaller/api.js"
 import {makeBrowserApi} from "../browser/api.js"
 import {clientLogging} from "./utils/client-logging.js"
 import {AgentInfo, SignallerStats} from "../signaller/types.js"
-import {CableConfig, Connection, ConnectOptions, generalTimeout, StdCable} from "./types.js"
+import {CableConfig, Connection, ConnectOptions, StdCable} from "./types.js"
 
 export class SparrowConnect {
 	constructor(
@@ -36,12 +36,12 @@ export async function connect<Cable = StdCable>(options: ConnectOptions<Cable>) 
 	const {socket, remote: signallerApi} = await webSocketRemote<SignallerApi>({
 		...logging.remote,
 		url: o.url,
+		timeout: o.timeout,
 		onClose: () => {
 			if (stopKeepAlive)
 				stopKeepAlive()
 			o.closed()
 		},
-		timeout: generalTimeout,
 		getLocalEndpoint: signallerApi => endpoint(
 			makeBrowserApi({
 				allow: async agent => !!(
@@ -82,7 +82,7 @@ export async function connect<Cable = StdCable>(options: ConnectOptions<Cable>) 
 	const onStats = pubsub<[SignallerStats]>()
 	const connected = new SparrowConnect(signaller, self, stats, onStats, close)
 
-	const keepAliveInterval = 0.45 * generalTimeout
+	const keepAliveInterval = 0.45 * o.timeout
 	const stopKeepAlive = repeating(keepAliveInterval, async() => {
 		const stats = await signaller.stats()
 		connected.stats = stats
