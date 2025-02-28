@@ -27,12 +27,6 @@ export async function connect<Cable = StdCable>(options: ConnectOptions<Cable>) 
 	let selfId: string | undefined
 	const connections = new Set<Connection<Cable>>()
 
-	// disconnect everybody when the user kills the tab
-	ev(window, {beforeunload: () => {
-		for (const connection of connections)
-			connection.disconnect()
-	}})
-
 	const {socket, remote: signallerApi} = await webSocketRemote<SignallerApi>({
 		...logging.remote,
 		url: o.url,
