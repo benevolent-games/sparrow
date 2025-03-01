@@ -12,8 +12,6 @@ export function messageBuffering(channel: RTCDataChannel) {
 			channel.dispatchEvent(message)
 	}
 
-
-
 	return new Proxy(channel, {
 
 		// intercept `channel.addEventListener("message", ...)`

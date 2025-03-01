@@ -18,6 +18,7 @@ export const DataChanneller = {
 			const detach = ev(peer, {
 				datachannel: ({channel}: RTCDataChannelEvent) => {
 					if (channel.label === label) {
+						channel.binaryType = "arraybuffer"
 						detach()
 						resolve(messageBuffering(channel))
 					}
