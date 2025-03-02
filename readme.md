@@ -31,7 +31,7 @@
       welcome: prospect => connection => {
         console.log(`peer connected: ${connection.id}`)
         connection.cable.reliable.send("hello")
-        connection.cable.reliable.onmessage = e => console.log("received", m.data)
+        connection.cable.reliable.onmessage = m => console.log("received", m.data)
         return () => console.log(`peer disconnected: ${connection.id}`)
       },
 
