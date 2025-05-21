@@ -12,7 +12,7 @@
 	],
 	"scripts": {
 		"build": "run-s _clean _code _site _links",
-		"_clean": "rimraf x && mkdirp x",
+		"_clean": "rm -rf x && mkdir x",
 		"_code": "turtle build --out=x",
 		"_site": "turtle ssg --in=s,x --out=x",
 		"_links": "ln -s \"$(realpath s)\" x/s && ln -s \"$(realpath assets)\" x/assets",
@@ -22,8 +22,9 @@
 		"start": "node --env-file=.env.dev x/signaller/server.js",
 		"start-prod": "node --env-file=.env.prod x/signaller/server.js",
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +",
-		"test": "cynic node --label='sparrow-rtc test suite' x/tests.test.js",
-		"test-watch": "chokidar 'x/**/*.js' -c 'npm test'"
+		"test": "node x/tests.test.js",
+		"test-watch": "node --watch x/tests.test.js",
+		"test-debug": "node --inspect-brk x/tests.test.js"
 	},
 	"dependencies": {
 		"@benev/slate": "^0.3.4",
@@ -33,14 +34,9 @@
 	"devDependencies": {
 		"@benev/turtle": "^0.6.12",
 		"@types/node": "^22.15.21",
-		"chokidar": "^4.0.3",
-		"chokidar-cli": "^3.0.0",
-		"cynic": "^0.2.1",
 		"http-server": "^14.1.1",
 		"importly": "^0.2.3",
-		"mkdirp": "^3.0.1",
 		"npm-run-all": "^4.1.5",
-		"rimraf": "^6.0.1",
 		"typescript": "^5.8.3"
 	},
 	"engines": {

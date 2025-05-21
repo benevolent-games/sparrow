@@ -1,9 +1,9 @@
 
-import {Suite, expect} from "cynic"
+import {Science, test, expect} from "@e280/science"
 
-export default <Suite>{
-	async "test framework works"() {
-		expect(true).ok()
-	},
-}
+await Science.run({
+	"science is ready": test(async() => {
+		expect(2 + 2).is(4)
+	}),
+})
 
