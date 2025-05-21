@@ -1,5 +1,5 @@
 
-import {Base58, Bytename, Hex} from "@benev/slate"
+import {Base58, Hex, Bytename} from "@e280/stz"
 
 export const Id = Object.freeze({
 	size: 8,
@@ -17,8 +17,12 @@ export const Id = Object.freeze({
 	},
 
 	toDisplayName(id: string, reputation: string) {
-		const firstName = Bytename.string(Hex.bytes(id).slice(0, 2), "Xxxxxx ")
-		const lastName = Bytename.string(Hex.bytes(reputation).slice(0, 3), "Xxxxxxxxx ")
+		const firstName = Bytename.fromBytes(
+			Hex.bytes(id).slice(0, 2)
+		)
+		const lastName = Bytename.fromBytes(
+			Hex.bytes(reputation).slice(0, 2)
+		)
 		return `${firstName} ${lastName}`
 	},
 })

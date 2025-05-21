@@ -92,7 +92,7 @@ export const makeSignallerApi = (
 	},
 
 	async sendIceCandidate(ice: RTCIceCandidate) {
-		await agent.onIceCandidate.publish(ice)
+		await agent.onIceCandidate.pub(ice)
 	},
 }})
 

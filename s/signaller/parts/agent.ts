@@ -1,5 +1,5 @@
 
-import {pubsub} from "@benev/slate"
+import {sub} from "@e280/stz"
 import {Id} from "../../tools/id.js"
 import {AgentInfo} from "../types.js"
 import {BrowserApi} from "../../browser/api.js"
@@ -13,7 +13,7 @@ export class Agent {
 	invites = new Set<string>()
 
 	/** pubsub for exchanging ice candidates */
-	onIceCandidate = pubsub<[RTCIceCandidate]>()
+	onIceCandidate = sub<[RTCIceCandidate]>()
 
 	constructor(
 

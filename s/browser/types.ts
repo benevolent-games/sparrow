@@ -1,5 +1,5 @@
 
-import {Pubsub} from "@benev/slate"
+import {Sub} from "@e280/stz"
 import {Logging} from "./std/logging.js"
 import {AgentInfo} from "../signaller/types.js"
 import {SignallerApi} from "../signaller/api.js"
@@ -10,7 +10,7 @@ export type Prospect = {
 	id: string
 	reputation: string
 	peer: RTCPeerConnection
-	onFailed: Pubsub
+	onFailed: Sub
 }
 
 export type Connection<Cable = StdCable> = {

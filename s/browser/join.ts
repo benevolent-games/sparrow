@@ -1,5 +1,5 @@
 
-import {deferPromise, Pubsub} from "@benev/slate"
+import {Sub, deferPromise} from "@e280/stz"
 
 import {SignallerApi} from "../signaller/api.js"
 import {connect, SparrowConnect} from "./connect.js"
@@ -11,7 +11,7 @@ export class SparrowJoin<Cable = StdCable> extends SparrowConnect {
 			signaller: SignallerApi["v1"],
 			self: AgentInfo,
 			stats: SignallerStats,
-			onStats: Pubsub<[SignallerStats]>,
+			onStats: Sub<[SignallerStats]>,
 			close: () => void,
 			public invite: string,
 			public host: AgentInfo,

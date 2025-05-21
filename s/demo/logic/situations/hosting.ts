@@ -1,6 +1,7 @@
 
+import {sub, Sub} from "@e280/stz"
 import {RandomUserEmojis} from "renraku"
-import {ev, Pubsub, pubsub, repeating, signal, Signal, signals} from "@benev/slate"
+import {ev, repeating, signal, Signal, signals} from "@benev/slate"
 
 import {Id} from "../../../tools/id.js"
 import {Sparrow} from "../../../browser/sparrow.js"
@@ -30,7 +31,7 @@ export class HostingSituation {
 			public hosted: SparrowHost,
 			public users: Signal<Set<User>>,
 			public stats: Signal<SignallerStats>,
-			onClosed: Pubsub,
+			onClosed: Sub,
 		) {
 		this.lobby = signals.computed(() => this.getLobby())
 		this.stopSignallerStats = hosted.onStats(value => { stats.value = value })
@@ -48,14 +49,14 @@ export class HostingSituation {
 	static async start(url: string, closed: () => void) {
 		const randomEmoji = new RandomUserEmojis()
 		const users = signal(new Set<User>)
-		const onClosed = pubsub()
+		const onClosed = sub()
 
 		const hosted = await Sparrow.host<StdCable>({
 			url,
 			rtcConfigurator: Sparrow.turnRtcConfigurator,
 			allow: async() => true,
 			closed: () => {
-				onClosed.publish()
+				onClosed.pub()
 				closed()
 			},
 

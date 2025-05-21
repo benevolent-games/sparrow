@@ -1,6 +1,7 @@
 
+import {sub, Sub} from "@e280/stz"
+import {repeating} from "@benev/slate"
 import {endpoint, webSocketRemote} from "renraku"
-import {ev, Pubsub, pubsub, repeating} from "@benev/slate"
 
 import {stdOptions} from "./std/options.js"
 import {SignallerApi} from "../signaller/api.js"
@@ -14,7 +15,7 @@ export class SparrowConnect {
 		public signaller: SignallerApi["v1"],
 		public self: AgentInfo,
 		public stats: SignallerStats,
-		public onStats: Pubsub<[SignallerStats]>,
+		public onStats: Sub<[SignallerStats]>,
 		public close: () => void,
 	) {}
 }
@@ -73,14 +74,14 @@ export async function connect<Cable = StdCable>(options: ConnectOptions<Cable>) 
 		stopKeepAlive()
 	}
 
-	const onStats = pubsub<[SignallerStats]>()
+	const onStats = sub<[SignallerStats]>()
 	const connected = new SparrowConnect(signaller, self, stats, onStats, close)
 
 	const keepAliveInterval = 0.45 * o.timeout
 	const stopKeepAlive = repeating(keepAliveInterval, async() => {
 		const stats = await signaller.stats()
 		connected.stats = stats
-		onStats.publish(stats)
+		onStats.pub(stats)
 	})
 
 	return connected

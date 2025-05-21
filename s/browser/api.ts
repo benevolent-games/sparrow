@@ -1,6 +1,8 @@
 
+import {ev} from "@benev/slate"
+import {MapG, sub} from "@e280/stz"
+
 import {Conduit} from "./utils/conduit.js"
-import {ev, Map2, pubsub} from "@benev/slate"
 import {AgentInfo} from "../signaller/types.js"
 import {gather_ice} from "./utils/gather-ice.js"
 import {wait_for_connection} from "./utils/wait-for-connection.js"
@@ -33,14 +35,14 @@ export function makeBrowserApi<Cable>({
 		connected: (connection: Connection<Cable>) => () => void
 	}
 
-	const attempts = new Map2<string, Attempt>()
+	const attempts = new MapG<string, Attempt>()
 
 	function destroy(attemptId: string) {
 		const attempt = attempts.get(attemptId)
 		if (!attempt) return
 		attempts.delete(attemptId)
 		attempt.prospect.peer.close()
-		attempt.prospect.onFailed.publish()
+		attempt.prospect.onFailed.pub()
 	}
 
 	function catcher(attemptId: string) {
@@ -88,7 +90,7 @@ export function makeBrowserApi<Cable>({
 
 			const rtcConfig = await rtcConfigurator({signaller})
 			const peer = new RTCPeerConnection(rtcConfig)
-			const onFailed = pubsub()
+			const onFailed = sub()
 			const prospect: Prospect = {...buddy, peer, onFailed}
 			const icePromise = gather_ice(peer, signaller.sendIceCandidate)
 				.catch(catcher(attemptId))
