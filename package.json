@@ -20,26 +20,28 @@
 		"http": "http-server x",
 		"start": "node --env-file=.env.dev x/signaller/server.js",
 		"start-prod": "node --env-file=.env.prod x/signaller/server.js",
+		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +",
 		"test": "cynic node --label='sparrow-rtc test suite' x/tests.test.js",
 		"test-watch": "chokidar 'x/**/*.js' -c 'npm test'"
 	},
 	"dependencies": {
-		"@benev/slate": "^0.3.0-13",
-		"renraku": "^0.4.5"
+		"@benev/slate": "^0.3.4",
+		"@e280/stz": "^0.0.0-18",
+		"renraku": "^0.5.0-11"
 	},
 	"devDependencies": {
-		"@benev/turtle": "^0.6.8",
-		"@types/node": "^22.13.5",
+		"@benev/turtle": "^0.6.12",
+		"@types/node": "^22.15.21",
 		"chokidar": "^4.0.3",
 		"chokidar-cli": "^3.0.0",
 		"cynic": "^0.2.1",
-		"es-module-shims": "^2.0.10",
+		"es-module-shims": "^2.5.1",
 		"http-server": "^14.1.1",
 		"importly": "^0.2.3",
 		"mkdirp": "^3.0.1",
 		"npm-run-all": "^4.1.5",
 		"rimraf": "^6.0.1",
-		"typescript": "^5.7.3"
+		"typescript": "^5.8.3"
 	},
 	"engines": {
 		"node": ">=22"

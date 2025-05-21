@@ -1,14 +1,14 @@
 
-import {loggers} from "renraku"
+import {logger} from "renraku"
 
 export function clientLogging(emoji: string) {
 	return {
-		remote: loggers.label({
+		remote: logger.logtool.label({
 			remote: true,
 			label: `${emoji} ->`,
 			prefix: "server",
 		}),
-		local: loggers.label({
+		local: logger.logtool.label({
 			remote: false,
 			label: `${emoji} <-`,
 			prefix: "client",

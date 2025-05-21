@@ -1,15 +1,16 @@
 
-import {Map2} from "@benev/slate"
+import {MapG} from "@e280/stz"
+import {SimpleHeaders} from "renraku"
+
 import {Agent} from "./parts/agent.js"
 import {makeSignallerApi} from "./api.js"
 import {SignallerParams} from "./types.js"
 import {BrowserApi} from "../browser/api.js"
-import {SimpleHeaders} from "renraku/x/server.js"
 import {Statistician} from "./parts/statistician.js"
 
 export class Core {
 	agents = new Set<Agent>()
-	invites = new Map2<string, Agent>()
+	invites = new MapG<string, Agent>()
 	statistician = new Statistician(this.agents)
 
 	constructor(private params: SignallerParams) {}

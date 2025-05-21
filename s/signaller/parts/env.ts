@@ -1,7 +1,8 @@
 
-import {color, loggers} from "renraku/x/server.js"
+import {logger} from "renraku"
+import {color} from "@e280/science"
 
-const log = (varname: string, value: string | undefined) => loggers.log([
+const log = (varname: string, value: string | undefined) => logger.logcore.log([
 	color.yellow(varname),
 	value !== undefined
 		? color.green("set")

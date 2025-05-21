@@ -7,11 +7,12 @@ import {getSignallerParams} from "./params.js"
 import {generalTimeout} from "../browser/types.js"
 import {serverLogging} from "./parts/server-logging.js"
 import {ipToReputation} from "./parts/ip-to-reputation.js"
-import {WebSocketServer, remote, endpoint, loggers, RandomUserEmojis, deathWithDignity} from "renraku/x/server.js"
+import {WebSocketServer, remote, endpoint, logger, RandomUserEmojis, deathWithDignity, Logcore} from "renraku/node"
 
 deathWithDignity()
 
-loggers.log("📜 environment variables:")
+logger.logcore = new Logcore()
+logger.logcore.log("📜 environment variables:")
 const params = getSignallerParams()
 
 const core = new Core(params)
@@ -40,6 +41,6 @@ const server = new WebSocketServer({
 
 server.listen(
 	params.port,
-	() => loggers.log(`🚀 listening on ${params.port}`),
+	() => logger.logcore.log(`🚀 listening on ${params.port}`),
 )
 

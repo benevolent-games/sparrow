@@ -1,13 +1,13 @@
 
-import {loggers} from "renraku"
+import {logger} from "renraku"
 
 export type Logging = ReturnType<typeof stdLogging>
 
 export function stdLogging() {
 	const emoji = "👤"
 	return {
-		remote: loggers.label({remote: true, label: `${emoji} ->`, prefix: "server"}),
-		local: loggers.label({remote: false, label: `${emoji} <-`, prefix: "client"}),
+		remote: logger.logtool.label({remote: true, label: `${emoji} ->`, prefix: "server"}),
+		local: logger.logtool.label({remote: false, label: `${emoji} <-`, prefix: "client"}),
 	}
 }
 

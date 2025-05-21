@@ -1,5 +1,5 @@
 
-import {ExposedError} from "renraku/x/server.js"
+import {ExposedError} from "renraku"
 import {CloudflareTurnParams, IceServer} from "../types.js"
 
 type CloudflareCreds = {
