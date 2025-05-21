@@ -288,9 +288,11 @@
 <br/>
 
 ## 🔌 Custom Cables
+- For this we recommend the handy tool `concurrent` from [`@e280/stz`](https://github.com/e280/stz)
 - You can prepare any kinds of RTC Data Channels you like, by establishing your own `cableConfig`
   ```ts
   // import various helpers
+  import {concurrent} from "@e280/stz"
   import {Sparrow, DataChanneler, concurrent} from "sparrow-rtc"
 
   // define your own cable properties (default shown, available as StdCable)
