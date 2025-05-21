@@ -1,9 +1,4 @@
 
-export * from "@benev/slate/x/tools/concurrent.js"
-export * from "@benev/slate/x/tools/data/hex.js"
-export * from "@benev/slate/x/tools/data/base58.js"
-export {Bytename} from "@benev/slate"
-
 export * from "./browser/std/cable.js"
 export * from "./browser/std/logging.js"
 export * from "./browser/std/options.js"
