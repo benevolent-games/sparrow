@@ -8,7 +8,7 @@
 
 ## v0.2
 
-### v0.2.8
+### v0.2.9
 - 🔶 switch away from various slate tools to the newer `@e280/stz` tools
   - removed slate exports `concurrent`, `Hex`, `Base58`, `Bytename` — instead you should use the upgraded versions of all of these from [`@e280/stz`](https://github.com/e280/stz)
 - 🍏 fixed various types
