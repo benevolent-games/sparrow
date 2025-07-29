@@ -1,6 +1,5 @@
 
-import {ev} from "@benev/slate"
-import {MapG, sub} from "@e280/stz"
+import {MapG, sub, ev} from "@e280/stz"
 
 import {Conduit} from "./utils/conduit.js"
 import {AgentInfo} from "../signaller/types.js"

@@ -11,29 +11,29 @@
 		"s"
 	],
 	"scripts": {
-		"build": "run-s _clean _code _site _links",
+		"build": "run-s _clean _links _tsc _scute",
+		"watch": "octo 'scute -vw' 'npm run start -s' 'node --watch x/tests.test.js' 'tsc -w' 'http-server x'",
 		"_clean": "rm -rf x && mkdir x",
-		"_code": "turtle build --out=x",
-		"_site": "turtle ssg --in=s,x --out=x",
 		"_links": "ln -s \"$(realpath s)\" x/s && ln -s \"$(realpath assets)\" x/assets",
-		"watch": "run-p _http _watch",
-		"_watch": "turtle watch -v --in=s,x --out=x",
-		"_http": "http-server x",
+		"_tsc": "tsc",
+		"_scute": "scute -v",
 		"start": "node --env-file=.env.dev x/signaller/server.js",
 		"start-prod": "node --env-file=.env.prod x/signaller/server.js",
 		"count": "find s -path '*/_archive' -prune -o -name '*.ts' -exec wc -l {} +",
 		"test": "node x/tests.test.js",
-		"test-watch": "node --watch x/tests.test.js",
-		"test-debug": "node --inspect-brk x/tests.test.js"
+		"test-debug": "node inspect x/tests.test.js"
 	},
 	"dependencies": {
-		"@benev/slate": "^0.3.4",
-		"@e280/stz": "^0.0.0-18",
-		"renraku": "^0.5.0-11"
+		"@benev/argv": "^0.3.11",
+		"@benev/slate": "^0.3.9",
+		"@e280/renraku": "^0.5.0-22",
+		"@e280/sten": "^0.0.0-5",
+		"@e280/stz": "^0.0.0-29"
 	},
 	"devDependencies": {
-		"@benev/turtle": "^0.6.12",
-		"@types/node": "^22.15.21",
+		"@e280/science": "^0.0.5",
+		"@e280/scute": "^0.0.0-6",
+		"@types/node": "^24.1.0",
 		"http-server": "^14.1.1",
 		"importly": "^0.2.3",
 		"npm-run-all": "^4.1.5",

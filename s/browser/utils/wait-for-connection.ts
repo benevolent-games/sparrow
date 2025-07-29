@@ -1,5 +1,5 @@
 
-import {ev} from "@benev/slate"
+import {ev} from "@e280/stz"
 
 export function wait_for_connection(peer: RTCPeerConnection) {
 	return new Promise<RTCPeerConnection>((resolve, reject) => {

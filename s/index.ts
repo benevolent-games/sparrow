@@ -1,6 +1,5 @@
 
 export * from "./browser/std/cable.js"
-export * from "./browser/std/logging.js"
 export * from "./browser/std/options.js"
 export * from "./browser/std/rtc-configurator.js"
 export * from "./browser/std/url.js"

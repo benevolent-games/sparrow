@@ -1,5 +1,5 @@
 
-import {concurrent} from "@benev/slate"
+import {concurrent} from "@e280/stz"
 import {asCableConfig, StdCable} from "../types.js"
 import {DataChanneller} from "../utils/data-channeller.js"
 

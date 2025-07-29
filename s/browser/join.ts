@@ -1,5 +1,5 @@
 
-import {Sub, deferPromise} from "@e280/stz"
+import {Sub, defer} from "@e280/stz"
 
 import {SignallerApi} from "../signaller/api.js"
 import {connect, SparrowConnect} from "./connect.js"
@@ -26,7 +26,7 @@ export async function join<Cable = StdCable>(options: JoinOptions<Cable>) {
 	const {invite} = options
 	const allow = options.allow ?? (async() => true)
 	const connecting = options.welcome ?? (() => () => () => {})
-	const ready = deferPromise<[Prospect, Connection<Cable>]>()
+	const ready = defer<[Prospect, Connection<Cable>]>()
 
 	const {signaller, self, stats, onStats, close} = await connect({
 		...options,

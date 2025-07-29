@@ -1,12 +1,14 @@
 
-import {logger} from "renraku"
-import {color} from "@e280/science"
+import {Logger} from "@e280/sten"
 
-const log = (varname: string, value: string | undefined) => logger.logcore.log([
-	color.yellow(varname),
+const logger = new Logger()
+const {colors} = logger
+
+const log = (varname: string, value: string | undefined) => logger.log([
+	colors.yellow(varname),
 	value !== undefined
-		? color.green("set")
-		: color.magenta("unset"),
+		? colors.green("set")
+		: colors.magenta("unset"),
 ].join(" "))
 
 export const Env = {

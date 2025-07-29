@@ -1,6 +1,6 @@
 
 import {MapG} from "@e280/stz"
-import {SimpleHeaders} from "renraku"
+import {SimpleHeaders} from "@e280/renraku"
 
 import {Agent} from "./parts/agent.js"
 import {makeSignallerApi} from "./api.js"

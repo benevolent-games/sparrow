@@ -1,46 +1,41 @@
 
-import "@benev/slate/x/node.js"
+import Renraku from "@e280/renraku"
+import {deathWithDignity} from "@benev/argv"
 
 import {Core} from "./core.js"
 import {BrowserApi} from "../browser/api.js"
 import {getSignallerParams} from "./params.js"
 import {generalTimeout} from "../browser/types.js"
-import {serverLogging} from "./parts/server-logging.js"
 import {ipToReputation} from "./parts/ip-to-reputation.js"
-import {WebSocketServer, remote, endpoint, logger, RandomUserEmojis, deathWithDignity, Logcore} from "renraku/node"
 
 deathWithDignity()
 
-logger.logcore = new Logcore()
-logger.logcore.log("📜 environment variables:")
+const logger = new Renraku.LoggerTap()
+logger.log("📜 environment variables:")
+
 const params = getSignallerParams()
-
 const core = new Core(params)
-const emojis = new RandomUserEmojis()
 
-const server = new WebSocketServer({
+const server = new Renraku.Server({
+	tap: logger,
+	cors: {origins: "*"},
 	timeout: generalTimeout,
-	acceptConnection: async({ip, headers, remoteEndpoint, close}) => {
-		const reputation = await ipToReputation(ip, params.salt)
-		const emoji = emojis.pull()
-		const logging = serverLogging(reputation, emoji)
-
-		if (!params.debug) {
-			logging.remote.onCall = () => {}
-			logging.local.onCall = () => {}
-		}
-
-		const browserApi = remote<BrowserApi>(remoteEndpoint, logging.remote)
-		const {agent, signallerApi} = await core.acceptAgent(reputation, headers, browserApi, close)
+	websocket: Renraku.websocket<BrowserApi>(async connection => {
+		const headers = Renraku.simplifyHeaders(connection.request.headers)
+		const reputation = await ipToReputation(connection.ip, params.salt)
+		const {agent, signallerApi} = await core.acceptAgent(
+			reputation,
+			headers,
+			connection.remote,
+			connection.close,
+		)
 		return {
-			closed: () => core.deleteAgent(agent),
-			localEndpoint: endpoint(signallerApi, logging.local),
+			rpc: () => signallerApi,
+			disconnected: () => core.deleteAgent(agent),
 		}
-	},
+	}),
 })
 
-server.listen(
-	params.port,
-	() => logger.logcore.log(`🚀 listening on ${params.port}`),
-)
+await server.listen(params.port)
+await logger.log(`🚀 sparrow signaller :${params.port}`)
 

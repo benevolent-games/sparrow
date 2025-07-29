@@ -1,5 +1,5 @@
 
-import {ev} from "@benev/slate"
+import {ev} from "@e280/stz"
 import {SendIceCandidateFn} from "../types.js"
 
 export function gather_ice(

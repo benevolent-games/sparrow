@@ -1,40 +1,40 @@
 
-import "@benev/slate/x/node.js"
-import {template, html, easypage, headScripts, git_commit_hash, read_file, unsanitized} from "@benev/turtle"
+import {ssg, html} from "@e280/scute"
 
-export default template(async basic => {
-	const path = basic.path(import.meta.url)
-	const hash = await git_commit_hash()
+const title = "sparrow"
+const description = "webrtc connectivity library"
+const favicon = "/assets/sparrow-256.png"
 
-	return easypage({
-		path,
-		dark: true,
-		title: "sparrow-rtc",
-		head: html`
-			<link rel="icon" href="/assets/sparrow-256.png"/>
-			<style>${unsanitized(await read_file("x/demo/stylesheet.css"))}</style>
-			<meta data-commit-hash="${hash}"/>
-			${headScripts({
-				devModulePath: await path.version.root("demo/main.bundle.js"),
-				prodModulePath: await path.version.root("demo/main.bundle.min.js"),
-				importmapContent: await read_file("x/importmap.json"),
-			})}
-		`,
-		body: html`
-			<h1 class=title>
-				<img src="/assets/sparrow.avif" alt=""/>
-				<span>sparrow-rtc</span>
-			</h1>
+export default ssg.page(import.meta.url, async orb => ({
+	title,
+	dark: true,
+	js: "demo/main.bundle.min.js",
+	css: "demo/stylesheet.css",
+	favicon,
 
-			<main>
-				<sparrow-demo></sparrow-demo>
-			</main>
+	socialCard: {
+		themeColor: "#acf",
+		title,
+		description,
+		siteName: "https://sparrow.e280.org/",
+		image: "https://sparrow.e280.org" + favicon,
+	},
 
-			<footer>
-				<p>Sparrow makes WebRTC easy, learn more on the <a href="https://github.com/chase-moskal/sparrow-rtc" target=_blank>GitHub</a> page.</p>
-				<p><a href="/" target=_blank>Click here</a> to host a new session.</p>
-			</footer>
-		`,
-	})
-})
+	body: html`
+		<h1 class=title>
+			<img src="/assets/sparrow.avif" alt=""/>
+			<span>sparrow-rtc</span>
+		</h1>
+
+		<main>
+			<sparrow-demo></sparrow-demo>
+		</main>
+
+		<footer>
+			<p>Sparrow makes WebRTC easy, learn more on the <a href="https://github.com/chase-moskal/sparrow-rtc" target=_blank>GitHub</a> page.</p>
+			<p><a href="/" target=_blank>Click here</a> to host a new session.</p>
+			<p><small>${orb.packageVersion()}</small></p>
+		</footer>
+	`,
+}))
 

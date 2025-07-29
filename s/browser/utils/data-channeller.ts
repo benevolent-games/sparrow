@@ -1,5 +1,5 @@
 
-import {ev} from "@benev/slate"
+import {ev} from "@e280/stz"
 import {messageBuffering} from "./message-buffering.js"
 
 export const DataChanneller = {

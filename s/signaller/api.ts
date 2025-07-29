@@ -1,5 +1,5 @@
 
-import {ExposedError} from "renraku"
+import {ExposedError} from "@e280/renraku"
 
 import {Core} from "./core.js"
 import {Id} from "../tools/id.js"

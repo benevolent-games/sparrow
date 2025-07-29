@@ -1,6 +1,5 @@
 
 import {Sub} from "@e280/stz"
-import {Logging} from "./std/logging.js"
 import {AgentInfo} from "../signaller/types.js"
 import {SignallerApi} from "../signaller/api.js"
 
@@ -54,7 +53,6 @@ export type CommonOptions<Cable> = {
 	timeout: number
 	rtcConfigurator: RtcConfigurator
 	cableConfig: CableConfig<Cable>
-	logging: Logging
 }
 
 export type ConnectOptions<Cable> = {

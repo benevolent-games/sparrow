@@ -1,6 +1,6 @@
 
 import {sub, Sub} from "@e280/stz"
-import {RandomUserEmojis} from "renraku"
+import {RandomUserEmojis} from "@e280/renraku"
 import {ev, repeating, signal, Signal, signals} from "@benev/slate"
 
 import {Id} from "../../../tools/id.js"
