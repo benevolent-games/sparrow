@@ -27,7 +27,7 @@ export async function connect<Cable = StdCable>(options: ConnectOptions<Cable>) 
 
 	const socket = new WebSocket(o.url)
 
-	const {remote: signallerApi} = await Renraku.wsClient<SignallerApi>({
+	const {remote: signallerApi} = await Renraku.wsConnect<SignallerApi>({
 		tap: new Renraku.LoggerTap(),
 		socket,
 		disconnected: () => {
@@ -35,26 +35,33 @@ export async function connect<Cable = StdCable>(options: ConnectOptions<Cable>) 
 				stopKeepAlive()
 			o.closed()
 		},
-		rpc: signallerApi => makeBrowserApi({
-			allow: async agent => !!(
-				agent.id !== selfId &&
-				await allow(agent)
-			),
-			signallerApi,
-			rtcConfigurator: o.rtcConfigurator,
-			cableConfig: o.cableConfig as CableConfig<Cable>,
-			welcome: prospect => {
-				const connected = o.welcome(prospect)
-				return connection => {
-					connections.add(connection)
-					const disconnected = connected(connection)
-					return () => {
-						connections.delete(connection)
-						disconnected()
+		connector: async connection => {
+			return {
+				fns: makeBrowserApi({
+					allow: async agent => !!(
+						agent.id !== selfId &&
+						await allow(agent)
+					),
+					signallerApi: connection.remote,
+					rtcConfigurator: o.rtcConfigurator,
+					cableConfig: o.cableConfig as CableConfig<Cable>,
+					welcome: prospect => {
+						const connected = o.welcome(prospect)
+						return connection => {
+							connections.add(connection)
+							const disconnected = connected(connection)
+							return () => {
+								connections.delete(connection)
+								disconnected()
+							}
+						}
 					}
-				}
+				}),
+				disconnected() {
+
+				},
 			}
-		}),
+		},
 	})
 
 	const signaller = signallerApi.v1 as SignallerApi["v1"]

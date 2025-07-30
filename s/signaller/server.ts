@@ -3,6 +3,7 @@ import Renraku from "@e280/renraku"
 import {deathWithDignity} from "@benev/argv"
 
 import {Core} from "./core.js"
+import {SignallerApi} from "./api.js"
 import {BrowserApi} from "../browser/api.js"
 import {getSignallerParams} from "./params.js"
 import {generalTimeout} from "../browser/types.js"
@@ -20,7 +21,7 @@ const server = new Renraku.Server({
 	tap: logger,
 	cors: {origins: "*"},
 	timeout: generalTimeout,
-	websocket: Renraku.websocket<BrowserApi>(async connection => {
+	websocket: Renraku.asAccepter<SignallerApi, BrowserApi>(async connection => {
 		const headers = Renraku.simplifyHeaders(connection.request.headers)
 		const reputation = await ipToReputation(connection.ip, params.salt)
 		const {agent, signallerApi} = await core.acceptAgent(
@@ -30,7 +31,7 @@ const server = new Renraku.Server({
 			connection.close,
 		)
 		return {
-			rpc: () => signallerApi,
+			fns: signallerApi,
 			disconnected: () => core.deleteAgent(agent),
 		}
 	}),
