@@ -1,11 +1,14 @@
 {
 	"name": "sparrow-rtc",
 	"version": "0.2.9",
-	"description": "",
+	"description": "webrtc connectivity library for games",
 	"license": "MIT",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"type": "module",
-	"main": "x/index.js",
+	"main": "./x/index.js",
+	"exports": {
+		".": "./x/index.js"
+	},
 	"files": [
 		"x",
 		"s"
