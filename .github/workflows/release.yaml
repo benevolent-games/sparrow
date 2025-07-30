@@ -29,9 +29,8 @@ jobs:
 
     - name: delete dev symlinks
       run: |
-        rm x/assets
-        rm x/node_modules
         rm x/s
+        rm x/assets
 
     - uses: webfactory/ssh-agent@v0.9.0
       with:
@@ -57,7 +56,6 @@ jobs:
 
     - name: moving files into x
       run: |
-        mv node_modules x/node_modules
         mv s x/s
         mv assets x/assets
 
