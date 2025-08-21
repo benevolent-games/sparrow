@@ -8,6 +8,12 @@
 
 ## v0.2
 
+### v0.2.12
+- 🍏 update dependencies
+
+### v0.2.11
+- 🍏 fix release workflow
+
 ### v0.2.10
 - 🔶 use package.json exports which restricts exportable modules
 - 🍏 upgrade to new `@e280/renraku`

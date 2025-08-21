@@ -27,20 +27,20 @@
 		"test-debug": "node inspect x/tests.test.js"
 	},
 	"dependencies": {
-		"@benev/argv": "^0.3.11",
-		"@benev/slate": "^0.3.9",
-		"@e280/renraku": "^0.5.0-23",
-		"@e280/sten": "^0.0.0-5",
-		"@e280/stz": "^0.0.0-29"
+		"@benev/argv": "^0.3.12",
+		"@benev/slate": "^0.3.10",
+		"@e280/renraku": "^0.5.0-30",
+		"@e280/sten": "^0.0.0-6",
+		"@e280/stz": "^0.0.0"
 	},
 	"devDependencies": {
-		"@e280/science": "^0.0.5",
-		"@e280/scute": "^0.0.0-6",
-		"@types/node": "^24.1.0",
+		"@e280/science": "^0.0.6",
+		"@e280/scute": "^0.0.0",
+		"@types/node": "^24.3.0",
 		"http-server": "^14.1.1",
 		"importly": "^0.2.3",
 		"npm-run-all": "^4.1.5",
-		"typescript": "^5.8.3"
+		"typescript": "^5.9.2"
 	},
 	"engines": {
 		"node": ">=22"

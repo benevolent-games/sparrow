@@ -1,6 +1,6 @@
 
-import {sub, Sub, repeat, nap} from "@e280/stz"
 import Renraku from "@e280/renraku"
+import {sub, Sub, repeat, nap} from "@e280/stz"
 
 import {stdOptions} from "./std/options.js"
 import {SignallerApi} from "../signaller/api.js"

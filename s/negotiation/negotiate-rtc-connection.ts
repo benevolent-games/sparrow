@@ -15,7 +15,7 @@ export async function negotiate_rtc_connection(
 	) {
 
 	const cancel = (attemptId: string) => async(error: any) => {
-		await deadline(generalTimeout, "timed out", () => Promise.all([
+		await deadline(generalTimeout, () => Promise.all([
 			alice.api.v1.cancel(attemptId),
 			bob.api.v1.cancel(attemptId),
 		]))
@@ -24,7 +24,7 @@ export async function negotiate_rtc_connection(
 
 	async function attempt(alice: Partner, bob: Partner) {
 		const attemptId = Id.random()
-		return deadline(generalTimeout, "timed out", () => attempt_rtc_connection(
+		return deadline(generalTimeout, () => attempt_rtc_connection(
 			attemptId,
 			alice,
 			bob,
