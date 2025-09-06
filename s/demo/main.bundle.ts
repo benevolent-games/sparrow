@@ -1,6 +1,6 @@
 
-import {register_to_dom} from "@benev/slate"
+import {dom} from "@e280/sly"
 import {SparrowDemo} from "./views/sparrow-demo/element.js"
 
-register_to_dom({SparrowDemo})
+dom.register({SparrowDemo})
 

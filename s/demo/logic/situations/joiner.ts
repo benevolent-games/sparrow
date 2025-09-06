@@ -1,5 +1,5 @@
 
-import {signal} from "@benev/slate"
+import {signal} from "@e280/strata"
 import {Lobby} from "../types.js"
 import {StdCable} from "../../../browser/types.js"
 import {Sparrow} from "../../../browser/sparrow.js"

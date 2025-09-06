@@ -1,5 +1,6 @@
 
-import {html, loading, Op, shadowView} from "@benev/slate"
+import {html} from "lit"
+import {Op, view} from "@e280/sly"
 
 import {Id} from "../../../tools/id.js"
 import stylesCss from "./styles.css.js"
@@ -7,8 +8,9 @@ import themeCss from "../../theme.css.js"
 import {LobbyView} from "../lobby/view.js"
 import {Lobby} from "../../logic/types.js"
 import {JoinerSituation} from "../../logic/situations/joiner.js"
+import {loader} from "../../utils/loader.js"
 
-export const ClientView = shadowView(use => (situation: JoinerSituation) => {
+export const ClientView = view(use => (situation: JoinerSituation) => {
 	use.styles(themeCss, stylesCss)
 
 	const lobby = situation.lobby.value
@@ -21,7 +23,7 @@ export const ClientView = shadowView(use => (situation: JoinerSituation) => {
 	return html`
 		<h2>Joined <code>${Id.toDisplay(invite)}</code></h2>
 
-		${loading.binary(op, lobby => LobbyView([self.id, lobby]))}
+		${loader(op, lobby => LobbyView(self.id, lobby))}
 	`
 })
 

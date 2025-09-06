@@ -1,7 +1,6 @@
 
-import {sub, Sub} from "@e280/stz"
+import {ev, nap, repeat, sub, Sub} from "@e280/stz"
 import {RandomUserEmojis} from "@e280/renraku"
-import {ev, repeating, signal, Signal, signals} from "@benev/slate"
 
 import {Id} from "../../../tools/id.js"
 import {Sparrow} from "../../../browser/sparrow.js"
@@ -10,6 +9,7 @@ import {Lobby, Person, UserDetails} from "../types.js"
 import {SignallerStats} from "../../../signaller/types.js"
 import {Connection, StdCable} from "../../../browser/types.js"
 import {ConnectivityReport, reportConnectivity} from "../../../browser/utils/report-connectivity.js"
+import {DerivedFn, signal, Signal, SignalFn} from "@e280/strata"
 
 type User = {
 	id: string
@@ -23,7 +23,7 @@ export class HostingSituation {
 	stopRtcStats: () => void
 	stopSignallerStats: () => void
 
-	lobby: Signal<Lobby>
+	lobby: DerivedFn<Lobby>
 	stopUpdates: () => void
 
 	constructor(
@@ -33,15 +33,13 @@ export class HostingSituation {
 			public stats: Signal<SignallerStats>,
 			onClosed: Sub,
 		) {
-		this.lobby = signals.computed(() => this.getLobby())
+		this.lobby = signal.derived(() => this.getLobby())
 		this.stopSignallerStats = hosted.onStats(value => { stats.value = value })
-		this.stopRtcStats = repeating(
-			5_000,
-			async() => {
-				await this.#refreshRtcStats(),
-				await this.#broadcastLobby()
-			},
-		)
+		this.stopRtcStats = repeat(async() => {
+			await nap(5_000)
+			await this.#refreshRtcStats(),
+			await this.#broadcastLobby()
+		})
 		this.stopUpdates = this.lobby.on(() => this.#broadcastLobby())
 		onClosed(() => this.#closed())
 	}
@@ -90,9 +88,11 @@ export class HostingSituation {
 					user.connection = connection
 					users.publish()
 
-					ev(connection.peer, {connectionstatechange: () => {
-						user.details.stable = (connection.peer.connectionState !== "disconnected")
-					}})
+					ev(connection.peer, {
+						connectionstatechange: () => {
+							user.details.stable = (connection.peer.connectionState !== "disconnected")
+						},
+					})
 
 					// person has disconnected
 					return perished

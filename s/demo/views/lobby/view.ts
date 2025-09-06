@@ -1,13 +1,13 @@
 
-import {html, shadowView} from "@benev/slate"
-
+import {html} from "lit"
+import {view} from "@e280/sly"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
+import {Id} from "../../../tools/id.js"
 import {Lobby} from "../../logic/types.js"
 import {AgentInfo} from "../../../signaller/types.js"
-import {Id} from "../../../tools/id.js"
 
-export const LobbyView = shadowView(use => (
+export const LobbyView = view(use => (
 		selfId: string,
 		lobby: Lobby,
 		killProspect?: (id: string) => void,
