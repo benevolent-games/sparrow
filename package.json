@@ -1,6 +1,6 @@
 {
 	"name": "sparrow-rtc",
-	"version": "0.2.12",
+	"version": "0.2.13",
 	"description": "webrtc connectivity library for games",
 	"license": "MIT",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
