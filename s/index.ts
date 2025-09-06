@@ -11,12 +11,11 @@ export * from "./browser/utils/report-connectivity.js"
 export * from "./browser/connect.js"
 export * from "./browser/host.js"
 export * from "./browser/join.js"
-export * from "./browser/sparrow.js"
+export * as Sparrow from "./browser/sparrow.js"
+export * as default from "./browser/sparrow.js"
 export * from "./browser/types.js"
 
 export * from "./signaller/types.js"
 
 export * from "./tools/id.js"
-
-export {Sparrow as default} from "./browser/sparrow.js"
 
