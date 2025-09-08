@@ -1,12 +1,12 @@
 
 import {Sub, defer} from "@e280/stz"
 
+import {connect, Connect} from "./connect.js"
 import {SignallerApi} from "../signaller/api.js"
-import {connect, SparrowConnect} from "./connect.js"
 import {AgentInfo, SignallerStats} from "../signaller/types.js"
 import {Connection, JoinOptions, Prospect, StdCable} from "./types.js"
 
-export class SparrowJoin<Cable = StdCable> extends SparrowConnect {
+export class Join<Cable = StdCable> extends Connect {
 	constructor(
 			signaller: SignallerApi["v1"],
 			self: AgentInfo,
@@ -21,6 +21,9 @@ export class SparrowJoin<Cable = StdCable> extends SparrowConnect {
 		super(signaller, self, stats, onStats, close)
 	}
 }
+
+/** @deprecated renamed to Join */
+export class SparrowJoin extends Connect {}
 
 export async function join<Cable = StdCable>(options: JoinOptions<Cable>) {
 	const {invite} = options
@@ -62,7 +65,7 @@ export async function join<Cable = StdCable>(options: JoinOptions<Cable>) {
 	// close connection to signaller after we've joined
 	close()
 
-	return new SparrowJoin<Cable>(
+	return new Join<Cable>(
 		signaller,
 		self,
 		stats,

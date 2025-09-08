@@ -1,13 +1,11 @@
 
 import {signal} from "@e280/strata"
 import {Lobby} from "../types.js"
-import {StdCable} from "../../../browser/types.js"
-import {Sparrow} from "../../../browser/sparrow.js"
-import {SparrowJoin} from "../../../browser/join.js"
+import * as Sparrow from "../../../browser/index.js"
 
 export class JoinerSituation {
 	static async start(url: string, invite: string, disconnected: () => void) {
-		const joined = await Sparrow.join<StdCable>({
+		const joined = await Sparrow.join<Sparrow.StdCable>({
 			url,
 			invite,
 			disconnected,
@@ -20,7 +18,7 @@ export class JoinerSituation {
 
 	constructor(
 			public url: string,
-			public joined: SparrowJoin
+			public joined: Sparrow.Join,
 		) {
 
 		joined.connection.cable.reliable.onmessage = event => {

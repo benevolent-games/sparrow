@@ -1,21 +1,19 @@
 
-import {ev, nap, repeat, sub, Sub} from "@e280/stz"
 import {RandomUserEmojis} from "@e280/renraku"
+import {ev, nap, repeat, sub, Sub} from "@e280/stz"
+import {DerivedFn, signal, SignalFn} from "@e280/strata"
 
 import {Id} from "../../../tools/id.js"
-import {Sparrow} from "../../../browser/sparrow.js"
-import {SparrowHost} from "../../../browser/host.js"
+import * as Sparrow from "../../../browser/index.js"
 import {Lobby, Person, UserDetails} from "../types.js"
 import {SignallerStats} from "../../../signaller/types.js"
-import {Connection, StdCable} from "../../../browser/types.js"
 import {ConnectivityReport, reportConnectivity} from "../../../browser/utils/report-connectivity.js"
-import {DerivedFn, signal, Signal, SignalFn} from "@e280/strata"
 
 type User = {
 	id: string
 	reputation: string
 	details: UserDetails
-	connection: Connection<StdCable> | null
+	connection: Sparrow.Connection<Sparrow.StdCable> | null
 	report: ConnectivityReport | null
 }
 
@@ -28,9 +26,9 @@ export class HostingSituation {
 
 	constructor(
 			public url: string,
-			public hosted: SparrowHost,
-			public users: Signal<Set<User>>,
-			public stats: Signal<SignallerStats>,
+			public hosted: Sparrow.Host,
+			public users: SignalFn<Set<User>>,
+			public stats: SignalFn<SignallerStats>,
 			onClosed: Sub,
 		) {
 		this.lobby = signal.derived(() => this.getLobby())
@@ -49,7 +47,7 @@ export class HostingSituation {
 		const users = signal(new Set<User>)
 		const onClosed = sub()
 
-		const hosted = await Sparrow.host<StdCable>({
+		const hosted = await Sparrow.host<Sparrow.StdCable>({
 			url,
 			rtcConfigurator: Sparrow.turnRtcConfigurator,
 			allow: async() => true,

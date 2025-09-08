@@ -1,14 +1,14 @@
 
+import {html} from "lit"
 import {view} from "@e280/sly"
 import {Id} from "../../../tools/id.js"
 import {LobbyView} from "../lobby/view.js"
-import {Sparrow} from "../../../browser/sparrow.js"
+import * as Sparrow from "../../../browser/index.js"
 import {HostingSituation} from "../../logic/situations/hosting.js"
 import stylesCss from "./styles.css.js"
 import themeCss from "../../theme.css.js"
 import crownSvg from "../../icons/tabler/crown.svg.js"
 import chartBarPopularSvg from "../../icons/tabler/chart-bar-popular.svg.js"
-import {html} from "lit"
 
 export const HostView = view(use => (situation: HostingSituation) => {
 	use.styles(themeCss, stylesCss)

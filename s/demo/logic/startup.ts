@@ -1,7 +1,7 @@
 
 import {Id} from "../../tools/id.js"
 import {isLocal} from "../utils/is-local.js"
-import {Sparrow} from "../../browser/sparrow.js"
+import * as Sparrow from "../../browser/index.js"
 import {JoinerSituation} from "./situations/joiner.js"
 import {HostingSituation} from "./situations/hosting.js"
 

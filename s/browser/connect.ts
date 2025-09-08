@@ -8,7 +8,7 @@ import {makeBrowserApi} from "../browser/api.js"
 import {AgentInfo, SignallerStats} from "../signaller/types.js"
 import {CableConfig, Connection, ConnectOptions, StdCable} from "./types.js"
 
-export class SparrowConnect {
+export class Connect {
 	constructor(
 		public signaller: SignallerApi["v1"],
 		public self: AgentInfo,
@@ -17,6 +17,9 @@ export class SparrowConnect {
 		public close: () => void,
 	) {}
 }
+
+/** @deprecated renamed to Connect */
+export class SparrowConnect extends Connect {}
 
 export async function connect<Cable = StdCable>(options: ConnectOptions<Cable>) {
 	const o = {...stdOptions(), ...options}
@@ -77,7 +80,7 @@ export async function connect<Cable = StdCable>(options: ConnectOptions<Cable>) 
 	}
 
 	const onStats = sub<[SignallerStats]>()
-	const connected = new SparrowConnect(signaller, self, stats, onStats, close)
+	const connected = new Connect(signaller, self, stats, onStats, close)
 
 	const keepAliveInterval = 0.45 * o.timeout
 	const stopKeepAlive = repeat(async() => {
