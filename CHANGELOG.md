@@ -4,16 +4,24 @@
 - 🔶 deprecation or possible breaking change
 - 🍏 harmless addition, fix, or enhancement
 
+
+
 <br/>
 
 ## v0.2
 
-### v0.2.13
+### v0.2.15
 - 🍏 fix the build lol
 - 🔶 rework exports, notably doing some renames with deprecated alias for old names
   - `SparrowHost` => (`Host`, `Sparrow.Host`)
   - `SparrowJoin` => (`Join`, `Sparrow.Join`)
   - `SparrowConnect` => (`Connect`, `Sparrow.Connect`)
+
+### v0.2.14
+- 🍏 export Sparrow as proper esm namespace (tree shakable)
+
+### v0.2.13
+- 🍏 upgrade from slate to `@e280/sly`
 
 ### v0.2.12
 - 🍏 update dependencies
@@ -57,10 +65,14 @@
 ### v0.2.0
 - 🟥 super cool rewrite
 
+
+
 <br/>
 
 ## v0.1
 - 🟥 massive extreme rewrite
+
+
 
 <br/>
 
